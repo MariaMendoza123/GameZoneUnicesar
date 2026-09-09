@@ -18,3 +18,25 @@ Adopté java.nio.file (Files/Path) en vez de BufferedReader/BufferedWriter, sigu
 Usé concatenación con + en toLine() en vez de String.join, para mantener consistencia de estilo con el repo guía del profesor.
 Diseñé operaciones granulares (save, findAll, findById, update) en vez de guardar/cargar toda la lista de una vez, porque update() es necesario para persistir el descuento automático de inventario cuando se registre una venta.
 Ruta del archivo: data/products.txt, para mantener consistencia con la carpeta data/ que exige el entregable final del taller.
+
+
+---
+
+## Log Entry 2
+
+* **Date:** 2026-09-08
+* **Tool Used:** Gemini (Google)
+* **Module:** Service — Product Module (`ProductService`)
+
+### Prompts / Queries:
+* Reviewed business rules required for the product service layer according to the project requirements.
+* Compared `ProductService` structure with the guide repository (`BibliotecaUnicesar`) to align exception handling and ID generation strategies.
+* Clarified the role of ID prefixing (`VG-` for VideoGames, `CN-` for Consoles) and String-based auto-increment logic in `ProductService`.
+* Refactored attribute validation to ensure all specific fields (platform, genre, classification, brand, model, generation) and common fields (title, price, stock) are checked before persistence.
+* Verified that all exception messages and JavaDoc comments strictly comply with the English language requirement.
+
+### Applied Decisions:
+* **Auto-generated ID:** Implemented `generateNextId(prefix)` to produce clean String IDs (`VG-1`, `CN-1`) automatically, keeping UI responsibility lightweight and avoiding duplicate IDs.
+* **Validation Strategy:** Created a helper method `validateCommonAttributes()` alongside specific attribute checks in `registerVideoGame` and `registerConsole`.
+* **Stock Management:** Implemented `updateStock()` to handle inventory reduction and stock sufficiency validation for integration with the sales module.
+* **Language Standardization:** Standardized all exception messages and JavaDoc documentation to English to fulfill project requirements.
