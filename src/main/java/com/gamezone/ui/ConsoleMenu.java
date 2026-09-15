@@ -1,11 +1,18 @@
 package com.gamezone.ui;
 
+import com.gamezone.model.Product;
+import com.gamezone.model.Sale;
 import com.gamezone.service.PersonService;
 import com.gamezone.service.ProductService;
 import com.gamezone.service.SaleService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Console menu for interacting with the GameZone application.
+ */
 public class ConsoleMenu {
 
     private final Scanner scanner;
@@ -13,6 +20,13 @@ public class ConsoleMenu {
     private final ProductService productService;
     private final SaleService saleService;
 
+    /**
+     * Constructs the console menu with the required services.
+     *
+     * @param personService service for managing persons
+     * @param productService service for managing products
+     * @param saleService service for managing sales
+     */
     public ConsoleMenu(
             PersonService personService,
             ProductService productService,
@@ -23,6 +37,7 @@ public class ConsoleMenu {
         this.productService = productService;
         this.saleService = saleService;
     }
+
     /**
      * Displays the main menu options.
      */
@@ -36,20 +51,22 @@ public class ConsoleMenu {
         System.out.println("4. Salir");
         System.out.println("=================================");
     }
+
     /**
-     * Reads the option selected by the user.
+     * Reads an option selected by the user.
      *
-     * @return the selected menu option.
+     * @return selected menu option
      */
     public int readOption() {
         System.out.print("Seleccione una opción: ");
-        return scanner.nextInt();
+        return Integer.parseInt(scanner.nextLine());
     }
 
     /**
-     * Handles the main menu navigation.
+     * Handles the main menu options.
      */
     public void handleMainMenu() {
+
         int option;
 
         do {
@@ -60,22 +77,32 @@ public class ConsoleMenu {
                 case 1:
                     handleProductMenu();
                     break;
+
                 case 2:
                     handlePersonMenu();
                     break;
+
                 case 3:
                     handleSaleMenu();
                     break;
+
                 case 4:
-                    System.out.println("Saliendo del sistema...");
+                    System.out.println(
+                            "Saliendo del sistema..."
+                    );
                     break;
+
                 default:
-                    System.out.println("Opción inválida.");
+                    System.out.println(
+                            "Opción inválida."
+                    );
             }
+
         } while (option != 4);
     }
+
     /**
-     * Displays the product management submenu.
+     * Displays the product management menu.
      */
     public void showProductMenu() {
         System.out.println();
@@ -90,9 +117,10 @@ public class ConsoleMenu {
     }
 
     /**
-     * Handles the product management submenu.
+     * Handles the product management menu.
      */
     public void handleProductMenu() {
+
         int option;
 
         do {
@@ -101,25 +129,40 @@ public class ConsoleMenu {
 
             switch (option) {
                 case 1:
-                    System.out.println("Registrar videojuego.");
+                    System.out.println(
+                            "Registrar videojuego."
+                    );
                     break;
+
                 case 2:
-                    System.out.println("Registrar consola.");
+                    System.out.println(
+                            "Registrar consola."
+                    );
                     break;
+
                 case 3:
-                    System.out.println("Consultar productos.");
+                    System.out.println(
+                            "Consultar productos."
+                    );
                     break;
+
                 case 4:
-                    System.out.println("Volviendo al menú principal...");
+                    System.out.println(
+                            "Volviendo al menú principal..."
+                    );
                     break;
+
                 default:
-                    System.out.println("Opción inválida.");
+                    System.out.println(
+                            "Opción inválida."
+                    );
             }
+
         } while (option != 4);
     }
 
     /**
-     * Displays the person management submenu.
+     * Displays the person management menu.
      */
     public void showPersonMenu() {
         System.out.println();
@@ -132,10 +175,12 @@ public class ConsoleMenu {
         System.out.println("4. Volver al menú principal");
         System.out.println("=================================");
     }
+
     /**
-     * Handles the person management submenu.
+     * Handles the person management menu.
      */
     public void handlePersonMenu() {
+
         int option;
 
         do {
@@ -144,25 +189,40 @@ public class ConsoleMenu {
 
             switch (option) {
                 case 1:
-                    System.out.println("Registrar cliente.");
+                    System.out.println(
+                            "Registrar cliente."
+                    );
                     break;
+
                 case 2:
-                    System.out.println("Registrar vendedor.");
+                    System.out.println(
+                            "Registrar vendedor."
+                    );
                     break;
+
                 case 3:
-                    System.out.println("Consultar personas.");
+                    System.out.println(
+                            "Consultar personas."
+                    );
                     break;
+
                 case 4:
-                    System.out.println("Volviendo al menú principal...");
+                    System.out.println(
+                            "Volviendo al menú principal..."
+                    );
                     break;
+
                 default:
-                    System.out.println("Opción inválida.");
+                    System.out.println(
+                            "Opción inválida."
+                    );
             }
+
         } while (option != 4);
     }
 
     /**
-     * Displays the sale management submenu.
+     * Displays the sales management menu.
      */
     public void showSaleMenu() {
         System.out.println();
@@ -176,10 +236,12 @@ public class ConsoleMenu {
         System.out.println("5. Volver al menú principal");
         System.out.println("=================================");
     }
+
     /**
-     * Handles the sale management submenu.
+     * Handles the sales management menu.
      */
     public void handleSaleMenu() {
+
         int option;
 
         do {
@@ -188,24 +250,222 @@ public class ConsoleMenu {
 
             switch (option) {
                 case 1:
-                    System.out.println("Registrar venta.");
+                    registerSale();
                     break;
+
                 case 2:
-                    System.out.println("Consultar historial de ventas.");
+                    showSalesHistory();
                     break;
+
                 case 3:
-                    System.out.println("Consultar compras de un cliente.");
+                    showClientPurchases();
                     break;
+
                 case 4:
-                    System.out.println("Consultar ventas de un vendedor.");
+                    showSellerSales();
                     break;
+
                 case 5:
-                    System.out.println("Volviendo al menú principal...");
+                    System.out.println(
+                            "Volviendo al menú principal..."
+                    );
                     break;
+
                 default:
-                    System.out.println("Opción inválida.");
+                    System.out.println(
+                            "Opción inválida."
+                    );
             }
+
         } while (option != 5);
     }
 
+    /**
+     * Registers a new sale through the console.
+     */
+    private void registerSale() {
+
+        System.out.println();
+        System.out.println("===== REGISTRAR VENTA =====");
+
+        System.out.print("ID de la venta: ");
+        String id = scanner.nextLine();
+
+        System.out.print("Fecha de la venta: ");
+        String date = scanner.nextLine();
+
+        System.out.print("ID del cliente: ");
+        String clientId = scanner.nextLine();
+
+        System.out.print("ID del vendedor: ");
+        String sellerId = scanner.nextLine();
+
+        System.out.print("ID del producto: ");
+        String productId = scanner.nextLine();
+
+        Product product =
+                productService.findProduct(productId);
+
+        if (product == null) {
+            System.out.println(
+                    "Producto no encontrado con ID: "
+                            + productId
+            );
+            return;
+        }
+
+        List<Product> products = new ArrayList<>();
+        products.add(product);
+
+        try {
+
+            Sale sale = saleService.registerSale(
+                    id,
+                    date,
+                    clientId,
+                    sellerId,
+                    products
+            );
+
+            System.out.println();
+            System.out.println(
+                    "Venta registrada correctamente."
+            );
+            System.out.println(
+                    "ID: " + sale.getId()
+            );
+            System.out.println(
+                    "Total: $" + sale.getTotalAmount()
+            );
+
+        } catch (IllegalArgumentException
+                 | IllegalStateException e) {
+
+            System.out.println();
+            System.out.println(
+                    "No se pudo registrar la venta."
+            );
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Displays the complete sales history.
+     */
+    private void showSalesHistory() {
+
+        System.out.println();
+        System.out.println(
+                "===== HISTORIAL DE VENTAS ====="
+        );
+
+        List<Sale> sales =
+                saleService.findAllSales();
+
+        if (sales.isEmpty()) {
+            System.out.println(
+                    "No hay ventas registradas."
+            );
+            return;
+        }
+
+        for (Sale sale : sales) {
+            printSale(sale);
+        }
+    }
+
+    /**
+     * Displays purchases made by a specific client.
+     */
+    private void showClientPurchases() {
+
+        System.out.println();
+        System.out.println(
+                "===== COMPRAS DEL CLIENTE ====="
+        );
+
+        System.out.print("ID del cliente: ");
+        String clientId = scanner.nextLine();
+
+        List<Sale> sales =
+                saleService.findSalesByClient(clientId);
+
+        if (sales.isEmpty()) {
+            System.out.println(
+                    "No se encontraron compras para este cliente."
+            );
+            return;
+        }
+
+        for (Sale sale : sales) {
+            printSale(sale);
+        }
+    }
+
+    /**
+     * Displays sales handled by a specific seller.
+     */
+    private void showSellerSales() {
+
+        System.out.println();
+        System.out.println(
+                "===== VENTAS DEL VENDEDOR ====="
+        );
+
+        System.out.print("ID del vendedor: ");
+        String sellerId = scanner.nextLine();
+
+        List<Sale> sales =
+                saleService.findSalesBySeller(sellerId);
+
+        if (sales.isEmpty()) {
+            System.out.println(
+                    "No se encontraron ventas para este vendedor."
+            );
+            return;
+        }
+
+        for (Sale sale : sales) {
+            printSale(sale);
+        }
+    }
+
+    /**
+     * Prints the information of a sale.
+     *
+     * @param sale sale to display
+     */
+    private void printSale(Sale sale) {
+
+        System.out.println();
+        System.out.println("-----------------------------");
+        System.out.println(
+                "Venta: " + sale.getId()
+        );
+        System.out.println(
+                "Fecha: " + sale.getDate()
+        );
+        System.out.println(
+                "Cliente: "
+                        + sale.getClient().getName()
+        );
+        System.out.println(
+                "Vendedor: "
+                        + sale.getSeller().getName()
+        );
+
+        System.out.println("Productos:");
+
+        for (Product product : sale.getProducts()) {
+            System.out.println(
+                    "- " + product.getTitle()
+                            + " | $" + product.getPrice()
+            );
+        }
+
+        System.out.println(
+                "Total: $" + sale.getTotalAmount()
+        );
+        System.out.println("-----------------------------");
+    }
 }
