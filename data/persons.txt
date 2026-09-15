@@ -1,0 +1,4 @@
+SELLER|SE-1|Carlos Perez|3001234567|EMP001|Mañana
+SELLER|SE-2|Laura Gomez|3007654321|EMP002|Tarde
+SELLER|SE-3|Andres Diaz|3009988776|EMP003|Noche
+CLIENT|CL-1|Maria Lopez|3001112233|maria@example.com
