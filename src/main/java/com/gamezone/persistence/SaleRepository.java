@@ -1,5 +1,7 @@
 package com.gamezone.persistence;
 
+import com.gamezone.model.Product;
+import com.gamezone.model.Product;
 import com.gamezone.model.Sale;
 
 import java.io.*;
@@ -42,16 +44,76 @@ public class SaleRepository {
     }
 
     /**
+     * Retrieves all sales stored in the sales data file.
+     *
+     * @return List of stored sales.
+     */
+    public List<Sale> findAll() {
+        List<Sale> sales = new ArrayList<>();
+        File file = new File(FILE_PATH);
+
+        if (!file.exists()) {
+            return sales;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                if (!line.trim().isEmpty()) {
+                    sales.add(fromLine(line));
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading sales.", e);
+        }
+
+        return sales;
+    }
+
+    /**
+     * Converts a stored text line into a Sale object.
+     *
+     * @param line Text representation of a sale.
+     * @return Sale created from the stored information.
+     */
+    private Sale fromLine(String line) {
+        String[] parts = line.split(DELIMITER);
+
+        String id = parts[0];
+        String date = parts[1];
+
+        return new Sale(
+                id,
+                date,
+                null,
+                null,
+                new ArrayList<>()
+        );
+    }
+
+    /**
      * Converts a sale into a text line for file storage.
      *
      * @param sale Sale to convert.
      * @return Text representation of the sale.
      */
     private String toLine(Sale sale) {
+        StringBuilder productIds = new StringBuilder();
+
+        for (Product product : sale.getProducts()) {
+            if (productIds.length() > 0) {
+                productIds.append(",");
+            }
+
+            productIds.append(product.getId());
+        }
+
         return sale.getId() + SEPARATOR
                 + sale.getDate() + SEPARATOR
                 + sale.getClient().getId() + SEPARATOR
                 + sale.getSeller().getId() + SEPARATOR
+                + productIds + SEPARATOR
                 + sale.getTotalAmount();
     }
 }
