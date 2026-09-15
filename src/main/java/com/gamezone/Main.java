@@ -23,8 +23,10 @@ public class Main {
         // Create repositories
         PersonRepository personRepository = new PersonRepository();
         ProductRepository productRepository = new ProductRepository();
-        SaleRepository saleRepository = new SaleRepository();
-
+        SaleRepository saleRepository = new SaleRepository(
+                personRepository,
+                productRepository
+        );
         // Create services
         PersonService personService = new PersonService(personRepository);
         ProductService productService = new ProductService(productRepository);

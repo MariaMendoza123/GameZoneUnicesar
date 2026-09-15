@@ -1,10 +1,17 @@
 package com.gamezone.persistence;
 
-import com.gamezone.model.Product;
+import com.gamezone.model.Client;
+import com.gamezone.model.Person;
 import com.gamezone.model.Product;
 import com.gamezone.model.Sale;
+import com.gamezone.model.Seller;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,39 +24,61 @@ public class SaleRepository {
     private static final String SEPARATOR = "|";
     private static final String DELIMITER = "\\|";
 
+    private final PersonRepository personRepository;
+    private final ProductRepository productRepository;
+
     /**
-     * Saves all sales to the sales data file.
+     * Constructs a SaleRepository with the required repositories.
      *
-     * @param sales List of sales to save.
+     * @param personRepository repository for managing persons
+     * @param productRepository repository for managing products
+     */
+    public SaleRepository(
+            PersonRepository personRepository,
+            ProductRepository productRepository
+    ) {
+        this.personRepository = personRepository;
+        this.productRepository = productRepository;
+    }
+
+    /**
+     * Saves all sales to the persistence file.
+     *
+     * @param sales sales to save
      */
     public void saveAll(List<Sale> sales) {
+
         File file = new File(FILE_PATH);
+        File parent = file.getParentFile();
 
-        try {
-            File parent = file.getParentFile();
+        if (parent != null && !parent.exists()) {
+            parent.mkdirs();
+        }
 
-            if (parent != null && !parent.exists()) {
-                parent.mkdirs();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+
+            for (Sale sale : sales) {
+                writer.write(toLine(sale));
+                writer.newLine();
             }
 
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                for (Sale sale : sales) {
-                    writer.write(toLine(sale));
-                    writer.newLine();
-                }
-            }
         } catch (IOException e) {
-            throw new RuntimeException("Error saving sales.", e);
+            throw new RuntimeException(
+                    "Error al guardar las ventas.",
+                    e
+            );
         }
     }
 
     /**
-     * Retrieves all sales stored in the sales data file.
+     * Loads all sales from the persistence file.
      *
-     * @return List of stored sales.
+     * @return list of stored sales
      */
     public List<Sale> findAll() {
+
         List<Sale> sales = new ArrayList<>();
+
         File file = new File(FILE_PATH);
 
         if (!file.exists()) {
@@ -57,51 +86,111 @@ public class SaleRepository {
         }
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+
             String line;
 
             while ((line = reader.readLine()) != null) {
+
                 if (!line.trim().isEmpty()) {
                     sales.add(fromLine(line));
                 }
             }
+
         } catch (IOException e) {
-            throw new RuntimeException("Error reading sales.", e);
+            throw new RuntimeException(
+                    "Error al cargar las ventas.",
+                    e
+            );
         }
 
         return sales;
     }
 
     /**
-     * Converts a stored text line into a Sale object.
+     * Reconstructs a Sale object from a stored line.
      *
-     * @param line Text representation of a sale.
-     * @return Sale created from the stored information.
+     * @param line stored sale information
+     * @return reconstructed sale
      */
     private Sale fromLine(String line) {
-        String[] parts = line.split(DELIMITER);
+
+        String[] parts = line.split(DELIMITER, -1);
+
+        if (parts.length < 6) {
+            throw new IllegalArgumentException(
+                    "Formato inválido en el archivo de ventas."
+            );
+        }
 
         String id = parts[0];
         String date = parts[1];
+        String clientId = parts[2];
+        String sellerId = parts[3];
+        String productIds = parts[4];
 
-        return new Sale(
+        Person clientPerson = personRepository.findById(clientId);
+        Person sellerPerson = personRepository.findById(sellerId);
+
+        if (!(clientPerson instanceof Client)) {
+            throw new IllegalArgumentException(
+                    "Cliente no encontrado con ID: " + clientId
+            );
+        }
+
+        if (!(sellerPerson instanceof Seller)) {
+            throw new IllegalArgumentException(
+                    "Vendedor no encontrado con ID: " + sellerId
+            );
+        }
+
+        Client client = (Client) clientPerson;
+        Seller seller = (Seller) sellerPerson;
+
+        List<Product> products = new ArrayList<>();
+
+        if (!productIds.isEmpty()) {
+
+            String[] ids = productIds.split(",");
+
+            for (String productId : ids) {
+
+                Product product = productRepository.findById(productId);
+
+                if (product == null) {
+                    throw new IllegalArgumentException(
+                            "Producto no encontrado con ID: " + productId
+                    );
+                }
+
+                products.add(product);
+            }
+        }
+
+        Sale sale = new Sale(
                 id,
                 date,
-                null,
-                null,
-                new ArrayList<>()
+                client,
+                seller,
+                products
         );
+
+        sale.calculateTotal();
+
+        return sale;
     }
 
     /**
-     * Converts a sale into a text line for file storage.
+     * Converts a Sale object into its persistence representation.
      *
-     * @param sale Sale to convert.
-     * @return Text representation of the sale.
+     * @param sale sale to convert
+     * @return stored representation of the sale
      */
     private String toLine(Sale sale) {
+
         StringBuilder productIds = new StringBuilder();
 
         for (Product product : sale.getProducts()) {
+
             if (productIds.length() > 0) {
                 productIds.append(",");
             }
@@ -109,11 +198,17 @@ public class SaleRepository {
             productIds.append(product.getId());
         }
 
-        return sale.getId() + SEPARATOR
-                + sale.getDate() + SEPARATOR
-                + sale.getClient().getId() + SEPARATOR
-                + sale.getSeller().getId() + SEPARATOR
-                + productIds + SEPARATOR
+        return sale.getId()
+                + SEPARATOR
+                + sale.getDate()
+                + SEPARATOR
+                + sale.getClient().getId()
+                + SEPARATOR
+                + sale.getSeller().getId()
+                + SEPARATOR
+                + productIds
+                + SEPARATOR
                 + sale.getTotalAmount();
     }
 }
+
