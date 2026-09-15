@@ -1,5 +1,6 @@
 package com.gamezone.ui;
 
+import com.gamezone.model.Person;
 import com.gamezone.model.Product;
 import com.gamezone.model.Sale;
 import com.gamezone.service.PersonService;
@@ -87,15 +88,11 @@ public class ConsoleMenu {
                     break;
 
                 case 4:
-                    System.out.println(
-                            "Saliendo del sistema..."
-                    );
+                    System.out.println("Saliendo del sistema...");
                     break;
 
                 default:
-                    System.out.println(
-                            "Opción inválida."
-                    );
+                    System.out.println("Opción inválida.");
             }
 
         } while (option != 4);
@@ -129,21 +126,15 @@ public class ConsoleMenu {
 
             switch (option) {
                 case 1:
-                    System.out.println(
-                            "Registrar videojuego."
-                    );
+                    registerVideoGame();
                     break;
 
                 case 2:
-                    System.out.println(
-                            "Registrar consola."
-                    );
+                    registerConsole();
                     break;
 
                 case 3:
-                    System.out.println(
-                            "Consultar productos."
-                    );
+                    showProducts();
                     break;
 
                 case 4:
@@ -153,12 +144,143 @@ public class ConsoleMenu {
                     break;
 
                 default:
-                    System.out.println(
-                            "Opción inválida."
-                    );
+                    System.out.println("Opción inválida.");
             }
 
         } while (option != 4);
+    }
+
+    /**
+     * Registers a new video game through the console.
+     */
+    private void registerVideoGame() {
+
+        System.out.println();
+        System.out.println("===== REGISTRAR VIDEOJUEGO =====");
+
+        System.out.print("Título: ");
+        String title = scanner.nextLine();
+
+        System.out.print("Precio: ");
+        double price = Double.parseDouble(scanner.nextLine());
+
+        System.out.print("Cantidad en stock: ");
+        int stockQuantity = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("Plataforma: ");
+        String platform = scanner.nextLine();
+
+        System.out.print("Género: ");
+        String genre = scanner.nextLine();
+
+        System.out.print("Clasificación: ");
+        String classification = scanner.nextLine();
+
+        try {
+            Product product = productService.registerVideoGame(
+                    title,
+                    price,
+                    stockQuantity,
+                    platform,
+                    genre,
+                    classification
+            );
+
+            System.out.println();
+            System.out.println(
+                    "Videojuego registrado correctamente."
+            );
+            System.out.println("ID: " + product.getId());
+
+        } catch (IllegalArgumentException e) {
+            System.out.println();
+            System.out.println(
+                    "No se pudo registrar el videojuego."
+            );
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Registers a new console through the console.
+     */
+    private void registerConsole() {
+
+        System.out.println();
+        System.out.println("===== REGISTRAR CONSOLA =====");
+
+        System.out.print("Título: ");
+        String title = scanner.nextLine();
+
+        System.out.print("Precio: ");
+        double price = Double.parseDouble(scanner.nextLine());
+
+        System.out.print("Cantidad en stock: ");
+        int stockQuantity = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("Marca: ");
+        String brand = scanner.nextLine();
+
+        System.out.print("Modelo: ");
+        String model = scanner.nextLine();
+
+        System.out.print("Generación: ");
+        String generation = scanner.nextLine();
+
+        try {
+            Product product = productService.registerConsole(
+                    title,
+                    price,
+                    stockQuantity,
+                    brand,
+                    model,
+                    generation
+            );
+
+            System.out.println();
+            System.out.println(
+                    "Consola registrada correctamente."
+            );
+            System.out.println("ID: " + product.getId());
+
+        } catch (IllegalArgumentException e) {
+            System.out.println();
+            System.out.println(
+                    "No se pudo registrar la consola."
+            );
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Displays all registered products.
+     */
+    private void showProducts() {
+
+        System.out.println();
+        System.out.println("===== PRODUCTOS REGISTRADOS =====");
+
+        List<Product> products =
+                productService.findAllProducts();
+
+        if (products.isEmpty()) {
+            System.out.println(
+                    "No hay productos registrados."
+            );
+            return;
+        }
+
+        for (Product product : products) {
+            System.out.println();
+            System.out.println("-----------------------------");
+            System.out.println("ID: " + product.getId());
+            System.out.println("Título: " + product.getTitle());
+            System.out.println("Precio: $" + product.getPrice());
+            System.out.println(
+                    "Stock: " + product.getStockQuantity()
+            );
+            System.out.println("-----------------------------");
+        }
     }
 
     /**
@@ -189,21 +311,15 @@ public class ConsoleMenu {
 
             switch (option) {
                 case 1:
-                    System.out.println(
-                            "Registrar cliente."
-                    );
+                    registerClient();
                     break;
 
                 case 2:
-                    System.out.println(
-                            "Registrar vendedor."
-                    );
+                    registerSeller();
                     break;
 
                 case 3:
-                    System.out.println(
-                            "Consultar personas."
-                    );
+                    showPersons();
                     break;
 
                 case 4:
@@ -213,12 +329,120 @@ public class ConsoleMenu {
                     break;
 
                 default:
-                    System.out.println(
-                            "Opción inválida."
-                    );
+                    System.out.println("Opción inválida.");
             }
 
         } while (option != 4);
+    }
+
+    /**
+     * Registers a new client through the console.
+     */
+    private void registerClient() {
+
+        System.out.println();
+        System.out.println("===== REGISTRAR CLIENTE =====");
+
+        System.out.print("Nombre: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Teléfono: ");
+        String phone = scanner.nextLine();
+
+        System.out.print("Correo electrónico: ");
+        String email = scanner.nextLine();
+
+        try {
+            Person person = personService.registerClient(
+                    name,
+                    phone,
+                    email
+            );
+
+            System.out.println();
+            System.out.println(
+                    "Cliente registrado correctamente."
+            );
+            System.out.println("ID: " + person.getId());
+
+        } catch (IllegalArgumentException e) {
+            System.out.println();
+            System.out.println(
+                    "No se pudo registrar el cliente."
+            );
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Registers a new seller through the console.
+     */
+    private void registerSeller() {
+
+        System.out.println();
+        System.out.println("===== REGISTRAR VENDEDOR =====");
+
+        System.out.print("Nombre: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Teléfono: ");
+        String phone = scanner.nextLine();
+
+        System.out.print("Código de empleado: ");
+        String employeeCode = scanner.nextLine();
+
+        System.out.print("Turno de trabajo: ");
+        String shift = scanner.nextLine();
+
+        try {
+            Person person = personService.registerSeller(
+                    name,
+                    phone,
+                    employeeCode,
+                    shift
+            );
+
+            System.out.println();
+            System.out.println(
+                    "Vendedor registrado correctamente."
+            );
+            System.out.println("ID: " + person.getId());
+
+        } catch (IllegalArgumentException e) {
+            System.out.println();
+            System.out.println(
+                    "No se pudo registrar el vendedor."
+            );
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Displays all registered persons.
+     */
+    private void showPersons() {
+
+        System.out.println();
+        System.out.println("===== PERSONAS REGISTRADAS =====");
+
+        List<Person> persons =
+                personService.findAllPersons();
+
+        if (persons.isEmpty()) {
+            System.out.println(
+                    "No hay personas registradas."
+            );
+            return;
+        }
+
+        for (Person person : persons) {
+            System.out.println();
+            System.out.println("-----------------------------");
+            System.out.println("ID: " + person.getId());
+            System.out.println("Nombre: " + person.getName());
+            System.out.println("Teléfono: " + person.getPhone());
+            System.out.println("-----------------------------");
+        }
     }
 
     /**
@@ -272,9 +496,7 @@ public class ConsoleMenu {
                     break;
 
                 default:
-                    System.out.println(
-                            "Opción inválida."
-                    );
+                    System.out.println("Opción inválida.");
             }
 
         } while (option != 5);
