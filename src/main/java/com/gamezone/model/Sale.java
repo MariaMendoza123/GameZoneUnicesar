@@ -59,5 +59,18 @@ public class Sale {
     public double getTotalAmount() {
         return totalAmount;
     }
+
+
+    public double calculateTotal() {
+        totalAmount = 0.0;
+
+        for (Product product : products) {
+            totalAmount += product.getPrice();
+        }
+
+        return totalAmount;
+    }
+
+
 }
 
