@@ -25,9 +25,11 @@ public class SaleService {
      * @param productService service for managing products
      * @param personService service for managing persons
      */
-    public SaleService(SaleRepository saleRepository,
-                       ProductService productService,
-                       PersonService personService) {
+    public SaleService(
+            SaleRepository saleRepository,
+            ProductService productService,
+            PersonService personService
+    ) {
         this.saleRepository = saleRepository;
         this.productService = productService;
         this.personService = personService;
@@ -36,18 +38,20 @@ public class SaleService {
     /**
      * Registers a new sale after validating the required information.
      *
-     * @param id       unique identifier of the sale
-     * @param date     date of the sale
+     * @param id unique identifier of the sale
+     * @param date date of the sale
      * @param clientId identifier of the client
      * @param sellerId identifier of the seller
      * @param products products included in the sale
-     * @return the registered Sale
+     * @return the registered sale
      */
-    public Sale registerSale(String id,
-                             String date,
-                             String clientId,
-                             String sellerId,
-                             List<Product> products) {
+    public Sale registerSale(
+            String id,
+            String date,
+            String clientId,
+            String sellerId,
+            List<Product> products
+    ) {
 
         if (products == null || products.isEmpty()) {
             throw new IllegalArgumentException(
@@ -75,7 +79,9 @@ public class SaleService {
         Seller seller = (Seller) sellerPerson;
 
         for (Product product : products) {
-            Product storedProduct = productService.findProduct(product.getId());
+
+            Product storedProduct =
+                    productService.findProduct(product.getId());
 
             if (storedProduct == null) {
                 throw new IllegalArgumentException(
@@ -111,4 +117,53 @@ public class SaleService {
 
         return sale;
     }
+    /**
+     * Returns all registered sales.
+     *
+     * @return list containing all registered sales
+     */
+    public List<Sale> findAllSales() {
+        return saleRepository.findAll();
+    }
+
+    /**
+     * Returns all sales made by a specific client.
+     *
+     * @param clientId identifier of the client
+     * @return list of sales made by the client
+     */
+    public List<Sale> findSalesByClient(String clientId) {
+        List<Sale> sales = saleRepository.findAll();
+        List<Sale> clientSales = new java.util.ArrayList<>();
+
+        for (Sale sale : sales) {
+            if (sale.getClient() != null
+                    && sale.getClient().getId().equals(clientId)) {
+                clientSales.add(sale);
+            }
+        }
+
+        return clientSales;
+    }
+
+    /**
+     * Returns all sales handled by a specific seller.
+     *
+     * @param sellerId identifier of the seller
+     * @return list of sales handled by the seller
+     */
+    public List<Sale> findSalesBySeller(String sellerId) {
+        List<Sale> sales = saleRepository.findAll();
+        List<Sale> sellerSales = new java.util.ArrayList<>();
+
+        for (Sale sale : sales) {
+            if (sale.getSeller() != null
+                    && sale.getSeller().getId().equals(sellerId)) {
+                sellerSales.add(sale);
+            }
+        }
+
+        return sellerSales;
+    }
+
 }
