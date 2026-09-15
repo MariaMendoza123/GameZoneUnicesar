@@ -40,3 +40,17 @@ Ruta del archivo: data/products.txt, para mantener consistencia con la carpeta d
 * **Validation Strategy:** Created a helper method `validateCommonAttributes()` alongside specific attribute checks in `registerVideoGame` and `registerConsole`.
 * **Stock Management:** Implemented `updateStock()` to handle inventory reduction and stock sufficiency validation for integration with the sales module.
 * **Language Standardization:** Standardized all exception messages and JavaDoc documentation to English to fulfill project requirements.
+
+## 3. Consultations Made
+date: 2026-09-15
+tool used: Gemini (Google)
+module worked: Model — Product Hierarchy (Accessory, Controller, Cable, Memory
+
+1. Design of the getDescription() method within the hierarchy.
+   I consulted on how to declare getDescription() in Accessory so that it met the requirement of "overriding" the method inherited from Product without negating the utility of the implementation, given that it would be overridden again by each concrete subclass. The AI suggested a pattern where Accessory implements the common elements (title, price, stock, compatibility) and each concrete subclass extends this implementation by calling super.getDescription() and adding its specific attribute.
+
+2. **Representation of compatibility between accessories and consoles.**
+   I asked about the pros and cons of representing compatibleConsoleIds as a List<String> (IDs) versus a List<Console> (full objects). The AI explained that using IDs avoids coupling the accessory's persistence with that of the product and aligns better with the service's findAccessoriesCompatibleWith(String consoleId) method signature.
+
+3. **Handling null and empty values.**
+   I consulted on the risk of a NullPointerException when using String.join on a potentially null list, and how to prevent this in getDescription() and the Accessory constructor.
