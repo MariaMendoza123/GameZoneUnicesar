@@ -1,11 +1,13 @@
 package com.gamezone.service;
 
+import com.gamezone.model.Accessory;
 import com.gamezone.model.Client;
 import com.gamezone.model.Person;
 import com.gamezone.model.Product;
 import com.gamezone.model.Sale;
 import com.gamezone.model.Seller;
 import com.gamezone.persistence.SaleRepository;
+import com.gamezone.persistence.AccessoryRepository;
 
 import java.util.List;
 
@@ -17,6 +19,7 @@ public class SaleService {
     private final SaleRepository saleRepository;
     private final ProductService productService;
     private final PersonService personService;
+    private final AccessoryService accessoryService;
 
     /**
      * Constructs a SaleService with the required dependencies.
@@ -24,15 +27,18 @@ public class SaleService {
      * @param saleRepository repository for managing sales
      * @param productService service for managing products
      * @param personService service for managing persons
+     * @param accessoryService service for managing accessories
      */
     public SaleService(
             SaleRepository saleRepository,
             ProductService productService,
-            PersonService personService
+            PersonService personService,
+            AccessoryService accessoryService
     ) {
         this.saleRepository = saleRepository;
         this.productService = productService;
         this.personService = personService;
+        this.accessoryService = accessoryService;
     }
 
     /**
@@ -42,7 +48,7 @@ public class SaleService {
      * @param date date of the sale
      * @param clientId identifier of the client
      * @param sellerId identifier of the seller
-     * @param products products included in the sale
+     * @param products products and accessories included in the sale
      * @return the registered sale
      */
     public Sale registerSale(
@@ -78,27 +84,61 @@ public class SaleService {
         Client client = (Client) clientPerson;
         Seller seller = (Seller) sellerPerson;
 
+        /*
+         * Validate the stock of every item before updating any inventory.
+         */
         for (Product product : products) {
 
-            Product storedProduct =
-                    productService.findProduct(product.getId());
+            if (product instanceof Accessory) {
 
-            if (storedProduct == null) {
-                throw new IllegalArgumentException(
-                        "Producto no encontrado con ID: " + product.getId()
-                );
-            }
+                Accessory accessory =
+                        accessoryService.findById(product.getId());
 
-            if (storedProduct.getStockQuantity() <= 0) {
-                throw new IllegalStateException(
-                        "Stock insuficiente para el producto: "
-                                + storedProduct.getTitle()
-                );
+                if (accessory == null) {
+                    throw new IllegalArgumentException(
+                            "Accesorio no encontrado con ID: "
+                                    + product.getId()
+                    );
+                }
+
+                if (accessory.getStockQuantity() <= 0) {
+                    throw new IllegalStateException(
+                            "Stock insuficiente para el accesorio: "
+                                    + accessory.getTitle()
+                    );
+                }
+
+            } else {
+
+                Product storedProduct =
+                        productService.findProduct(product.getId());
+
+                if (storedProduct == null) {
+                    throw new IllegalArgumentException(
+                            "Producto no encontrado con ID: "
+                                    + product.getId()
+                    );
+                }
+
+                if (storedProduct.getStockQuantity() <= 0) {
+                    throw new IllegalStateException(
+                            "Stock insuficiente para el producto: "
+                                    + storedProduct.getTitle()
+                    );
+                }
             }
         }
 
+        /*
+         * Update the inventory using the service that owns each item.
+         */
         for (Product product : products) {
-            productService.updateStock(product.getId(), 1);
+
+            if (product instanceof Accessory) {
+                accessoryService.updateStock(product.getId(), 1);
+            } else {
+                productService.updateStock(product.getId(), 1);
+            }
         }
 
         Sale sale = new Sale(
@@ -117,6 +157,7 @@ public class SaleService {
 
         return sale;
     }
+
     /**
      * Returns all registered sales.
      *
@@ -165,5 +206,4 @@ public class SaleService {
 
         return sellerSales;
     }
-
 }
