@@ -29,7 +29,8 @@ public class Main {
 
         SaleRepository saleRepository = new SaleRepository(
                 personRepository,
-                productRepository
+                productRepository,
+                accessoryRepository
         );
 
         // Create services

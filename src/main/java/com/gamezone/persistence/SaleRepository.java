@@ -5,6 +5,8 @@ import com.gamezone.model.Person;
 import com.gamezone.model.Product;
 import com.gamezone.model.Sale;
 import com.gamezone.model.Seller;
+import com.gamezone.model.Accessory;
+import com.gamezone.persistence.AccessoryRepository;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -26,6 +28,7 @@ public class SaleRepository {
 
     private final PersonRepository personRepository;
     private final ProductRepository productRepository;
+    private final AccessoryRepository accessoryRepository;
 
     /**
      * Constructs a SaleRepository with the required repositories.
@@ -35,10 +38,12 @@ public class SaleRepository {
      */
     public SaleRepository(
             PersonRepository personRepository,
-            ProductRepository productRepository
+            ProductRepository productRepository,
+            AccessoryRepository accessoryRepository
     ) {
         this.personRepository = personRepository;
         this.productRepository = productRepository;
+        this.accessoryRepository = accessoryRepository;
     }
 
     /**
@@ -157,12 +162,18 @@ public class SaleRepository {
                 Product product = productRepository.findById(productId);
 
                 if (product == null) {
-                    throw new IllegalArgumentException(
-                            "Producto no encontrado con ID: " + productId
-                    );
-                }
+                    Accessory accessory = findAccessoryById(productId);
 
-                products.add(product);
+                    if (accessory == null) {
+                        throw new IllegalArgumentException(
+                                "Producto o accesorio no encontrado con ID: " + productId
+                        );
+                    }
+
+                    products.add(accessory);
+                } else {
+                    products.add(product);
+                }
             }
         }
 
@@ -177,6 +188,18 @@ public class SaleRepository {
         sale.calculateTotal();
 
         return sale;
+    }
+
+    private Accessory findAccessoryById(String accessoryId) {
+        List<Accessory> accessories = accessoryRepository.loadAll();
+
+        for (Accessory accessory : accessories) {
+            if (accessory.getId().equals(accessoryId)) {
+                return accessory;
+            }
+        }
+
+        return null;
     }
 
     /**
