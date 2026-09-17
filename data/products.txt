@@ -2,3 +2,4 @@ VIDEOGAME|VG-001|EA Sports FC 26|249900.0|10|PlayStation 5|Sports|Everyone
 VIDEOGAME|VG-002|Minecraft|119900.0|15|PC|Adventure|Everyone 10+
 CONSOLE|CO-001|PlayStation 5|2499900.0|5|Sony|PS5|9th Generation
 CONSOLE|CO-002|Xbox Series X|2299900.0|7|Microsoft|Xbox Series X|9th Generation
+VIDEOGAME|VG-3|EA Sports FC 26|250000.0|9|PC|Sports|E

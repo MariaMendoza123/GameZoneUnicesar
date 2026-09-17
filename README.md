@@ -12,3 +12,15 @@ The system now supports accessory management, including:
 - Accessory inventory and filtering by type.
 - Compatibility queries between accessories and consoles.
 - Integration of accessories into sales.
+
+## Promotion Features
+
+The system now supports promotion management, including:
+
+- Percentage discounts applied to the total sale.
+- Category discounts applied only to products of a target category.
+- Bulk purchase discounts based on a minimum quantity of products.
+- Promotion validity based on start and end dates.
+- Automatic selection of the promotion that provides the highest monetary discount.
+- Promotion persistence in data/promotions.csv.
+- Discount information included in the sale receipt.

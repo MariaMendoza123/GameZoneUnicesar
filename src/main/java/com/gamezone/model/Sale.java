@@ -1,9 +1,5 @@
 package com.gamezone.model;
 
-import com.gamezone.model.Client;
-import com.gamezone.model.Product;
-import com.gamezone.model.Seller;
-
 import java.util.List;
 
 /**
@@ -17,6 +13,8 @@ public class Sale {
     private Seller seller;
     private List<Product> products;
     private double totalAmount;
+    private String appliedPromotionName;
+    private double discountAmount;
 
     /**
      * Constructs a new Sale instance.
@@ -34,6 +32,8 @@ public class Sale {
         this.seller = seller;
         this.products = products;
         this.totalAmount = 0.0;
+        this.appliedPromotionName = null;
+        this.discountAmount = 0.0;
     }
 
     public String getId() {
@@ -60,7 +60,31 @@ public class Sale {
         return totalAmount;
     }
 
+    public void setTotalAmount(double totalAmount) {
+        this.totalAmount = totalAmount;
+    }
 
+    public String getAppliedPromotionName() {
+        return appliedPromotionName;
+    }
+
+    public void setAppliedPromotionName(String appliedPromotionName) {
+        this.appliedPromotionName = appliedPromotionName;
+    }
+
+    public double getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setDiscountAmount(double discountAmount) {
+        this.discountAmount = discountAmount;
+    }
+
+    /**
+     * Calculates the subtotal of the products included in the sale.
+     *
+     * @return the subtotal
+     */
     public double calculateTotal() {
         totalAmount = 0.0;
 
@@ -71,6 +95,48 @@ public class Sale {
         return totalAmount;
     }
 
+    /**
+     * Calculates the final total after applying the discount.
+     *
+     * @return the final total
+     */
+    public double calculateFinalTotal() {
+        double subtotal = calculateTotal();
+        return Math.max(0.0, subtotal - discountAmount);
+    }
 
+    /**
+     * Generates a receipt containing the subtotal, promotion,
+     * discount, and final total.
+     *
+     * @return formatted receipt
+     */
+    public String generateReceipt() {
+        double subtotal = calculateTotal();
+        double finalTotal = calculateFinalTotal();
+
+        StringBuilder receipt = new StringBuilder();
+
+        receipt.append("===== GAMEZONE RECEIPT =====\n");
+        receipt.append("Sale ID: ").append(id).append("\n");
+        receipt.append("Date: ").append(date).append("\n");
+        receipt.append("Client: ").append(client.getName()).append("\n");
+        receipt.append("Seller: ").append(seller.getName()).append("\n");
+        receipt.append("----------------------------\n");
+        receipt.append("Subtotal: ").append(subtotal).append("\n");
+
+        if (appliedPromotionName != null && !appliedPromotionName.isBlank()
+                && discountAmount > 0) {
+            receipt.append("Promotion: ").append(appliedPromotionName).append("\n");
+            receipt.append("Discount: ").append(discountAmount).append("\n");
+        } else {
+            receipt.append("Promotion: None\n");
+            receipt.append("Discount: 0.0\n");
+        }
+
+        receipt.append("Final total: ").append(finalTotal).append("\n");
+        receipt.append("============================");
+
+        return receipt.toString();
+    }
 }
-

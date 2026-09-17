@@ -19,3 +19,24 @@ Compatibility is represented as an attribute of the accessory only, not of the c
 We chose this direction for two reasons. First, it keeps the change strictly additive: since Console belongs to another team member's module, storing the relationship on the accessory side avoids touching a class outside our responsibility. Second, it matches how the relationship is actually queried in the system — AccessoryService.findAccessoriesCompatibleWith(consoleId) needs to answer "which accessories work with this console", which is a natural filter over the accessory list rather than a lookup that would require Console to hold references back to accessories.
 
 In persistence, the list of console IDs is serialized as a single field within the accessory's own record in data/accessories.csv, using a secondary separator (";") to join multiple IDs into one field (e.g. CO-001;CO-002). AccessoryRepository splits that field back into a List<String> when loading. This avoids creating a separate join file or table just for the relationship, keeping persistence for the accessory module self-contained in a single file.
+4. What modifications are necessary in SaleService so that sales can include accessories without breaking the existing behavior with video games and consoles?
+
+SaleService must be extended to recognize accessories as valid Product objects while preserving the existing sales behavior for video games and consoles. Since Accessory extends Product, the sale can continue using a single List<Product> without changing the Sale model or duplicating the sales structure.
+
+The main modification is to validate the stock of each item according to its type. When an item is an Accessory, SaleService delegates the search and stock update to AccessoryService. For existing products such as VideoGame and Console, it continues using ProductService. This keeps each service responsible for the inventory it manages.
+
+During the registration process, SaleService first validates that the sale contains at least one item and that all required client and seller information is valid. It then verifies the availability of every product or accessory before modifying any inventory. After all items pass validation, the corresponding service updates their stock.
+
+The sale total continues to be calculated through the common Product abstraction, allowing video games, consoles, and accessories to participate in the same transaction. This approach preserves the existing sales behavior while extending it to the new accessory types without duplicating the complete sales process.
+
+5. In which layer of the system architecture should the new accessory module classes be located? Justify your decision based on the responsibilities of each layer.
+
+The new accessory classes should be distributed across the existing layers according to their responsibilities. The domain classes Accessory, Controller, Cable, and Memory belong in the model layer because they represent the entities and characteristics of the accessory domain.
+
+AccessoryRepository belongs in the persistence layer because its responsibility is to read and write accessory information to the physical data file. It should not contain business rules or user interface logic.
+
+AccessoryService belongs in the service layer because it contains the business rules for registering, listing, searching, validating, and updating accessory inventory. It also provides the operations required by other parts of the system without exposing persistence details.
+
+Any accessory-related options presented to the user belong in the ui layer, where the console menu handles input and output and delegates operations to the corresponding service.
+
+This organization preserves the existing layered architecture and separation of concerns. The model represents the domain, persistence manages data storage, service manages business rules, and ui manages interaction with the user. As a result, the accessory module can be integrated without mixing responsibilities or creating unnecessary dependencies between layers.
