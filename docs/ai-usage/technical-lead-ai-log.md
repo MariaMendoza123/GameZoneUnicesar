@@ -153,3 +153,39 @@ The completed Requirement 2 changes were committed and pushed to the `feature/pr
 ### Final Note
 
 AI assistance was used as a technical consultation and learning resource. It did not replace the team's implementation, testing, Git operations, or final technical decisions. The final integration, verification, commit, and push were performed as part of my responsibilities as Technical Lead.
+
+---
+
+## Log Entry 5
+
+* **Date:** 2026-09-17
+* **Tool Used:** ChatGPT
+* **Role:** Technical Lead
+* **Module:** Requirement 2 - Promotion Management Console Integration
+
+### Consultations Made
+
+I used AI as a technical consultation tool to review the integration of promotion management into the existing console application.
+
+I consulted about:
+
+* How to connect PromotionService to ConsoleMenu while preserving the existing layered architecture.
+* How to add a promotion management submenu without affecting the existing product, person, accessory, and sales menus.
+* How to expose the required promotion operations through the console: registering percentage, category, and bulk purchase promotions, listing all promotions, and listing currently active promotions.
+* How to display promotion information through the user interface while keeping business logic inside PromotionService.
+* How to connect PromotionService through Main using dependency injection.
+* How to verify the new integration through Maven compilation and Git status.
+
+### Applied Decisions
+
+The promotion management submenu was integrated into ConsoleMenu as an extension of the existing user interface.
+
+The console menu delegates promotion operations to PromotionService instead of implementing promotion business rules directly in the UI.
+
+Main was updated to create PromotionRepository and PromotionService and inject PromotionService into the console menu and SaleService.
+
+The new functionality was compiled successfully with Maven, confirming that the promotion management integration is compatible with the existing application structure.
+
+### Final Note
+
+AI assistance was used as a technical consultation and learning resource. The final implementation, verification, Git operations, and technical decisions were performed by me as Technical Lead.
