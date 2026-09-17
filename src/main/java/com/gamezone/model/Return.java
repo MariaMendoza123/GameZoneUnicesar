@@ -44,4 +44,14 @@ public class Return {
     public double getRefundAmount() {
         return refundAmount;
     }
+
+    public double calculateRefundAmount() {
+        double totalRefund = 0;
+        for (Product product : returnedProducts) {
+            totalRefund =  totalRefund + product.getPrice();
+        }
+        this.refundAmount = totalRefund;
+        return totalRefund;
+    }
+    
 }
