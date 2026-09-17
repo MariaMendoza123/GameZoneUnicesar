@@ -53,5 +53,21 @@ public class Return {
         this.refundAmount = totalRefund;
         return totalRefund;
     }
-    
+
+    public String generateReturnReceipt(){
+
+        String receipt = "Recibo de devolución\n";
+        receipt += "ID de devolución: " + id + "\n";
+        receipt += "Fecha de devolución: " + returnDate + "\n";
+        receipt += "Venta original: " + originalSale.getId() + "\n";
+        receipt += "Productos devueltos:\n";
+        for (Product product : returnedProducts) {
+            receipt += "- " + product.getTitle() + ": $" + product.getPrice() + "\n";
+        }
+        receipt += "Motivo de la devolución: " + returnReason + "\n";
+        receipt += "Monto del reembolso: $" + refundAmount + "\n";
+
+        return receipt;
+    }
+
 }
