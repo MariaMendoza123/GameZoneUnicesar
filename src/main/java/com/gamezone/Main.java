@@ -4,10 +4,12 @@ import com.gamezone.persistence.AccessoryRepository;
 import com.gamezone.persistence.PersonRepository;
 import com.gamezone.persistence.ProductRepository;
 import com.gamezone.persistence.PromotionRepository;
+import com.gamezone.persistence.PromotionRepository;
 import com.gamezone.persistence.SaleRepository;
 import com.gamezone.service.AccessoryService;
 import com.gamezone.service.PersonService;
 import com.gamezone.service.ProductService;
+import com.gamezone.service.PromotionService;
 import com.gamezone.service.PromotionService;
 import com.gamezone.service.SaleService;
 import com.gamezone.ui.ConsoleMenu;
@@ -29,6 +31,7 @@ public class Main {
         ProductRepository productRepository = new ProductRepository();
         AccessoryRepository accessoryRepository = new AccessoryRepository();
         PromotionRepository promotionRepository = new PromotionRepository();
+
 
         SaleRepository saleRepository = new SaleRepository(
                 personRepository,
@@ -57,7 +60,8 @@ public class Main {
                 personService,
                 productService,
                 accessoryService,
-                saleService
+                saleService,
+                promotionService
         );
 
         menu.handleMainMenu();
