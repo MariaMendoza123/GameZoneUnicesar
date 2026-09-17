@@ -1,5 +1,7 @@
 package com.gamezone.model;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
@@ -138,5 +140,17 @@ public class Sale {
         receipt.append("============================");
 
         return receipt.toString();
+    }
+    /**
+     * Determines if the sale can be returned based on the date of the sale.
+     * A sale can be returned if it was made within the last 30 days.
+     *
+     * @return true if the sale can be returned, false otherwise
+     */
+    public boolean canBeReturned() {
+        LocalDate saleDate = LocalDate.parse(date);
+        LocalDate currentDate = LocalDate.now();
+        long daysPassed = ChronoUnit.DAYS.between(saleDate, currentDate);
+        return daysPassed <= 30;
     }
 }
