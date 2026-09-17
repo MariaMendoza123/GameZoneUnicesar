@@ -54,3 +54,15 @@ module worked: Model — Product Hierarchy (Accessory, Controller, Cable, Memory
 
 3. **Handling null and empty values.**
    I consulted on the risk of a NullPointerException when using String.join on a potentially null list, and how to prevent this in getDescription() and the Accessory constructor.
+   AI Usage Log — Requerimiento 2 (Promotion Module)
+
+
+Date: 2026-09-16
+module worked: Promotion class hierarchy — model layer
+AI tool used: Claude (Anthropic)
+
+I used Claude as a tutor to understand and implement the Promotion abstract class and its three subclasses (PercentageDiscount, CategoryDiscount, BulkPurchaseDiscount). For isActive, I learned to check a date range using LocalDate methods (isBefore, isAfter, isEqual) combined with logical operators. For calculateDiscount, I understood why it must be declared abstract in Promotion, forcing each subclass to provide its own calculation without the rest of the system knowing the concrete type.
+
+In PercentageDiscount, I applied the discount percentage to sale.calculateTotal() rather than a plain getter, to make sure the total is freshly computed. In CategoryDiscount, since Product has no category field and categories are represented through the VideoGame/Console subclasses, I used instanceof checks instead of comparing strings, iterating over the sale's products and summing only the matching ones before applying the percentage. This also helped me fix a Cannot resolve symbol 'getCategory' compile error. In BulkPurchaseDiscount, I compared the number of products in the sale against a minimum threshold, applying the discount only if the condition was met and returning zero otherwise.
+
+Overall, the AI helped reinforce concepts of abstraction, polymorphism, and Java syntax (logical operators, compound assignment), while all final code was adapted and validated against the real project classes before being committed.

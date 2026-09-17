@@ -7,7 +7,8 @@ import com.gamezone.model.Product;
 import com.gamezone.model.Sale;
 import com.gamezone.model.Seller;
 import com.gamezone.persistence.SaleRepository;
-import com.gamezone.persistence.AccessoryRepository;
+import com.gamezone.model.Promotion;
+
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class SaleService {
     private final ProductService productService;
     private final PersonService personService;
     private final AccessoryService accessoryService;
+    private final PromotionService promotionService;
 
     /**
      * Constructs a SaleService with the required dependencies.
@@ -28,17 +30,20 @@ public class SaleService {
      * @param productService service for managing products
      * @param personService service for managing persons
      * @param accessoryService service for managing accessories
+     * @param promotionService service for managing promotions
      */
     public SaleService(
             SaleRepository saleRepository,
             ProductService productService,
             PersonService personService,
-            AccessoryService accessoryService
+            AccessoryService accessoryService,
+            PromotionService promotionService
     ) {
         this.saleRepository = saleRepository;
         this.productService = productService;
         this.personService = personService;
         this.accessoryService = accessoryService;
+        this.promotionService = promotionService;
     }
 
     /**
@@ -149,7 +154,18 @@ public class SaleService {
                 products
         );
 
-        sale.calculateTotal();
+        double subtotal = sale.calculateTotal();
+
+        Promotion bestPromotion = promotionService.findBestPromotionFor(sale);
+
+        if (bestPromotion != null) {
+            double discount = bestPromotion.calculateDiscount(sale);
+
+            sale.setAppliedPromotionName(bestPromotion.getName());
+            sale.setDiscountAmount(discount);
+
+            sale.setTotalAmount(Math.max(0.0, subtotal - discount));
+        }
 
         List<Sale> sales = saleRepository.findAll();
         sales.add(sale);
