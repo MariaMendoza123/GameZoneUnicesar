@@ -21,5 +21,27 @@ public class Return {
         this.refundAmount = refundAmount;
     }
 
-    
+    public String getId() {
+        return id;
+    }
+
+    public LocalDate getReturnDate() {
+        return returnDate;
+    }
+
+    public Sale getOriginalSale() {
+        return originalSale;
+    }
+
+    public List<Product> getReturnedProducts() {
+        return returnedProducts;
+    }
+
+    public String getReturnReason() {
+        return returnReason;
+    }
+
+    public double getRefundAmount() {
+        return refundAmount;
+    }
 }
