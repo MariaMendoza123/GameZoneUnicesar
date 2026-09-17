@@ -109,3 +109,47 @@ All final Git operations were performed without force pushes and without modifyi
 ### Final Note
 
 AI assistance was used as a technical consultation and learning resource. It did not replace the team's implementation, testing, Git operations, or final technical decisions.
+
+## Log Entry 4
+
+* **Date:** 2026-09-17
+* **Tool Used:** ChatGPT
+* **Role:** Technical Lead
+* **Module:** Requirement 2 - Promotion Module Integration
+
+### Consultations Made
+
+I used AI as a technical consultation tool during the integration and verification of the promotion module into the existing GameZone system.
+
+I consulted about:
+
+* How the promotion functionality could be integrated with the existing sales module without breaking the previously implemented sales and inventory functionality.
+* How `Sale` should store promotion-related information, including the applied promotion name and discount amount.
+* How `SaleService` should interact with `PromotionService` when registering a sale.
+* How to calculate the subtotal, apply the best available promotion, calculate the discount, and obtain the final sale total.
+* How the promotion logic could remain separated from the sales and console interface responsibilities.
+* How to connect the new `PromotionService` dependency to `SaleService` and update the application initialization in `Main`.
+* How to verify the integration through compilation and execution of the complete application.
+* How to use Git to review the modified files, stage the complete Requirement 2 changes, create a descriptive commit, and push the completed feature branch to GitHub.
+
+### Applied Decisions
+
+The AI was used to review implementation alternatives, clarify technical concepts, and verify the integration process. The final implementation and technical decisions were made by me as Technical Lead according to the project requirements and the existing architecture.
+
+The promotion functionality was integrated with the existing sales process while preserving the responsibilities of the established layers.
+
+`Sale` was extended to store the applied promotion name and discount amount, while keeping the existing sale information and product list.
+
+`SaleService` was extended to use `PromotionService` when registering a sale. The service calculates the subtotal, searches for the best applicable promotion, calculates the corresponding discount, and stores the final sale information.
+
+The existing inventory validation and stock update process was preserved so that the promotion functionality did not interfere with product and accessory inventory management.
+
+The integration was verified by compiling the project successfully with Maven and executing the application. A complete sale was also registered using a videogame priced at $250,000, resulting in a final total of $200,000 after the applicable promotion was applied.
+
+The completed Requirement 2 changes were committed and pushed to the `feature/promotion-module` branch using the commit:
+
+`5722279 feat: implement promotion module`
+
+### Final Note
+
+AI assistance was used as a technical consultation and learning resource. It did not replace the team's implementation, testing, Git operations, or final technical decisions. The final integration, verification, commit, and push were performed as part of my responsibilities as Technical Lead.
