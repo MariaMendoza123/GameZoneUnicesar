@@ -84,7 +84,7 @@ public class ReturnService {
         returnRepository.saveAll(returns);
         return returnTransaction;
     }
-    
+
     /**
      * Retrieves all registered returns.
      *
@@ -125,6 +125,33 @@ public class ReturnService {
             }
         }
         return result;
+    }
+    
+    /**
+     * Generates the net balance for a given month and year, subtracting
+     * the total returns from the total sales of that period.
+     *
+     * @param month the month to evaluate (1-12)
+     * @param year  the year to evaluate
+     * @return the net balance (sales total minus returns total)
+     */
+    public double generateMonthlyBalance(int month, int year) {
+        double salesTotal = 0.0;
+        for (Sale sale : saleService.findAllSales()) {
+            LocalDate saleDate = LocalDate.parse(sale.getDate());
+            if (saleDate.getMonthValue() == month && saleDate.getYear() == year) {
+                salesTotal += sale.getTotalAmount();
+            }
+        }
+
+        double returnsTotal = 0.0;
+        for (Return r : returns) {
+            if (r.getReturnDate().getMonthValue() == month && r.getReturnDate().getYear() == year) {
+                returnsTotal += r.getRefundAmount();
+            }
+        }
+
+        return salesTotal - returnsTotal;
     }
 
     private Sale findSaleById(String saleId) {
