@@ -38,5 +38,24 @@ public abstract class Warranty {
         return endDate;
     }
 
-    
+    public abstract int getDurationInMonths();
+
+    public abstract String getWarrantyType();
+
+    public abstract double getAdditionalCost();
+
+    public boolean isActive(LocalDate date) {
+        return !date.isBefore(startDate) && !date.isAfter(endDate);
+    }
+
+    public String generateWarrantyCertificate() {
+        String certificate = "Certificado de Garantía\n";
+        certificate += "ID de garantía: " + id + "\n";
+        certificate += "Tipo: " + getWarrantyType() + "\n";
+        certificate += "Producto: " + product.getTitle() + "\n";
+        certificate += "Fecha de inicio: " + startDate + "\n";
+        certificate += "Fecha de fin: " + endDate + "\n";
+        certificate += "Costo adicional: $" + getAdditionalCost() + "\n";
+        return certificate;
+    }
 }
