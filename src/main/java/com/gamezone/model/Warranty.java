@@ -1,7 +1,10 @@
 package com.gamezone.model;
 
 import java.time.LocalDate;
-
+/**
+ * Abstract class representing a warranty in the GameZone system.
+ * This class serves as a base for different types of warranties, such as basic and extended warranties.
+ */
 public abstract class Warranty {
 
     private String id;
@@ -9,7 +12,15 @@ public abstract class Warranty {
     private Sale sale;
     private LocalDate startDate;
     private LocalDate endDate;
-
+    /**
+     * Constructs a new Warranty instance.
+     *
+     * @param id        Unique identifier for the warranty.
+     * @param product   Product associated with the warranty.
+     * @param sale      Sale associated with the warranty.
+     * @param startDate Start date of the warranty.
+     * @param endDate   End date of the warranty.
+     */
     public Warranty(String id, Product product, Sale sale, LocalDate startDate, LocalDate endDate) {
         this.id = id;
         this.product = product;
@@ -17,37 +28,78 @@ public abstract class Warranty {
         this.startDate = startDate;
         this.endDate = endDate;
     }
-
+    /**
+     * Returns the unique identifier of the warranty.
+     *
+     * @return the warranty ID
+     */
     public String getId() {
         return id;
     }
-
+    /**
+     * Returns the product associated with the warranty.
+     *
+     * @return the product associated with the warranty
+     */
     public Product getProduct() {
         return product;
     }
-
+    /**
+     * Returns the sale associated with the warranty.
+     *
+     * @return the sale associated with the warranty
+     */
     public Sale getSale() {
         return sale;
     }
-
+    /**
+     * Returns the start date of the warranty.
+     *
+     * @return the start date of the warranty
+     */
     public LocalDate getStartDate() {
         return startDate;
     }
-
+    /**
+     * Returns the end date of the warranty.
+     *
+     * @return the end date of the warranty
+     */
     public LocalDate getEndDate() {
         return endDate;
     }
-
+    /**
+     * Returns the duration of the warranty in months.
+     *
+     * @return the duration of the warranty in months
+     */
     public abstract int getDurationInMonths();
-
+    /**
+     * Returns the type of the warranty.
+     *
+     * @return the type of the warranty
+     */
     public abstract String getWarrantyType();
-
+    /**
+     * Returns the additional cost of the warranty.
+     *
+     * @return the additional cost of the warranty
+     */
     public abstract double getAdditionalCost();
-
+    /**
+     * Checks if the warranty is active on a given date.
+     *
+     * @param date the date to check
+     * @return true if the warranty is active on the given date, false otherwise
+     */
     public boolean isActive(LocalDate date) {
         return !date.isBefore(startDate) && !date.isAfter(endDate);
     }
-
+    /**
+     * Generates a warranty certificate in text format.
+     *
+     * @return the warranty certificate as a string
+     */
     public String generateWarrantyCertificate() {
         String certificate = "Certificado de Garantía\n";
         certificate += "ID de garantía: " + id + "\n";
