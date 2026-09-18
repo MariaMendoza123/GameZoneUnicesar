@@ -14,6 +14,7 @@ import com.gamezone.service.SaleService;
 import com.gamezone.service.PromotionService;
 import com.gamezone.service.ReturnService;
 import com.gamezone.model.Promotion;
+import com.gamezone.model.Return;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +43,7 @@ public class ConsoleMenu {
      * @param accessoryService service for managing accessories
      * @param saleService service for managing sales
      * @param promotionService service for managing promotions
+     * @param returnService service for managing returns
      */
     public ConsoleMenu(
             PersonService personService,
@@ -121,11 +123,12 @@ public class ConsoleMenu {
                     break;
 
                 case 6:
-                    System.out.println();
+                    handleReturnMenu();
                     break;
 
                 case 7:
                     System.out.println("Saliendo del sistema");
+                    break;
 
                 default:
                     System.out.println("Opción inválida.");
@@ -1125,6 +1128,313 @@ public class ConsoleMenu {
         System.out.println("Tipo: " + promotion.getClass().getSimpleName());
         System.out.println("Fecha de inicio: " + promotion.getStartDate());
         System.out.println("Fecha de fin: " + promotion.getEndDate());
+        System.out.println("-----------------------------");
+    }
+    /**
+     * Displays the return management menu.
+     */
+    public void showReturnMenu() {
+        System.out.println();
+        System.out.println("=================================");
+        System.out.println("      GESTIÓN DE DEVOLUCIONES");
+        System.out.println("=================================");
+        System.out.println("1. Registrar devolución");
+        System.out.println("2. Consultar todas las devoluciones");
+        System.out.println("3. Consultar devoluciones por cliente");
+        System.out.println("4. Consultar devoluciones por venta");
+        System.out.println("5. Consultar balance mensual");
+        System.out.println("6. Volver al menú principal");
+        System.out.println("=================================");
+    }
+
+    /**
+     * Handles the return management menu.
+     */
+    public void handleReturnMenu() {
+
+        int option;
+
+        do {
+            showReturnMenu();
+            option = readOption();
+
+            switch (option) {
+
+                case 1:
+                    registerReturn();
+                    break;
+
+                case 2:
+                    showAllReturns();
+                    break;
+
+                case 3:
+                    showReturnsByCustomer();
+                    break;
+
+                case 4:
+                    showReturnsBySale();
+                    break;
+
+                case 5:
+                    showMonthlyBalance();
+                    break;
+
+                case 6:
+                    System.out.println(
+                            "Volviendo al menú principal..."
+                    );
+                    break;
+
+                default:
+                    System.out.println("Opción inválida.");
+            }
+
+        } while (option != 6);
+    }
+
+    /**
+     * Registers a new return through the console.
+     */
+    private void registerReturn() {
+
+        System.out.println();
+        System.out.println("===== REGISTRAR DEVOLUCIÓN =====");
+
+        System.out.print("ID de la venta original: ");
+        String saleId = scanner.nextLine();
+
+        System.out.print(
+                "IDs de productos a devolver separados por coma: "
+        );
+        String input = scanner.nextLine().trim();
+
+        if (input.isEmpty()) {
+            System.out.println(
+                    "Debe indicar al menos un producto a devolver."
+            );
+            return;
+        }
+
+        List<String> productIds =
+                new ArrayList<>(
+                        Arrays.asList(
+                                input.split("\\s*,\\s*")
+                        )
+                );
+
+        System.out.print("Motivo de la devolución: ");
+        String reason = scanner.nextLine();
+
+        try {
+
+            Return returnTransaction =
+                    returnService.registerReturn(
+                            saleId,
+                            productIds,
+                            reason
+                    );
+
+            System.out.println();
+            System.out.println(
+                    "Devolución registrada correctamente."
+            );
+
+            System.out.println(
+                    returnTransaction.generateReturnReceipt()
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            System.out.println();
+            System.out.println(
+                    "No se pudo registrar la devolución."
+            );
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Displays all registered returns.
+     */
+    private void showAllReturns() {
+
+        System.out.println();
+        System.out.println(
+                "===== DEVOLUCIONES REGISTRADAS ====="
+        );
+
+        List<Return> returns =
+                returnService.viewAllReturns();
+
+        if (returns.isEmpty()) {
+            System.out.println(
+                    "No hay devoluciones registradas."
+            );
+            return;
+        }
+
+        for (Return returnTransaction : returns) {
+            printReturn(returnTransaction);
+        }
+    }
+
+    /**
+     * Displays returns associated with a specific customer.
+     */
+    private void showReturnsByCustomer() {
+
+        System.out.println();
+        System.out.println(
+                "===== DEVOLUCIONES DEL CLIENTE ====="
+        );
+
+        System.out.print("ID del cliente: ");
+        String customerId = scanner.nextLine();
+
+        List<Return> returns =
+                returnService.viewReturnsByCustomer(customerId);
+
+        if (returns.isEmpty()) {
+            System.out.println(
+                    "No se encontraron devoluciones para este cliente."
+            );
+            return;
+        }
+
+        for (Return returnTransaction : returns) {
+            printReturn(returnTransaction);
+        }
+    }
+
+    /**
+     * Displays returns associated with a specific sale.
+     */
+    private void showReturnsBySale() {
+
+        System.out.println();
+        System.out.println(
+                "===== DEVOLUCIONES DE LA VENTA ====="
+        );
+
+        System.out.print("ID de la venta: ");
+        String saleId = scanner.nextLine();
+
+        List<Return> returns =
+                returnService.viewReturnsBySale(saleId);
+
+        if (returns.isEmpty()) {
+            System.out.println(
+                    "No se encontraron devoluciones para esta venta."
+            );
+            return;
+        }
+
+        for (Return returnTransaction : returns) {
+            printReturn(returnTransaction);
+        }
+    }
+
+    /**
+     * Displays the monthly sales, returns, and net balance.
+     */
+    private void showMonthlyBalance() {
+
+        System.out.println();
+        System.out.println(
+                "===== BALANCE MENSUAL ====="
+        );
+
+        System.out.print("Mes (1-12): ");
+        int month = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("Año: ");
+        int year = Integer.parseInt(scanner.nextLine());
+
+        try {
+
+            double salesTotal =
+                    returnService.calculateMonthlySalesTotal(
+                            month,
+                            year
+                    );
+
+            double returnsTotal =
+                    returnService.calculateMonthlyReturnsTotal(
+                            month,
+                            year
+                    );
+
+            double balance =
+                    returnService.generateMonthlyBalance(
+                            month,
+                            year
+                    );
+
+            System.out.println();
+            System.out.println(
+                    "Total de ventas: $" + salesTotal
+            );
+            System.out.println(
+                    "Total de devoluciones: $" + returnsTotal
+            );
+            System.out.println(
+                    "Balance neto: $" + balance
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            System.out.println();
+            System.out.println(
+                    "No se pudo generar el balance mensual."
+            );
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Prints the information of a return transaction.
+     *
+     * @param returnTransaction return transaction to display
+     */
+    private void printReturn(Return returnTransaction) {
+
+        System.out.println();
+        System.out.println("-----------------------------");
+        System.out.println(
+                "ID de devolución: "
+                        + returnTransaction.getId()
+        );
+        System.out.println(
+                "Fecha de devolución: "
+                        + returnTransaction.getReturnDate()
+        );
+        System.out.println(
+                "Venta original: "
+                        + returnTransaction.getOriginalSale().getId()
+        );
+        System.out.println(
+                "Motivo: "
+                        + returnTransaction.getReturnReason()
+        );
+        System.out.println(
+                "Monto reembolsado: $"
+                        + returnTransaction.getRefundAmount()
+        );
+
+        System.out.println("Productos devueltos:");
+
+        for (Product product :
+                returnTransaction.getReturnedProducts()) {
+
+            System.out.println(
+                    "- "
+                            + product.getTitle()
+                            + " | $"
+                            + product.getPrice()
+            );
+        }
+
         System.out.println("-----------------------------");
     }
 

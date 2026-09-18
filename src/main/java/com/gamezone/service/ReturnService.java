@@ -135,23 +135,97 @@ public class ReturnService {
      * @param year  the year to evaluate
      * @return the net balance (sales total minus returns total)
      */
-    public double generateMonthlyBalance(int month, int year) {
+
+    /**
+     * Calculates the total sales for a given month and year.
+     *
+     * @param month the month to evaluate (1-12)
+     * @param year the year to evaluate
+     * @return the total sales amount
+     */
+    public double calculateMonthlySalesTotal(int month, int year) {
+        validateMonth(month);
+
         double salesTotal = 0.0;
+
         for (Sale sale : saleService.findAllSales()) {
-            LocalDate saleDate = LocalDate.parse(sale.getDate());
-            if (saleDate.getMonthValue() == month && saleDate.getYear() == year) {
+            LocalDate saleDate = parseSaleDate(sale.getDate());
+
+            if (saleDate.getMonthValue() == month
+                    && saleDate.getYear() == year) {
                 salesTotal += sale.getTotalAmount();
             }
         }
 
+        return salesTotal;
+    }
+
+    /**
+     * Calculates the total refunds for a given month and year.
+     *
+     * @param month the month to evaluate (1-12)
+     * @param year the year to evaluate
+     * @return the total refund amount
+     */
+    public double calculateMonthlyReturnsTotal(int month, int year) {
+        validateMonth(month);
+
         double returnsTotal = 0.0;
-        for (Return r : returns) {
-            if (r.getReturnDate().getMonthValue() == month && r.getReturnDate().getYear() == year) {
-                returnsTotal += r.getRefundAmount();
+
+        for (Return returnTransaction : returns) {
+            LocalDate returnDate = returnTransaction.getReturnDate();
+
+            if (returnDate.getMonthValue() == month
+                    && returnDate.getYear() == year) {
+                returnsTotal += returnTransaction.getRefundAmount();
             }
         }
 
+        return returnsTotal;
+    }
+
+    /**
+     * Generates the net balance for a given month and year.
+     *
+     * @param month the month to evaluate (1-12)
+     * @param year the year to evaluate
+     * @return the net balance, calculated as sales minus refunds
+     */
+    public double generateMonthlyBalance(int month, int year) {
+        double salesTotal = calculateMonthlySalesTotal(month, year);
+        double returnsTotal = calculateMonthlyReturnsTotal(month, year);
+
         return salesTotal - returnsTotal;
+    }
+
+    /**
+     * Parses a sale date stored in the application.
+     *
+     * @param date the stored sale date
+     * @return the parsed date
+     */
+    private LocalDate parseSaleDate(String date) {
+        try {
+            return LocalDate.parse(date);
+        } catch (java.time.format.DateTimeParseException e) {
+            return LocalDate.parse(
+                    date,
+                    java.time.format.DateTimeFormatter.ofPattern("yyyy/MM/dd")
+            );
+        }
+    }
+
+    /**
+     * Validates a month value.
+     *
+     * @param month the month to validate
+     */
+    private void validateMonth(int month) {
+        if (month < 1 || month > 12) {
+            throw new IllegalArgumentException(
+                    "El mes debe estar entre 1 y 12."
+            );
+        }
     }
 
     private Sale findSaleById(String saleId) {
