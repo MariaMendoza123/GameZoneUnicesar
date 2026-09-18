@@ -90,9 +90,9 @@ public class Main {
                 accessoryService,
                 saleService,
                 promotionService,
-                returnService
+                returnService,
+                warrantyService
         );
-
         menu.handleMainMenu();
     }
 }
