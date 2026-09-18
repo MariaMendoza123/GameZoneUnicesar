@@ -151,6 +151,21 @@ public class WarrantyService {
         return warranties;
     }
 
+    /**
+     * Retrieves all warranties currently active on today's date.
+     *
+     * @return a list of active warranties
+     */
+    public List<Warranty> listActiveWarranties() {
+        List<Warranty> active = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        for (Warranty warranty : warranties) {
+            if (warranty.isActive(today)) {
+                active.add(warranty);
+            }
+        }
+        return active;
+    }
     private String generateNextId(String prefix) {
         int maxId = 0;
         for (Warranty warranty : warranties) {
