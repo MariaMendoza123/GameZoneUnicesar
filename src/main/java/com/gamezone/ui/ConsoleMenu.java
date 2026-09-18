@@ -15,6 +15,7 @@ import com.gamezone.service.PromotionService;
 import com.gamezone.service.ReturnService;
 import com.gamezone.model.Promotion;
 import com.gamezone.model.Return;
+import com.gamezone.model.Console;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1519,11 +1520,25 @@ public class ConsoleMenu {
         String itemId = scanner.nextLine();
 
         List<Product> products = new ArrayList<>();
+        List<String> productIdsWithExtendedWarranty = new ArrayList<>();
 
         Product product = productService.findProduct(itemId);
 
         if (product != null) {
             products.add(product);
+
+            if (product instanceof Console) {
+                System.out.print(
+                        "¿Desea agregar garantía extendida a esta consola? (S/N): "
+                );
+
+                String warrantyOption = scanner.nextLine().trim();
+
+                if (warrantyOption.equalsIgnoreCase("S")) {
+                    productIdsWithExtendedWarranty.add(product.getId());
+                }
+            }
+
         } else {
             Accessory accessory =
                     accessoryService.findById(itemId);
@@ -1546,7 +1561,8 @@ public class ConsoleMenu {
                     date,
                     clientId,
                     sellerId,
-                    products
+                    products,
+                    productIdsWithExtendedWarranty
             );
 
             System.out.println();

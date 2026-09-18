@@ -4,17 +4,17 @@ import com.gamezone.persistence.AccessoryRepository;
 import com.gamezone.persistence.PersonRepository;
 import com.gamezone.persistence.ProductRepository;
 import com.gamezone.persistence.PromotionRepository;
-import com.gamezone.persistence.PromotionRepository;
 import com.gamezone.persistence.SaleRepository;
 import com.gamezone.service.AccessoryService;
 import com.gamezone.service.PersonService;
 import com.gamezone.service.ProductService;
 import com.gamezone.service.PromotionService;
-import com.gamezone.service.PromotionService;
 import com.gamezone.service.SaleService;
 import com.gamezone.ui.ConsoleMenu;
 import com.gamezone.persistence.ReturnRepository;
 import com.gamezone.service.ReturnService;
+import com.gamezone.persistence.WarrantyRepository;
+import com.gamezone.service.WarrantyService;
 
 /**
  * Main class of the GameZone application.
@@ -56,6 +56,19 @@ public class Main {
                 accessoryService,
                 promotionService
         );
+
+        WarrantyRepository warrantyRepository =
+                new WarrantyRepository(
+                        saleService,
+                        productService
+                );
+
+        WarrantyService warrantyService =
+                new WarrantyService(
+                        warrantyRepository
+                );
+
+        saleService.setWarrantyService(warrantyService);
 
         ReturnRepository returnRepository =
                 new ReturnRepository(
