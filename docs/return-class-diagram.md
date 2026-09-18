@@ -94,11 +94,13 @@ classDiagram
     ConsoleMenu --> ReturnService : delegates return operations
     ProductService --> Product : manages inventory
 
-Layer Integration
-Return belongs to the model layer.
-ReturnRepository belongs to the persistence layer.
-ReturnService belongs to the service layer.
-ConsoleMenu belongs to the ui layer.
-ReturnService coordinates sales and inventory through SaleService and ProductService.
-ProductService.restoreStock() is reused to restore inventory after a successful return.
-ConsoleMenu delegates return operations to ReturnService instead of implementing business rules directly.
+
+
+## Layer Integration
+- `Return` belongs to the `model` layer.
+- `ReturnRepository` belongs to the `persistence` layer.
+- `ReturnService` belongs to the `service` layer.
+- `ConsoleMenu` belongs to the `ui` layer.
+- `ReturnService` coordinates sales and inventory through `SaleService` and `ProductService`.
+- `ProductService.restoreStock()` is reused to restore inventory after a successful return.
+- `ConsoleMenu` delegates return operations to `ReturnService` instead of implementing business rules directly.
