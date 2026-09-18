@@ -187,10 +187,10 @@ public class SaleRepository {
 
         sale.calculateTotal();
 
-        /*
-         * Sales stored with the old six-field format do not contain
-         * promotion information, so the default values remain in Sale.
-         */
+        if (parts.length >= 6) {
+            sale.setTotalAmount(Double.parseDouble(parts[5]));
+        }
+
         if (parts.length >= 8) {
             String promotionName = parts[6];
 
@@ -201,6 +201,11 @@ public class SaleRepository {
             sale.setDiscountAmount(Double.parseDouble(parts[7]));
         }
 
+        if (parts.length >= 9) {
+            sale.setExtendedWarrantyCost(
+                    Double.parseDouble(parts[8])
+            );
+        }
         return sale;
     }
 
@@ -253,6 +258,8 @@ public class SaleRepository {
                 + SEPARATOR
                 + promotionName
                 + SEPARATOR
-                + sale.getDiscountAmount();
+                + sale.getDiscountAmount()
+                + SEPARATOR
+                + sale.getExtendedWarrantyCost();
     }
 }
