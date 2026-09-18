@@ -12,6 +12,7 @@ import com.gamezone.service.PersonService;
 import com.gamezone.service.ProductService;
 import com.gamezone.service.SaleService;
 import com.gamezone.service.PromotionService;
+import com.gamezone.service.ReturnService;
 import com.gamezone.model.Promotion;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public class ConsoleMenu {
     private final AccessoryService accessoryService;
     private final SaleService saleService;
     private final PromotionService promotionService;
+    private final ReturnService returnService;
 
     /**
      * Constructs the console menu with the required services.
@@ -46,7 +48,9 @@ public class ConsoleMenu {
             ProductService productService,
             AccessoryService accessoryService,
             SaleService saleService,
-            PromotionService promotionService
+            PromotionService promotionService,
+            ReturnService returnService
+
     ) {
         scanner = new Scanner(System.in);
         this.personService = personService;
@@ -54,6 +58,7 @@ public class ConsoleMenu {
         this.accessoryService = accessoryService;
         this.saleService = saleService;
         this.promotionService = promotionService;
+        this.returnService = returnService;
     }
 
     /**
@@ -68,7 +73,8 @@ public class ConsoleMenu {
         System.out.println("3. Gestión de accesorios");
         System.out.println("4. Gestión de ventas");
         System.out.println("5. Gestión de promociones");
-        System.out.println("6. Salir");
+        System.out.println("6. Gestión de devoluciones");
+        System.out.println("7. Salir");
         System.out.println("=================================");
     }
 
@@ -115,14 +121,17 @@ public class ConsoleMenu {
                     break;
 
                 case 6:
-                    System.out.println("Saliendo del sistema...");
+                    System.out.println();
                     break;
+
+                case 7:
+                    System.out.println("Saliendo del sistema");
 
                 default:
                     System.out.println("Opción inválida.");
             }
 
-        } while (option != 6);
+        } while (option != 7);
     }
 
     /**

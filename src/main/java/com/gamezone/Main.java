@@ -76,7 +76,8 @@ public class Main {
                 productService,
                 accessoryService,
                 saleService,
-                promotionService
+                promotionService,
+                returnService
         );
 
         menu.handleMainMenu();
