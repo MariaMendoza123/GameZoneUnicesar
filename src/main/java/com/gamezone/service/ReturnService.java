@@ -84,6 +84,48 @@ public class ReturnService {
         returnRepository.saveAll(returns);
         return returnTransaction;
     }
+    
+    /**
+     * Retrieves all registered returns.
+     *
+     * @return a list of all returns
+     */
+    public List<Return> viewAllReturns() {
+        return returns;
+    }
+
+    /**
+     * Retrieves all returns whose original sale belongs to the given customer.
+     *
+     * @param customerId the ID of the customer
+     * @return a list of returns associated with that customer
+     */
+    public List<Return> viewReturnsByCustomer(String customerId) {
+        List<Return> result = new ArrayList<>();
+        for (Return r : returns) {
+            if (r.getOriginalSale().getClient() != null
+                    && r.getOriginalSale().getClient().getId().equals(customerId)) {
+                result.add(r);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Retrieves all returns associated with a specific sale.
+     *
+     * @param saleId the ID of the sale
+     * @return a list of returns associated with that sale
+     */
+    public List<Return> viewReturnsBySale(String saleId) {
+        List<Return> result = new ArrayList<>();
+        for (Return r : returns) {
+            if (r.getOriginalSale().getId().equals(saleId)) {
+                result.add(r);
+            }
+        }
+        return result;
+    }
 
     private Sale findSaleById(String saleId) {
         for (Sale sale : saleService.findAllSales()) {
