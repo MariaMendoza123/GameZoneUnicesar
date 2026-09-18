@@ -75,3 +75,13 @@ For calculateRefundAmount(), I iterated over the returnedProducts list, summed t
 For canBeReturned(), I compared two approaches to calculate the difference between two dates: ChronoUnit.DAYS.between(saleDate, today) compared against 30, versus saleDate.plusDays(30) combined with isAfter/isBefore. I chose the ChronoUnit.DAYS.between() approach because it maps more directly to the business rule ("how many days have passed") and is easier to justify without a negation. I also confirmed that Sale.date is stored as a String, so LocalDate.parse(date) is required before performing date calculations.
 
 All final code was adapted to match the real project classes (Sale, Product) and reviewed for compile errors before being committed.
+
+date: 2026-09-18
+module worked: Warranty class hierarchy — model layer
+AI tool used: Claude (Anthropic)
+
+I used Claude to design and implement the Warranty class hierarchy: the abstract Warranty class and its two subclasses, BasicWarranty and ExtendedWarranty. I learned that the constructor of an abstract class can safely call an abstract method (getDurationInMonths()) to calculate endDate automatically, since by the time the constructor runs, the real object is already a concrete subclass, so Java resolves the correct implementation through polymorphism. I used IntelliJ's Implement Methods and Generate Constructor shortcuts to scaffold the abstract methods and the super(...) call instead of writing them by hand.
+
+For BasicWarranty, I implemented getDurationInMonths() (6), getWarrantyType() ("Garantía Básica"), and getAdditionalCost() (0.0). For ExtendedWarranty, the difference was getAdditionalCost(), which required accessing the associated product through the inherited getProduct() getter (since product is private in Warranty) and calculating 10% of its price. I also caught and fixed an early version of the Warranty constructor that incorrectly received endDate as a parameter instead of calculating it internally, which also required removing that parameter from the subclasses' calls to super(...).
+
+All code was adapted to the real project classes and validated for compilation before being committed.
