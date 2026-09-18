@@ -24,3 +24,11 @@ Claude (Anthropic), como apoyo para repasar y practicar los requerimientos del t
 - Pedí explicación de por qué la validación de plazo (30 días) debe vivir en el modelo (Sale.canBeReturned) mientras la decisión de rechazar la operación vive en el servicio (ReturnService.registerReturn).
 - Identifiqué junto con la IA una limitación real del enunciado: ProductService.restoreStock no tiene equivalente en AccessoryService, por lo que las devoluciones de accesorios no restauran stock automáticamente. Esta decisión de alcance quedó documentada para discutirla con el equipo.
 - Redacté con apoyo de la IA las respuestas en inglés a las preguntas 3 y 5 de docs/return-analysis.md, basadas en el código que implementé.
+
+## Sesión: Módulo de garantías (Requerimiento 4)
+
+- Consulté cómo diseñar WarrantyRepository para resolver referencias a Sale y Product durante la carga desde CSV, reutilizando el mismo patrón ya aplicado en ReturnRepository (buscar primero en los productos de la venta, luego en ProductService como respaldo).
+- Pedí ayuda para dividir WarrantyService en commits atómicos por método (assignBasicWarranty/assignExtendedWarranty, findWarrantyByProduct/listAllWarranties, listActiveWarranties, listWarrantiesExpiringSoon), ya que no había trabajo previo real que dividir en esta sesión.
+- Resolví dudas sobre por qué listWarrantiesExpiringSoon pertenece a la capa de servicio y no a persistencia ni a la interfaz de consola, en el contexto de la arquitectura en capas.
+- Redacté con apoyo de la IA la respuesta en inglés a la pregunta 5 de docs/warranty-analysis.md, basada en el código que implementé.
+- Verifiqué que WarrantyRepository y WarrantyService no compilarán hasta que el Líder Técnico modifique SaleService.registerSale e integre el módulo; esto se documentó como una dependencia esperada del flujo de trabajo, no un error.

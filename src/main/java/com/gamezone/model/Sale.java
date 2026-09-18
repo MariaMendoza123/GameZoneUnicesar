@@ -17,6 +17,7 @@ public class Sale {
     private double totalAmount;
     private String appliedPromotionName;
     private double discountAmount;
+    private double extendedWarrantyCost;
 
     /**
      * Constructs a new Sale instance.
@@ -36,6 +37,7 @@ public class Sale {
         this.totalAmount = 0.0;
         this.appliedPromotionName = null;
         this.discountAmount = 0.0;
+        this.extendedWarrantyCost = 0.0;
     }
 
     public String getId() {
@@ -78,6 +80,24 @@ public class Sale {
         return discountAmount;
     }
 
+    /**
+     * Returns the additional cost of the extended warranties in the sale.
+     *
+     * @return the extended warranty cost
+     */
+    public double getExtendedWarrantyCost() {
+        return extendedWarrantyCost;
+    }
+
+    /**
+     * Sets the additional cost of the extended warranties in the sale.
+     *
+     * @param extendedWarrantyCost the extended warranty cost
+     */
+    public void setExtendedWarrantyCost(double extendedWarrantyCost) {
+        this.extendedWarrantyCost = extendedWarrantyCost;
+    }
+
     public void setDiscountAmount(double discountAmount) {
         this.discountAmount = discountAmount;
     }
@@ -104,9 +124,11 @@ public class Sale {
      */
     public double calculateFinalTotal() {
         double subtotal = calculateTotal();
-        return Math.max(0.0, subtotal - discountAmount);
+        return Math.max(
+                0.0,
+                subtotal + extendedWarrantyCost - discountAmount
+        );
     }
-
     /**
      * Generates a receipt containing the subtotal, promotion,
      * discount, and final total.

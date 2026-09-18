@@ -81,15 +81,14 @@ public class Console extends Product {
      */
     @Override
     public String getDescription() {
-        return "Console{" +
-                "id='" + getId() + '\'' +
-                ", title='" + getTitle() + '\'' +
-                ", price=" + getPrice() +
-                ", stockQuantity=" + getStockQuantity() +
-                ", brand='" + brand + '\'' +
-                ", model='" + model + '\'' +
-                ", generation='" + generation + '\'' +
-                '}';
+        return String.format(
+                "Categoría: [CONSOLA]\n" +
+                        "ID: %s | %s\n" +
+                        "Precio: $%,.2f | Stock: %d unds.\n" +
+                        "Marca: %s | Modelo: %s | Generación: %s",
+                getId(), getTitle().toUpperCase(), getPrice(), getStockQuantity(),
+                brand, model, generation
+        );
     }
     /**
      * Returns a string representation of the console.

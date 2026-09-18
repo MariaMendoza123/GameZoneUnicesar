@@ -38,3 +38,20 @@ The system now supports return management, including:
 - Monthly balance reporting with total sales, total returns, and net balance.
 - Return persistence in data/returns.csv.
 - Return receipts with return details and refund information.
+
+## Warranty Management Features
+
+The system now supports warranty management, including:
+
+- Automatic basic warranties for consoles sold in the system.
+- Basic warranty coverage for 6 months from the sale date.
+- Optional extended warranties for consoles.
+- Extended warranty coverage for 12 months from the sale date.
+- Extended warranty cost of 10% of the associated console price.
+- Warranty validity checks based on start and end dates.
+- Consultation of the warranty associated with a product in a specific sale.
+- Listing of all registered warranties.
+- Listing of currently active warranties.
+- Listing of warranties expiring within a user-defined number of days.
+- Warranty persistence in data/warranties.csv.
+- Warranty certificate generation with warranty details.

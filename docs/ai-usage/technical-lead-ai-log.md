@@ -225,3 +225,43 @@ I also updated the return module documentation and class diagram to reflect the 
 ### Final Note
 
 AI assistance was used for technical guidance, debugging, and clarification. The final implementation decisions, code changes, testing, Git operations, and integration coordination were performed by me as Technical Lead.
+
+---
+
+## Log Entry 7
+
+* **Date:** 2026-09-18
+* **Tool Used:** ChatGPT
+* **Role:** Technical Lead
+* **Module:** Requirement 4 - Warranty Module Integration
+
+### Consultations Made
+
+I used AI as a technical consultation and debugging resource during the integration of the warranty module.
+
+I consulted about:
+
+* How to integrate warranty information into the existing sales flow.
+* How to preserve the extended warranty cost when sales are stored and loaded.
+* How to connect WarrantyService with SaleService without changing the responsibilities of the existing layers.
+* How to extend ConsoleMenu with warranty selection and warranty management options.
+* How to review compilation errors during the integration.
+* How to organize and verify the documentation and class diagram required for the warranty module.
+
+### Applied Decisions
+
+I integrated the warranty module into the existing GameZone application while preserving the established layered architecture.
+
+I extended the sale information to store the additional cost of extended warranties and updated the sales persistence structure to preserve this value.
+
+I modified the sales registration flow so that consoles receive automatic basic warranties and can receive an extended warranty when selected by the seller.
+
+I also extended the console menu with warranty management and consultation options.
+
+The implementation was verified through Maven compilation after the integration changes, and the warranty management menu was integrated into the main application.
+
+The required warranty analysis, class diagram, and README documentation were also completed.
+
+### Final Note
+
+AI assistance was used for technical guidance, debugging, and clarification. The final implementation decisions, code changes, testing, Git operations, and integration coordination were performed by me as Technical Lead.

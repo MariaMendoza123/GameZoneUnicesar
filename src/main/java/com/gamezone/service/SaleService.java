@@ -8,6 +8,7 @@ import com.gamezone.model.Sale;
 import com.gamezone.model.Seller;
 import com.gamezone.persistence.SaleRepository;
 import com.gamezone.model.Promotion;
+import com.gamezone.model.Console;
 
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class SaleService {
     private final PersonService personService;
     private final AccessoryService accessoryService;
     private final PromotionService promotionService;
+    private WarrantyService warrantyService;
 
     /**
      * Constructs a SaleService with the required dependencies.
@@ -47,6 +49,15 @@ public class SaleService {
     }
 
     /**
+     * Sets the service used to manage product warranties.
+     *
+     * @param warrantyService service for managing warranties
+     */
+    public void setWarrantyService(WarrantyService warrantyService) {
+        this.warrantyService = warrantyService;
+    }
+
+    /**
      * Registers a new sale after validating the required information.
      *
      * @param id unique identifier of the sale
@@ -54,6 +65,7 @@ public class SaleService {
      * @param clientId identifier of the client
      * @param sellerId identifier of the seller
      * @param products products and accessories included in the sale
+     * @param productIdsWithExtendedWarranty product IDs selected for extended warranty
      * @return the registered sale
      */
     public Sale registerSale(
@@ -61,7 +73,8 @@ public class SaleService {
             String date,
             String clientId,
             String sellerId,
-            List<Product> products
+            List<Product> products,
+            List<String> productIdsWithExtendedWarranty
     ) {
 
         if (products == null || products.isEmpty()) {
@@ -156,17 +169,72 @@ public class SaleService {
 
         double subtotal = sale.calculateTotal();
 
-        Promotion bestPromotion = promotionService.findBestPromotionFor(sale);
+        Promotion bestPromotion =
+                promotionService.findBestPromotionFor(sale);
+
+        double discount = 0.0;
 
         if (bestPromotion != null) {
-            double discount = bestPromotion.calculateDiscount(sale);
+            discount = bestPromotion.calculateDiscount(sale);
 
-            sale.setAppliedPromotionName(bestPromotion.getName());
+            sale.setAppliedPromotionName(
+                    bestPromotion.getName()
+            );
+
             sale.setDiscountAmount(discount);
-
-            sale.setTotalAmount(Math.max(0.0, subtotal - discount));
         }
 
+        double extendedWarrantyCost = 0.0;
+
+        if (warrantyService == null) {
+            throw new IllegalStateException(
+                    "WarrantyService no está configurado."
+            );
+        }
+
+        java.time.LocalDate saleDate =
+                java.time.LocalDate.parse(sale.getDate());
+
+        List<String> extendedWarrantyIds =
+                productIdsWithExtendedWarranty == null
+                        ? java.util.Collections.emptyList()
+                        : productIdsWithExtendedWarranty;
+
+        for (Product product : products) {
+
+            if (product instanceof Console) {
+
+                warrantyService.assignBasicWarranty(
+                        product,
+                        sale,
+                        saleDate
+                );
+
+                if (extendedWarrantyIds.contains(product.getId())) {
+
+                    com.gamezone.model.ExtendedWarranty extendedWarranty =
+                            warrantyService.assignExtendedWarranty(
+                                    product,
+                                    sale,
+                                    saleDate
+                            );
+
+                    extendedWarrantyCost +=
+                            extendedWarranty.getAdditionalCost();
+                }
+            }
+        }
+
+        sale.setExtendedWarrantyCost(
+                extendedWarrantyCost
+        );
+
+        sale.setTotalAmount(
+                Math.max(
+                        0.0,
+                        subtotal + extendedWarrantyCost - discount
+                )
+        );
         List<Sale> sales = saleRepository.findAll();
         sales.add(sale);
         saleRepository.saveAll(sales);
