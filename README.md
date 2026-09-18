@@ -24,3 +24,17 @@ The system now supports promotion management, including:
 - Automatic selection of the promotion that provides the highest monetary discount.
 - Promotion persistence in data/promotions.csv.
 - Discount information included in the sale receipt.
+
+## Return Management Features
+
+The system now supports return management, including:
+
+- Registration of partial returns linked to an original sale.
+- Validation of the 30-day return deadline.
+- Validation that returned products belong to the referenced sale.
+- Automatic restoration of product stock after a successful return.
+- Automatic calculation of the refunded amount.
+- Return queries by customer and by original sale.
+- Monthly balance reporting with total sales, total returns, and net balance.
+- Return persistence in data/returns.csv.
+- Return receipts with return details and refund information.

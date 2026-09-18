@@ -189,3 +189,39 @@ The new functionality was compiled successfully with Maven, confirming that the 
 ### Final Note
 
 AI assistance was used as a technical consultation and learning resource. The final implementation, verification, Git operations, and technical decisions were performed by me as Technical Lead.
+
+---
+
+## Log Entry 6
+
+* **Date:** 2026-09-17
+* **Tool Used:** ChatGPT
+* **Role:** Technical Lead
+* **Module:** Requirement 3 - Return Module Integration
+
+### Consultations Made
+
+I used AI as a technical consultation and debugging resource during the integration of the return module.
+
+I consulted about:
+
+* How to connect the return module with the existing application structure.
+* How to integrate ReturnService into Main and ConsoleMenu.
+* How to extend the console with the required return management options.
+* How to verify and correct compilation errors during the integration process.
+* How to review the return class diagram according to the implemented classes.
+* How to synchronize the feature branch with changes pushed by other team members.
+
+### Applied Decisions
+
+I integrated the return module into the existing application according to the project requirements and the established layered architecture.
+
+I connected ReturnRepository and ReturnService through the existing services and application entry point, and extended ConsoleMenu with the required return management operations.
+
+I verified the integration by compiling the project with Maven and running the application. The return management menu was successfully displayed and accessible from the main menu.
+
+I also updated the return module documentation and class diagram to reflect the implemented integration.
+
+### Final Note
+
+AI assistance was used for technical guidance, debugging, and clarification. The final implementation decisions, code changes, testing, Git operations, and integration coordination were performed by me as Technical Lead.

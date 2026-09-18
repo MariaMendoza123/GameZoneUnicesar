@@ -106,6 +106,31 @@ public class ProductService {
         product.setStockQuantity(newStock);
         productRepository.update(product);
     }
+    /**
+     * Restores the stock quantity of a product.
+     *
+     * @param productId the ID of the product
+     * @param quantity the quantity to restore
+     */
+    public void restoreStock(String productId, int quantity) {
+        Product product = findProduct(productId);
+
+        if (product == null) {
+            throw new IllegalArgumentException(
+                    "Producto no encontrado con ID: " + productId
+            );
+        }
+
+        if (quantity <= 0) {
+            throw new IllegalArgumentException(
+                    "La cantidad a restaurar debe ser mayor que cero."
+            );
+        }
+
+        int newStock = product.getStockQuantity() + quantity;
+        product.setStockQuantity(newStock);
+        productRepository.update(product);
+    }
 
     /**
      * Finds a product by its ID.
