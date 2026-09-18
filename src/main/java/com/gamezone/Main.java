@@ -13,6 +13,8 @@ import com.gamezone.service.PromotionService;
 import com.gamezone.service.PromotionService;
 import com.gamezone.service.SaleService;
 import com.gamezone.ui.ConsoleMenu;
+import com.gamezone.persistence.ReturnRepository;
+import com.gamezone.service.ReturnService;
 
 /**
  * Main class of the GameZone application.
@@ -54,6 +56,19 @@ public class Main {
                 accessoryService,
                 promotionService
         );
+
+        ReturnRepository returnRepository =
+                new ReturnRepository(
+                        saleService,
+                        productService
+                );
+
+        ReturnService returnService =
+                new ReturnService(
+                        returnRepository,
+                        saleService,
+                        productService
+                );
 
         // Create and start the console menu
         ConsoleMenu menu = new ConsoleMenu(
