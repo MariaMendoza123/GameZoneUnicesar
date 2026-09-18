@@ -126,7 +126,7 @@ public class ReturnService {
         }
         return result;
     }
-    
+
     /**
      * Generates the net balance for a given month and year, subtracting
      * the total returns from the total sales of that period.
