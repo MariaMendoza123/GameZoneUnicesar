@@ -13,20 +13,19 @@ public abstract class Warranty {
     private LocalDate startDate;
     private LocalDate endDate;
     /**
-     * Constructs a new Warranty instance.
+     * Constructs a new Warranty with the specified details.
      *
-     * @param id        Unique identifier for the warranty.
-     * @param product   Product associated with the warranty.
-     * @param sale      Sale associated with the warranty.
-     * @param startDate Start date of the warranty.
-     * @param endDate   End date of the warranty.
+     * @param id        the unique identifier for the warranty
+     * @param product   the product associated with the warranty
+     * @param sale      the sale associated with the warranty
+     * @param startDate the start date of the warranty
      */
-    public Warranty(String id, Product product, Sale sale, LocalDate startDate, LocalDate endDate) {
+    public Warranty(String id, Product product, Sale sale, LocalDate startDate) {
         this.id = id;
         this.product = product;
         this.sale = sale;
         this.startDate = startDate;
-        this.endDate = endDate;
+        this.endDate = startDate.plusMonths(getDurationInMonths());
     }
     /**
      * Returns the unique identifier of the warranty.
