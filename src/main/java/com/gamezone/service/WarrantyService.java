@@ -125,6 +125,32 @@ public class WarrantyService {
         return expiringSoon;
     }
 
+    /**
+     * Finds the warranty associated with a specific product within a specific sale.
+     *
+     * @param productId the ID of the product
+     * @param saleId    the ID of the sale
+     * @return the matching Warranty, or null if none exists
+     */
+    public Warranty findWarrantyByProduct(String productId, String saleId) {
+        for (Warranty warranty : warranties) {
+            if (warranty.getProduct().getId().equals(productId)
+                    && warranty.getSale().getId().equals(saleId)) {
+                return warranty;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Retrieves all registered warranties.
+     *
+     * @return a list of all warranties
+     */
+    public List<Warranty> listAllWarranties() {
+        return warranties;
+    }
+
     private String generateNextId(String prefix) {
         int maxId = 0;
         for (Warranty warranty : warranties) {
