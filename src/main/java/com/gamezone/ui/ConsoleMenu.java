@@ -537,15 +537,12 @@ public class ConsoleMenu {
         }
 
         for (Product product : products) {
-            System.out.println();
-            System.out.println("-----------------------------");
-            System.out.println("ID: " + product.getId());
-            System.out.println("Título: " + product.getTitle());
-            System.out.println("Precio: $" + product.getPrice());
-            System.out.println(
-                    "Stock: " + product.getStockQuantity()
-            );
-            System.out.println("-----------------------------");
+            System.out.println("\n==================================================");
+            if (product != null) {
+                // Polymorphism: each object provides its own description
+                System.out.println(product.getDescription());
+            }
+            System.out.println("==================================================");
         }
     }
 
