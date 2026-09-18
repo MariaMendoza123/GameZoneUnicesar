@@ -80,15 +80,14 @@ public class VideoGame extends Product{
      */
     @Override
     public String getDescription() {
-        return "VideoGame{" +
-                "id='" + getId() + '\'' +
-                ", title='" + getTitle() + '\'' +
-                ", price=" + getPrice() +
-                ", stockQuantity=" + getStockQuantity() +
-                ", platform='" + platform + '\'' +
-                ", genre='" + genre + '\'' +
-                ", classification='" + classification + '\'' +
-                '}';
+        return String.format(
+                "Categoría: [VIDEOJUEGO]\n" +
+                        "ID: %s | %s\n" +
+                        "Precio: $%,.2f | Stock: %d unds.\n" +
+                        "Plataforma: %s | Género: %s | Clasificación: %s",
+                getId(), getTitle().toUpperCase(), getPrice(), getStockQuantity(),
+                platform, genre, classification
+        );
     }
    /**
     * Returns a string representation of the video game.

@@ -18,4 +18,60 @@
 
 10.Why: To maintain Low Coupling and adhere to the Single Responsibility Principle. Domain entities should only represent real-world concepts and business logic.  Problems Avoided: If entities handled file storage directly:Changing storage mechanisms (e.g., switching from flat files to SQL or JSON) would require modifying core domain logic.  Testing domain logic independently would be impossible without relying on physical disk I/O.  Reusability in other UI environments (desktop UI, web, mobile) would be severely compromised.
 
-11.Allowed Dependencies:The user interface layer depends on the service layer.  The service layer depends on the persistence layer.  The service layer depends on the model layer.  The persistence layer depends on the model layer.  Prohibited Dependencies:The user interface layer must not depend on or directly access the persistence layer.  The model layer must not depend on any other layer in the application.  Upward dependencies, such as the persistence layer or service layer depending on the user interface layer, are strictly prohibited.  Justification: Strict top-down dependencies ensure high modularity, easy maintenance, and simple unit testing. Lower layers, such as the domain model, remain completely isolated from technological changes in presentation or data storage engines. 
+11.Allowed Dependencies:The user interface layer depends on the service layer.  The service layer depends on the persistence layer.  The service layer depends on the model layer.  The persistence layer depends on the model layer.  Prohibited Dependencies:The user interface layer must not depend on or directly access the persistence layer.  The model layer must not depend on any other layer in the application.  Upward dependencies, such as the persistence layer or service layer depending on the user interface layer, are strictly prohibited.  Justification: Strict top-down dependencies ensure high modularity, easy maintenance, and simple unit testing. Lower layers, such as the domain model, remain completely isolated from technological changes in presentation or data storage engines.
+
+## Requirement 1 - Guiding Questions
+
+### 1. Should accessories extend the existing Product hierarchy or form an independent hierarchy? Justify your decision considering code reuse and model coherence.
+
+Accessories should extend the existing Product hierarchy rather than form an independent hierarchy. All three accessory types (Controller, Cable, Memory) are sellable items and share the common attributes already defined in Product, such as id, title, price, and stockQuantity.
+
+Extending Product allows the accessory module to reuse the existing attributes and behavior instead of duplicating them. It also keeps the model coherent because accessories, videogames, and consoles can be treated as Product objects when they participate in a sale.
+
+This decision also simplifies integration with SaleService. Since accessories are Products, the sales process can receive them through the same List<Product> used for videogames and consoles. The service only needs to distinguish which inventory service is responsible for updating the stock. This avoids creating a separate sales mechanism for accessories and preserves the existing behavior.
+
+### 2. What attributes are common to the three accessory types and which are specific to each type? How is this distinction reflected in the module's class hierarchy?
+
+The three accessory types inherit the common Product attributes: id, title, price, and stockQuantity.
+
+In addition, all accessories share the compatibleConsoleIds attribute, which stores the identifiers of the consoles compatible with the accessory. This attribute and its related compatibility operations are defined in the abstract Accessory class.
+
+Each concrete accessory subclass defines its own specific attributes:
+
+- Controller: connectionType.
+- Cable: lengthInMeters and connectorType.
+- Memory: capacityInGb and memoryType.
+
+The hierarchy therefore places the common accessory-specific behavior in the abstract Accessory class, while Controller, Cable, and Memory contain only the attributes and behavior specific to each accessory type. This structure promotes inheritance, code reuse, and polymorphism.
+
+### 3. The compatibility between an accessory and a console is a relationship between two entities in the system. How is this relationship represented in the design and in persistence? Is compatibility an attribute of the accessory, of the console, or of both?
+
+Compatibility is represented on the accessory side through the compatibleConsoleIds attribute in Accessory. This attribute contains a list of console identifiers that are compatible with the accessory.
+
+The Console class does not store a list of accessories. Therefore, the relationship is maintained as a unidirectional association from Accessory to Console identifiers. This keeps the accessory module self-contained and avoids modifying the existing Console class.
+
+In persistence, the compatibility list is stored as part of each accessory record in data/accessories.csv. Multiple console IDs are separated using a semicolon. When the repository loads the file, AccessoryRepository converts this field back into a List<String>. This allows the compatibility relationship to be persisted without requiring an additional file or persistence structure.
+
+### 4. What modifications are necessary in the sales service (SaleService) so that sales can include accessories without breaking the existing behavior with videogames and consoles?
+
+SaleService must be extended so that accessories can participate in the existing sales process while preserving the behavior already implemented for videogames and consoles.
+
+The service receives the sale items as a List<Product>, allowing videogames, consoles, and accessories to be processed through the same collection. During stock validation, SaleService identifies whether an item is an Accessory. If it is an accessory, the service uses AccessoryService to find the item and validate its stock. Otherwise, it continues using ProductService for videogames and consoles.
+
+The same distinction is applied when updating inventory after the sale. AccessoryService.updateStock() is used for accessories, while ProductService.updateStock() continues to handle the existing product types.
+
+This approach keeps the existing sales workflow intact while adding support for accessories. The Sale class and the total calculation can continue working with Product references, so no separate sales mechanism is required for accessories.
+
+### 5. In which layer of the system architecture should the new accessory module classes be located? Justify your decision based on the responsibilities of each layer.
+
+The new accessory classes should be distributed across the existing layered architecture according to their responsibilities.
+
+The model layer contains the domain entities and their relationships, including Accessory, Controller, Cable, and Memory. These classes represent the concepts of the accessory domain and contain their attributes and core domain behavior.
+
+The persistence layer contains AccessoryRepository, which is responsible for reading and writing accessory information to data/accessories.csv. It handles the conversion between persisted records and model objects.
+
+The service layer contains AccessoryService, which implements the business operations and validations for registering, listing, searching, and updating accessories.
+
+The user interface layer is responsible for receiving user input and displaying the accessory management options through the console menu. It delegates the operations to AccessoryService instead of accessing the repository directly.
+
+This organization preserves the project's existing separation of concerns and follows the Single Responsibility Principle. Each layer has a specific responsibility, making the accessory module easier to maintain and integrate with the rest of the system.

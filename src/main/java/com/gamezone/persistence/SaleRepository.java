@@ -1,12 +1,11 @@
 package com.gamezone.persistence;
 
+import com.gamezone.model.Accessory;
 import com.gamezone.model.Client;
 import com.gamezone.model.Person;
 import com.gamezone.model.Product;
 import com.gamezone.model.Sale;
 import com.gamezone.model.Seller;
-import com.gamezone.model.Accessory;
-import com.gamezone.persistence.AccessoryRepository;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -35,6 +34,7 @@ public class SaleRepository {
      *
      * @param personRepository repository for managing persons
      * @param productRepository repository for managing products
+     * @param accessoryRepository repository for managing accessories
      */
     public SaleRepository(
             PersonRepository personRepository,
@@ -187,6 +187,25 @@ public class SaleRepository {
 
         sale.calculateTotal();
 
+        if (parts.length >= 6) {
+            sale.setTotalAmount(Double.parseDouble(parts[5]));
+        }
+
+        if (parts.length >= 8) {
+            String promotionName = parts[6];
+
+            if (!promotionName.isBlank()) {
+                sale.setAppliedPromotionName(promotionName);
+            }
+
+            sale.setDiscountAmount(Double.parseDouble(parts[7]));
+        }
+
+        if (parts.length >= 9) {
+            sale.setExtendedWarrantyCost(
+                    Double.parseDouble(parts[8])
+            );
+        }
         return sale;
     }
 
@@ -221,6 +240,10 @@ public class SaleRepository {
             productIds.append(product.getId());
         }
 
+        String promotionName = sale.getAppliedPromotionName() == null
+                ? ""
+                : sale.getAppliedPromotionName();
+
         return sale.getId()
                 + SEPARATOR
                 + sale.getDate()
@@ -231,7 +254,12 @@ public class SaleRepository {
                 + SEPARATOR
                 + productIds
                 + SEPARATOR
-                + sale.getTotalAmount();
+                + sale.getTotalAmount()
+                + SEPARATOR
+                + promotionName
+                + SEPARATOR
+                + sale.getDiscountAmount()
+                + SEPARATOR
+                + sale.getExtendedWarrantyCost();
     }
 }
-

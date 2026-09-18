@@ -20,9 +20,6 @@ Diseñé operaciones granulares (save, findAll, findById, update) en vez de guar
 Ruta del archivo: data/products.txt, para mantener consistencia con la carpeta data/ que exige el entregable final del taller.
 
 
----
-
-## Log Entry 2
 
 * **Date:** 2026-09-08
 * **Tool Used:** Gemini (Google)
@@ -54,3 +51,37 @@ module worked: Model — Product Hierarchy (Accessory, Controller, Cable, Memory
 
 3. **Handling null and empty values.**
    I consulted on the risk of a NullPointerException when using String.join on a potentially null list, and how to prevent this in getDescription() and the Accessory constructor.
+   AI Usage Log — Requerimiento 2 (Promotion Module)
+
+
+Date: 2026-09-16
+module worked: Promotion class hierarchy — model layer
+AI tool used: Claude (Anthropic)
+
+I used Claude as a tutor to understand and implement the Promotion abstract class and its three subclasses (PercentageDiscount, CategoryDiscount, BulkPurchaseDiscount). For isActive, I learned to check a date range using LocalDate methods (isBefore, isAfter, isEqual) combined with logical operators. For calculateDiscount, I understood why it must be declared abstract in Promotion, forcing each subclass to provide its own calculation without the rest of the system knowing the concrete type.
+
+In PercentageDiscount, I applied the discount percentage to sale.calculateTotal() rather than a plain getter, to make sure the total is freshly computed. In CategoryDiscount, since Product has no category field and categories are represented through the VideoGame/Console subclasses, I used instanceof checks instead of comparing strings, iterating over the sale's products and summing only the matching ones before applying the percentage. This also helped me fix a Cannot resolve symbol 'getCategory' compile error. In BulkPurchaseDiscount, I compared the number of products in the sale against a minimum threshold, applying the discount only if the condition was met and returning zero otherwise.
+
+Overall, the AI helped reinforce concepts of abstraction, polymorphism, and Java syntax (logical operators, compound assignment), while all final code was adapted and validated against the real project classes before being committed.
+
+date: 2026-09-17
+module worked: Return class implementation — model layer, plus canBeReturned in Sale.
+AI tool used: Claude (Anthropic)
+
+I used Claude as a tutor to design and implement the Return class and the additive canBeReturned() method in Sale. This clarified that the association between Return and Sale is a simple reference (association), not inheritance or composition, since the sale exists independently of the return.
+
+For calculateRefundAmount(), I iterated over the returnedProducts list, summed the prices, assigned the result to the refundAmount attribute, and returned it — reusing the same accumulator pattern from the promotion module. For generateReturnReceipt(), I first saw a StringBuilder-based approach with .append(), then chose a simpler version using plain string concatenation (+=) since I was not familiar with StringBuilder, producing the same result in Spanish as required for user-facing text.
+
+For canBeReturned(), I compared two approaches to calculate the difference between two dates: ChronoUnit.DAYS.between(saleDate, today) compared against 30, versus saleDate.plusDays(30) combined with isAfter/isBefore. I chose the ChronoUnit.DAYS.between() approach because it maps more directly to the business rule ("how many days have passed") and is easier to justify without a negation. I also confirmed that Sale.date is stored as a String, so LocalDate.parse(date) is required before performing date calculations.
+
+All final code was adapted to match the real project classes (Sale, Product) and reviewed for compile errors before being committed.
+
+date: 2026-09-18
+module worked: Warranty class hierarchy — model layer
+AI tool used: Claude (Anthropic)
+
+I used Claude to design and implement the Warranty class hierarchy: the abstract Warranty class and its two subclasses, BasicWarranty and ExtendedWarranty. I learned that the constructor of an abstract class can safely call an abstract method (getDurationInMonths()) to calculate endDate automatically, since by the time the constructor runs, the real object is already a concrete subclass, so Java resolves the correct implementation through polymorphism. I used IntelliJ's Implement Methods and Generate Constructor shortcuts to scaffold the abstract methods and the super(...) call instead of writing them by hand.
+
+For BasicWarranty, I implemented getDurationInMonths() (6), getWarrantyType() ("Garantía Básica"), and getAdditionalCost() (0.0). For ExtendedWarranty, the difference was getAdditionalCost(), which required accessing the associated product through the inherited getProduct() getter (since product is private in Warranty) and calculating 10% of its price. I also caught and fixed an early version of the Warranty constructor that incorrectly received endDate as a parameter instead of calculating it internally, which also required removing that parameter from the subclasses' calls to super(...).
+
+All code was adapted to the real project classes and validated for compilation before being committed.

@@ -11,10 +11,18 @@ import com.gamezone.service.AccessoryService;
 import com.gamezone.service.PersonService;
 import com.gamezone.service.ProductService;
 import com.gamezone.service.SaleService;
+import com.gamezone.service.PromotionService;
+import com.gamezone.service.ReturnService;
+import com.gamezone.model.Promotion;
+import com.gamezone.model.Return;
+import com.gamezone.model.Console;
+import com.gamezone.model.Warranty;
+import com.gamezone.service.WarrantyService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.time.LocalDate;
 import java.util.Scanner;
 
 /**
@@ -27,6 +35,9 @@ public class ConsoleMenu {
     private final ProductService productService;
     private final AccessoryService accessoryService;
     private final SaleService saleService;
+    private final PromotionService promotionService;
+    private final ReturnService returnService;
+    private final WarrantyService warrantyService;
 
     /**
      * Constructs the console menu with the required services.
@@ -35,18 +46,27 @@ public class ConsoleMenu {
      * @param productService service for managing products
      * @param accessoryService service for managing accessories
      * @param saleService service for managing sales
+     * @param promotionService service for managing promotions
+     * @param returnService service for managing returns
      */
     public ConsoleMenu(
             PersonService personService,
             ProductService productService,
             AccessoryService accessoryService,
-            SaleService saleService
+            SaleService saleService,
+            PromotionService promotionService,
+            ReturnService returnService,
+            WarrantyService warrantyService
+
     ) {
         scanner = new Scanner(System.in);
         this.personService = personService;
         this.productService = productService;
         this.accessoryService = accessoryService;
         this.saleService = saleService;
+        this.promotionService = promotionService;
+        this.returnService = returnService;
+        this.warrantyService = warrantyService;
     }
 
     /**
@@ -60,7 +80,10 @@ public class ConsoleMenu {
         System.out.println("2. Gestión de personas");
         System.out.println("3. Gestión de accesorios");
         System.out.println("4. Gestión de ventas");
-        System.out.println("5. Salir");
+        System.out.println("5. Gestión de promociones");
+        System.out.println("6. Gestión de devoluciones");
+        System.out.println("7. Gestión de garantías");
+        System.out.println("8. Salir");
         System.out.println("=================================");
     }
 
@@ -103,7 +126,77 @@ public class ConsoleMenu {
                     break;
 
                 case 5:
+                    handlePromotionMenu();
+                    break;
+
+                case 6:
+                    handleReturnMenu();
+                    break;
+
+                case 7:
+                    handleWarrantyMenu();
+                    break;
+
+                case 8:
                     System.out.println("Saliendo del sistema...");
+                    break;
+
+                default:
+                    System.out.println("Opción inválida.");
+            }
+
+        } while (option != 8);
+    }
+
+    /**
+     * Displays the warranty management menu.
+     */
+    public void showWarrantyMenu() {
+        System.out.println();
+        System.out.println("=================================");
+        System.out.println("       GESTIÓN DE GARANTÍAS");
+        System.out.println("=================================");
+        System.out.println("1. Consultar garantía por producto y venta");
+        System.out.println("2. Listar todas las garantías");
+        System.out.println("3. Listar garantías vigentes");
+        System.out.println("4. Listar garantías próximas a vencer");
+        System.out.println("5. Volver al menú principal");
+        System.out.println("=================================");
+    }
+
+    /**
+     * Handles the warranty management menu.
+     */
+    public void handleWarrantyMenu() {
+
+        int option;
+
+        do {
+            showWarrantyMenu();
+            option = readOption();
+
+            switch (option) {
+
+                case 1:
+                    findWarranty();
+                    break;
+
+                case 2:
+                    showAllWarranties();
+                    break;
+
+                case 3:
+                    showActiveWarranties();
+                    break;
+
+                case 4:
+                    showExpiringSoonWarranties();
+                    break;
+
+                case 5:
+                    System.out.println(
+                            "Volviendo al menú principal..."
+                    );
                     break;
 
                 default:
@@ -112,6 +205,164 @@ public class ConsoleMenu {
 
         } while (option != 5);
     }
+
+    /**
+     * Finds a warranty associated with a product and a sale.
+     */
+    private void findWarranty() {
+
+        System.out.println();
+        System.out.println("===== CONSULTAR GARANTÍA =====");
+
+        System.out.print("ID del producto: ");
+        String productId = scanner.nextLine();
+
+        System.out.print("ID de la venta: ");
+        String saleId = scanner.nextLine();
+
+        Warranty warranty =
+                warrantyService.findWarrantyByProduct(
+                        productId,
+                        saleId
+                );
+
+        if (warranty == null) {
+            System.out.println(
+                    "No se encontró una garantía para los datos indicados."
+            );
+            return;
+        }
+
+        System.out.println(
+                warranty.generateWarrantyCertificate()
+        );
+    }
+
+    /**
+     * Displays all registered warranties.
+     */
+    private void showAllWarranties() {
+
+        System.out.println();
+        System.out.println("===== TODAS LAS GARANTÍAS =====");
+
+        List<Warranty> warranties =
+                warrantyService.listAllWarranties();
+
+        if (warranties.isEmpty()) {
+            System.out.println(
+                    "No hay garantías registradas."
+            );
+            return;
+        }
+
+        for (Warranty warranty : warranties) {
+            printWarranty(warranty);
+        }
+    }
+
+    /**
+     * Displays all warranties currently active.
+     */
+    private void showActiveWarranties() {
+
+        System.out.println();
+        System.out.println("===== GARANTÍAS VIGENTES =====");
+
+        List<Warranty> warranties =
+                warrantyService.listActiveWarranties();
+
+        if (warranties.isEmpty()) {
+            System.out.println(
+                    "No hay garantías vigentes."
+            );
+            return;
+        }
+
+        for (Warranty warranty : warranties) {
+            printWarranty(warranty);
+        }
+    }
+
+    /**
+     * Displays warranties expiring within a specified number of days.
+     */
+    private void showExpiringSoonWarranties() {
+
+        System.out.println();
+        System.out.println(
+                "===== GARANTÍAS PRÓXIMAS A VENCER ====="
+        );
+
+        System.out.print(
+                "Días de anticipación: "
+        );
+
+        int daysAhead =
+                Integer.parseInt(scanner.nextLine());
+
+        if (daysAhead < 0) {
+            System.out.println(
+                    "Los días de anticipación no pueden ser negativos."
+            );
+            return;
+        }
+
+        List<Warranty> warranties =
+                warrantyService.listWarrantiesExpiringSoon(
+                        daysAhead
+                );
+
+        if (warranties.isEmpty()) {
+            System.out.println(
+                    "No hay garantías próximas a vencer en ese período."
+            );
+            return;
+        }
+
+        for (Warranty warranty : warranties) {
+            printWarranty(warranty);
+        }
+    }
+
+    /**
+     * Prints warranty information.
+     *
+     * @param warranty warranty to display
+     */
+    private void printWarranty(Warranty warranty) {
+
+        System.out.println();
+        System.out.println("-----------------------------");
+        System.out.println(
+                "ID: " + warranty.getId()
+        );
+        System.out.println(
+                "Tipo: " + warranty.getWarrantyType()
+        );
+        System.out.println(
+                "Producto: "
+                        + warranty.getProduct().getTitle()
+        );
+        System.out.println(
+                "Venta: "
+                        + warranty.getSale().getId()
+        );
+        System.out.println(
+                "Fecha de inicio: "
+                        + warranty.getStartDate()
+        );
+        System.out.println(
+                "Fecha de fin: "
+                        + warranty.getEndDate()
+        );
+        System.out.println(
+                "Costo adicional: $"
+                        + warranty.getAdditionalCost()
+        );
+        System.out.println("-----------------------------");
+    }
+
 
     /**
      * Displays the product management menu.
@@ -286,15 +537,12 @@ public class ConsoleMenu {
         }
 
         for (Product product : products) {
-            System.out.println();
-            System.out.println("-----------------------------");
-            System.out.println("ID: " + product.getId());
-            System.out.println("Título: " + product.getTitle());
-            System.out.println("Precio: $" + product.getPrice());
-            System.out.println(
-                    "Stock: " + product.getStockQuantity()
-            );
-            System.out.println("-----------------------------");
+            System.out.println("\n==================================================");
+            if (product != null) {
+                // Polymorphism: each object provides its own description
+                System.out.println(product.getDescription());
+            }
+            System.out.println("==================================================");
         }
     }
 
@@ -872,6 +1120,548 @@ public class ConsoleMenu {
         System.out.println("-----------------------------");
     }
 
+/**
+     * Displays the promotion management menu.
+     */
+    public void showPromotionMenu() {
+        System.out.println();
+        System.out.println("=================================");
+        System.out.println("     GESTIÓN DE PROMOCIONES");
+        System.out.println("=================================");
+        System.out.println("1. Registrar promoción por porcentaje");
+        System.out.println("2. Registrar promoción por categoría");
+        System.out.println("3. Registrar promoción por volumen");
+        System.out.println("4. Listar todas las promociones");
+        System.out.println("5. Listar promociones vigentes");
+        System.out.println("6. Volver al menú principal");
+        System.out.println("=================================");
+    }
+
+    /**
+     * Handles the promotion management menu.
+     */
+    public void handlePromotionMenu() {
+        int option;
+
+        do {
+            showPromotionMenu();
+            option = readOption();
+
+            switch (option) {
+                case 1:
+                    registerPercentagePromotion();
+                    break;
+
+                case 2:
+                    registerCategoryPromotion();
+                    break;
+
+                case 3:
+                    registerBulkPromotion();
+                    break;
+
+                case 4:
+                    showAllPromotions();
+                    break;
+
+                case 5:
+                    showActivePromotions();
+                    break;
+
+                case 6:
+                    System.out.println("Volviendo al menú principal...");
+                    break;
+
+                default:
+                    System.out.println("Opción inválida.");
+            }
+
+        } while (option != 6);
+    }
+
+    /**
+     * Registers a percentage promotion through the console.
+     */
+    private void registerPercentagePromotion() {
+        System.out.println();
+        System.out.println("===== REGISTRAR PROMOCIÓN POR PORCENTAJE =====");
+
+        System.out.print("Nombre: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Fecha de inicio (YYYY-MM-DD): ");
+        LocalDate startDate = LocalDate.parse(scanner.nextLine());
+
+        System.out.print("Fecha de fin (YYYY-MM-DD): ");
+        LocalDate endDate = LocalDate.parse(scanner.nextLine());
+
+        System.out.print("Porcentaje de descuento: ");
+        double percentage = Double.parseDouble(scanner.nextLine());
+
+        try {
+            Promotion promotion = promotionService.registerPercentageDiscount(
+                    name,
+                    startDate,
+                    endDate,
+                    percentage
+            );
+
+            System.out.println();
+            System.out.println("Promoción registrada correctamente.");
+            System.out.println("ID: " + promotion.getId());
+
+        } catch (IllegalArgumentException e) {
+            System.out.println();
+            System.out.println("No se pudo registrar la promoción.");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Registers a category promotion through the console.
+     */
+    private void registerCategoryPromotion() {
+        System.out.println();
+        System.out.println("===== REGISTRAR PROMOCIÓN POR CATEGORÍA =====");
+
+        System.out.print("Nombre: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Fecha de inicio (YYYY-MM-DD): ");
+        LocalDate startDate = LocalDate.parse(scanner.nextLine());
+
+        System.out.print("Fecha de fin (YYYY-MM-DD): ");
+        LocalDate endDate = LocalDate.parse(scanner.nextLine());
+
+        System.out.print("Porcentaje de descuento: ");
+        double percentage = Double.parseDouble(scanner.nextLine());
+
+        System.out.print("Categoría (VIDEOGAME/CONSOLE): ");
+        String targetCategory = scanner.nextLine().trim().toUpperCase();
+
+        try {
+            Promotion promotion = promotionService.registerCategoryDiscount(
+                    name,
+                    startDate,
+                    endDate,
+                    percentage,
+                    targetCategory
+            );
+
+            System.out.println();
+            System.out.println("Promoción registrada correctamente.");
+            System.out.println("ID: " + promotion.getId());
+
+        } catch (IllegalArgumentException e) {
+            System.out.println();
+            System.out.println("No se pudo registrar la promoción.");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Registers a bulk purchase promotion through the console.
+     */
+    private void registerBulkPromotion() {
+        System.out.println();
+        System.out.println("===== REGISTRAR PROMOCIÓN POR VOLUMEN =====");
+
+        System.out.print("Nombre: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Fecha de inicio (YYYY-MM-DD): ");
+        LocalDate startDate = LocalDate.parse(scanner.nextLine());
+
+        System.out.print("Fecha de fin (YYYY-MM-DD): ");
+        LocalDate endDate = LocalDate.parse(scanner.nextLine());
+
+        System.out.print("Cantidad mínima de productos: ");
+        int minimumQuantity = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("Porcentaje de descuento: ");
+        double percentage = Double.parseDouble(scanner.nextLine());
+
+        try {
+            Promotion promotion = promotionService.registerBulkPurchaseDiscount(
+                    name,
+                    startDate,
+                    endDate,
+                    minimumQuantity,
+                    percentage
+            );
+
+            System.out.println();
+            System.out.println("Promoción registrada correctamente.");
+            System.out.println("ID: " + promotion.getId());
+
+        } catch (IllegalArgumentException e) {
+            System.out.println();
+            System.out.println("No se pudo registrar la promoción.");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Displays all registered promotions.
+     */
+    private void showAllPromotions() {
+        System.out.println();
+        System.out.println("===== PROMOCIONES REGISTRADAS =====");
+
+        List<Promotion> promotions = promotionService.listAllPromotions();
+
+        if (promotions.isEmpty()) {
+            System.out.println("No hay promociones registradas.");
+            return;
+        }
+
+        for (Promotion promotion : promotions) {
+            printPromotion(promotion);
+        }
+    }
+
+    /**
+     * Displays currently active promotions.
+     */
+    private void showActivePromotions() {
+        System.out.println();
+        System.out.println("===== PROMOCIONES VIGENTES =====");
+
+        List<Promotion> promotions = promotionService.listActivePromotions();
+
+        if (promotions.isEmpty()) {
+            System.out.println("No hay promociones vigentes.");
+            return;
+        }
+
+        for (Promotion promotion : promotions) {
+            printPromotion(promotion);
+        }
+    }
+
+    /**
+     * Prints promotion information.
+     *
+     * @param promotion promotion to display
+     */
+    private void printPromotion(Promotion promotion) {
+        System.out.println();
+        System.out.println("-----------------------------");
+        System.out.println("ID: " + promotion.getId());
+        System.out.println("Nombre: " + promotion.getName());
+        System.out.println("Tipo: " + promotion.getClass().getSimpleName());
+        System.out.println("Fecha de inicio: " + promotion.getStartDate());
+        System.out.println("Fecha de fin: " + promotion.getEndDate());
+        System.out.println("-----------------------------");
+    }
+    /**
+     * Displays the return management menu.
+     */
+    public void showReturnMenu() {
+        System.out.println();
+        System.out.println("=================================");
+        System.out.println("      GESTIÓN DE DEVOLUCIONES");
+        System.out.println("=================================");
+        System.out.println("1. Registrar devolución");
+        System.out.println("2. Consultar todas las devoluciones");
+        System.out.println("3. Consultar devoluciones por cliente");
+        System.out.println("4. Consultar devoluciones por venta");
+        System.out.println("5. Consultar balance mensual");
+        System.out.println("6. Volver al menú principal");
+        System.out.println("=================================");
+    }
+
+    /**
+     * Handles the return management menu.
+     */
+    public void handleReturnMenu() {
+
+        int option;
+
+        do {
+            showReturnMenu();
+            option = readOption();
+
+            switch (option) {
+
+                case 1:
+                    registerReturn();
+                    break;
+
+                case 2:
+                    showAllReturns();
+                    break;
+
+                case 3:
+                    showReturnsByCustomer();
+                    break;
+
+                case 4:
+                    showReturnsBySale();
+                    break;
+
+                case 5:
+                    showMonthlyBalance();
+                    break;
+
+                case 6:
+                    System.out.println(
+                            "Volviendo al menú principal..."
+                    );
+                    break;
+
+                default:
+                    System.out.println("Opción inválida.");
+            }
+
+        } while (option != 6);
+    }
+
+    /**
+     * Registers a new return through the console.
+     */
+    private void registerReturn() {
+
+        System.out.println();
+        System.out.println("===== REGISTRAR DEVOLUCIÓN =====");
+
+        System.out.print("ID de la venta original: ");
+        String saleId = scanner.nextLine();
+
+        System.out.print(
+                "IDs de productos a devolver separados por coma: "
+        );
+        String input = scanner.nextLine().trim();
+
+        if (input.isEmpty()) {
+            System.out.println(
+                    "Debe indicar al menos un producto a devolver."
+            );
+            return;
+        }
+
+        List<String> productIds =
+                new ArrayList<>(
+                        Arrays.asList(
+                                input.split("\\s*,\\s*")
+                        )
+                );
+
+        System.out.print("Motivo de la devolución: ");
+        String reason = scanner.nextLine();
+
+        try {
+
+            Return returnTransaction =
+                    returnService.registerReturn(
+                            saleId,
+                            productIds,
+                            reason
+                    );
+
+            System.out.println();
+            System.out.println(
+                    "Devolución registrada correctamente."
+            );
+
+            System.out.println(
+                    returnTransaction.generateReturnReceipt()
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            System.out.println();
+            System.out.println(
+                    "No se pudo registrar la devolución."
+            );
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Displays all registered returns.
+     */
+    private void showAllReturns() {
+
+        System.out.println();
+        System.out.println(
+                "===== DEVOLUCIONES REGISTRADAS ====="
+        );
+
+        List<Return> returns =
+                returnService.viewAllReturns();
+
+        if (returns.isEmpty()) {
+            System.out.println(
+                    "No hay devoluciones registradas."
+            );
+            return;
+        }
+
+        for (Return returnTransaction : returns) {
+            printReturn(returnTransaction);
+        }
+    }
+
+    /**
+     * Displays returns associated with a specific customer.
+     */
+    private void showReturnsByCustomer() {
+
+        System.out.println();
+        System.out.println(
+                "===== DEVOLUCIONES DEL CLIENTE ====="
+        );
+
+        System.out.print("ID del cliente: ");
+        String customerId = scanner.nextLine();
+
+        List<Return> returns =
+                returnService.viewReturnsByCustomer(customerId);
+
+        if (returns.isEmpty()) {
+            System.out.println(
+                    "No se encontraron devoluciones para este cliente."
+            );
+            return;
+        }
+
+        for (Return returnTransaction : returns) {
+            printReturn(returnTransaction);
+        }
+    }
+
+    /**
+     * Displays returns associated with a specific sale.
+     */
+    private void showReturnsBySale() {
+
+        System.out.println();
+        System.out.println(
+                "===== DEVOLUCIONES DE LA VENTA ====="
+        );
+
+        System.out.print("ID de la venta: ");
+        String saleId = scanner.nextLine();
+
+        List<Return> returns =
+                returnService.viewReturnsBySale(saleId);
+
+        if (returns.isEmpty()) {
+            System.out.println(
+                    "No se encontraron devoluciones para esta venta."
+            );
+            return;
+        }
+
+        for (Return returnTransaction : returns) {
+            printReturn(returnTransaction);
+        }
+    }
+
+    /**
+     * Displays the monthly sales, returns, and net balance.
+     */
+    private void showMonthlyBalance() {
+
+        System.out.println();
+        System.out.println(
+                "===== BALANCE MENSUAL ====="
+        );
+
+        System.out.print("Mes (1-12): ");
+        int month = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("Año: ");
+        int year = Integer.parseInt(scanner.nextLine());
+
+        try {
+
+            double salesTotal =
+                    returnService.calculateMonthlySalesTotal(
+                            month,
+                            year
+                    );
+
+            double returnsTotal =
+                    returnService.calculateMonthlyReturnsTotal(
+                            month,
+                            year
+                    );
+
+            double balance =
+                    returnService.generateMonthlyBalance(
+                            month,
+                            year
+                    );
+
+            System.out.println();
+            System.out.println(
+                    "Total de ventas: $" + salesTotal
+            );
+            System.out.println(
+                    "Total de devoluciones: $" + returnsTotal
+            );
+            System.out.println(
+                    "Balance neto: $" + balance
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            System.out.println();
+            System.out.println(
+                    "No se pudo generar el balance mensual."
+            );
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Prints the information of a return transaction.
+     *
+     * @param returnTransaction return transaction to display
+     */
+    private void printReturn(Return returnTransaction) {
+
+        System.out.println();
+        System.out.println("-----------------------------");
+        System.out.println(
+                "ID de devolución: "
+                        + returnTransaction.getId()
+        );
+        System.out.println(
+                "Fecha de devolución: "
+                        + returnTransaction.getReturnDate()
+        );
+        System.out.println(
+                "Venta original: "
+                        + returnTransaction.getOriginalSale().getId()
+        );
+        System.out.println(
+                "Motivo: "
+                        + returnTransaction.getReturnReason()
+        );
+        System.out.println(
+                "Monto reembolsado: $"
+                        + returnTransaction.getRefundAmount()
+        );
+
+        System.out.println("Productos devueltos:");
+
+        for (Product product :
+                returnTransaction.getReturnedProducts()) {
+
+            System.out.println(
+                    "- "
+                            + product.getTitle()
+                            + " | $"
+                            + product.getPrice()
+            );
+        }
+
+        System.out.println("-----------------------------");
+    }
+
     /**
      * Displays the sales management menu.
      */
@@ -953,11 +1743,25 @@ public class ConsoleMenu {
         String itemId = scanner.nextLine();
 
         List<Product> products = new ArrayList<>();
+        List<String> productIdsWithExtendedWarranty = new ArrayList<>();
 
         Product product = productService.findProduct(itemId);
 
         if (product != null) {
             products.add(product);
+
+            if (product instanceof Console) {
+                System.out.print(
+                        "¿Desea agregar garantía extendida a esta consola? (S/N): "
+                );
+
+                String warrantyOption = scanner.nextLine().trim();
+
+                if (warrantyOption.equalsIgnoreCase("S")) {
+                    productIdsWithExtendedWarranty.add(product.getId());
+                }
+            }
+
         } else {
             Accessory accessory =
                     accessoryService.findById(itemId);
@@ -980,7 +1784,8 @@ public class ConsoleMenu {
                     date,
                     clientId,
                     sellerId,
-                    products
+                    products,
+                    productIdsWithExtendedWarranty
             );
 
             System.out.println();
@@ -993,6 +1798,8 @@ public class ConsoleMenu {
             System.out.println(
                     "Total: $" + sale.getTotalAmount()
             );
+            System.out.println();
+            System.out.println(sale.generateReceipt());
 
         } catch (IllegalArgumentException
                  | IllegalStateException e) {
@@ -1119,9 +1926,27 @@ public class ConsoleMenu {
             );
         }
 
-        System.out.println(
-                "Total: $" + sale.getTotalAmount()
-        );
+        double subtotal = 0.0;
+
+        for (Product product : sale.getProducts()) {
+            subtotal += product.getPrice();
+        }
+
+        System.out.println("Subtotal: $" + subtotal);
+
+        if (sale.getAppliedPromotionName() != null
+                && !sale.getAppliedPromotionName().isBlank()
+                && sale.getDiscountAmount() > 0) {
+            System.out.println("Promoción: "
+                    + sale.getAppliedPromotionName());
+            System.out.println("Descuento: $"
+                    + sale.getDiscountAmount());
+        } else {
+            System.out.println("Promoción: Ninguna");
+            System.out.println("Descuento: $0.0");
+        }
+
+        System.out.println("Total: $" + sale.getTotalAmount());
         System.out.println("-----------------------------");
     }
 }
