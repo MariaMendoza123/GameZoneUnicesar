@@ -166,6 +166,28 @@ public class WarrantyService {
         }
         return active;
     }
+
+    /**
+     * Retrieves all warranties whose end date falls within the given number
+     * of days from today (inclusive), and that have not already expired.
+     *
+     * @param daysAhead the number of days to look ahead
+     * @return a list of warranties expiring soon
+     */
+    public List<Warranty> listWarrantiesExpiringSoon(int daysAhead) {
+        List<Warranty> expiringSoon = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        LocalDate limit = today.plusDays(daysAhead);
+
+        for (Warranty warranty : warranties) {
+            LocalDate endDate = warranty.getEndDate();
+            if (!endDate.isBefore(today) && !endDate.isAfter(limit)) {
+                expiringSoon.add(warranty);
+            }
+        }
+        return expiringSoon;
+    }
+    
     private String generateNextId(String prefix) {
         int maxId = 0;
         for (Warranty warranty : warranties) {
