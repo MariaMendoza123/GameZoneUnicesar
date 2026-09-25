@@ -2,11 +2,7 @@ package com.gamezone.persistence;
 
 import com.gamezone.model.BasicWarranty;
 import com.gamezone.model.ExtendedWarranty;
-import com.gamezone.model.Product;
-import com.gamezone.model.Sale;
 import com.gamezone.model.Warranty;
-import com.gamezone.service.ProductService;
-import com.gamezone.service.SaleService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,8 +14,10 @@ import java.util.List;
 
 /**
  * Repository class for managing warranties in the game zone.
- * This class provides methods to save and load all warranties from a CSV file,
- * resolving references to their associated Sale and Product objects.
+ * This class only persists and loads the raw identifiers of a warranty
+ * (sale ID and product ID); it does not resolve them into domain objects.
+ * Resolving those references is the responsibility of WarrantyService,
+ * which avoids a circular dependency between SaleService and this class.
  */
 public class WarrantyRepository {
 
@@ -29,19 +27,11 @@ public class WarrantyRepository {
     private static final String BASIC_TAG = "BASIC";
     private static final String EXTENDED_TAG = "EXTENDED";
 
-    private final SaleService saleService;
-    private final ProductService productService;
-
     /**
-     * Constructs a WarrantyRepository with the dependencies needed to resolve
-     * Sale and Product references when loading stored warranties.
-     *
-     * @param saleService    the service used to resolve the associated sale by ID
-     * @param productService the service used to resolve the associated product by ID
+     * Constructs a WarrantyRepository. This class has no dependencies on
+     * other services, since it only reads and writes raw identifiers.
      */
-    public WarrantyRepository(SaleService saleService, ProductService productService) {
-        this.saleService = saleService;
-        this.productService = productService;
+    public WarrantyRepository() {
     }
 
     /**
@@ -58,18 +48,19 @@ public class WarrantyRepository {
     }
 
     /**
-     * Loads all warranties stored in the CSV file.
+     * Loads all warranty records stored in the CSV file, without resolving
+     * their Sale and Product references.
      *
-     * @return the list of warranties found, or an empty list if the file does not exist
+     * @return the list of raw warranty records found, or an empty list if the file does not exist
      */
-    public List<Warranty> loadAll() {
-        List<Warranty> warranties = new ArrayList<>();
+    public List<WarrantyRecord> loadAll() {
+        List<WarrantyRecord> records = new ArrayList<>();
         for (String line : readLines()) {
             if (!line.isBlank()) {
-                warranties.add(fromLine(line));
+                records.add(fromLine(line));
             }
         }
-        return warranties;
+        return records;
     }
 
     private List<String> readLines() {
@@ -104,7 +95,7 @@ public class WarrantyRepository {
                 + warranty.getStartDate();
     }
 
-    private Warranty fromLine(String line) {
+    private WarrantyRecord fromLine(String line) {
         String[] fields = line.split(DELIMITER, -1);
         String type = fields[0];
         String id = fields[1];
@@ -112,39 +103,60 @@ public class WarrantyRepository {
         String productId = fields[3];
         LocalDate startDate = LocalDate.parse(fields[4]);
 
-        Sale sale = findSaleById(saleId);
-        if (sale == null) {
-            throw new IllegalArgumentException("Venta no encontrada con ID: " + saleId);
+        if (!BASIC_TAG.equals(type) && !EXTENDED_TAG.equals(type)) {
+            throw new IllegalArgumentException("Unknown warranty type in file: " + type);
         }
 
-        Product product = findProductById(sale, productId);
-        if (product == null) {
-            throw new IllegalArgumentException("Producto no encontrado con ID: " + productId);
-        }
-
-        if (BASIC_TAG.equals(type)) {
-            return new BasicWarranty(id, product, sale, startDate);
-        } else if (EXTENDED_TAG.equals(type)) {
-            return new ExtendedWarranty(id, product, sale, startDate);
-        }
-        throw new IllegalArgumentException("Unknown warranty type in file: " + type);
+        return new WarrantyRecord(type, id, saleId, productId, startDate);
     }
 
-    private Sale findSaleById(String saleId) {
-        for (Sale sale : saleService.findAllSales()) {
-            if (sale.getId().equals(saleId)) {
-                return sale;
-            }
-        }
-        return null;
-    }
+    /**
+     * Raw representation of a stored warranty, holding only identifiers.
+     * WarrantyService resolves the saleId and productId into actual
+     * Sale and Product objects.
+     */
+    public static class WarrantyRecord {
+        private final String type;
+        private final String id;
+        private final String saleId;
+        private final String productId;
+        private final LocalDate startDate;
 
-    private Product findProductById(Sale sale, String productId) {
-        for (Product product : sale.getProducts()) {
-            if (product.getId().equals(productId)) {
-                return product;
-            }
+        /**
+         * Constructs a WarrantyRecord with the raw stored fields.
+         *
+         * @param type      the warranty type tag (BASIC or EXTENDED)
+         * @param id        the unique identifier of the warranty
+         * @param saleId    the identifier of the associated sale
+         * @param productId the identifier of the associated product
+         * @param startDate the start date of the warranty coverage
+         */
+        public WarrantyRecord(String type, String id, String saleId, String productId, LocalDate startDate) {
+            this.type = type;
+            this.id = id;
+            this.saleId = saleId;
+            this.productId = productId;
+            this.startDate = startDate;
         }
-        return productService.findProduct(productId);
+
+        public String getType() {
+            return type;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getSaleId() {
+            return saleId;
+        }
+
+        public String getProductId() {
+            return productId;
+        }
+
+        public LocalDate getStartDate() {
+            return startDate;
+        }
     }
 }
