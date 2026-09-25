@@ -5,7 +5,6 @@ import com.gamezone.model.ExtendedWarranty;
 import com.gamezone.model.Product;
 import com.gamezone.model.Sale;
 import com.gamezone.model.Warranty;
-import com.gamezone.persistence.SaleRepository;
 import com.gamezone.persistence.WarrantyRepository;
 
 import java.time.LocalDate;
@@ -15,74 +14,20 @@ import java.util.List;
 /**
  * Contains the business rules for assigning warranties to sold products
  * and querying their validity and expiration status.
- * Depends on SaleRepository (not SaleService) and ProductService to
- * resolve the Sale and Product references of stored warranties, which
- * avoids a circular dependency between this class and SaleService.
  */
 public class WarrantyService {
 
     private final WarrantyRepository warrantyRepository;
-    private final SaleRepository saleRepository;
-    private final ProductService productService;
     private final List<Warranty> warranties;
 
     /**
-     * Constructs a WarrantyService with the dependencies needed to persist
-     * warranties and resolve their Sale and Product references.
+     * Constructs a WarrantyService with the specified WarrantyRepository.
      *
      * @param warrantyRepository the repository for managing warranties
-     * @param saleRepository     the repository used to resolve the associated sale by ID
-     * @param productService     the service used to resolve the associated product by ID
      */
-    public WarrantyService(
-            WarrantyRepository warrantyRepository,
-            SaleRepository saleRepository,
-            ProductService productService
-    ) {
+    public WarrantyService(WarrantyRepository warrantyRepository) {
         this.warrantyRepository = warrantyRepository;
-        this.saleRepository = saleRepository;
-        this.productService = productService;
-        this.warranties = resolveWarranties(warrantyRepository.loadAll());
-    }
-
-    private List<Warranty> resolveWarranties(List<WarrantyRepository.WarrantyRecord> records) {
-        List<Warranty> resolved = new ArrayList<>();
-        for (WarrantyRepository.WarrantyRecord record : records) {
-            Sale sale = findSaleById(record.getSaleId());
-            if (sale == null) {
-                throw new IllegalArgumentException("Venta no encontrada con ID: " + record.getSaleId());
-            }
-
-            Product product = findProductById(sale, record.getProductId());
-            if (product == null) {
-                throw new IllegalArgumentException("Producto no encontrado con ID: " + record.getProductId());
-            }
-
-            if ("BASIC".equals(record.getType())) {
-                resolved.add(new BasicWarranty(record.getId(), product, sale, record.getStartDate()));
-            } else {
-                resolved.add(new ExtendedWarranty(record.getId(), product, sale, record.getStartDate()));
-            }
-        }
-        return resolved;
-    }
-
-    private Sale findSaleById(String saleId) {
-        for (Sale sale : saleRepository.findAll()) {
-            if (sale.getId().equals(saleId)) {
-                return sale;
-            }
-        }
-        return null;
-    }
-
-    private Product findProductById(Sale sale, String productId) {
-        for (Product product : sale.getProducts()) {
-            if (product.getId().equals(productId)) {
-                return product;
-            }
-        }
-        return productService.findProduct(productId);
+        this.warranties = warrantyRepository.loadAll();
     }
 
     /**
@@ -179,7 +124,7 @@ public class WarrantyService {
         }
         return expiringSoon;
     }
-
+    
     private String generateNextId(String prefix) {
         int maxId = 0;
         for (Warranty warranty : warranties) {

@@ -49,24 +49,26 @@ public class Main {
         PromotionService promotionService =
                 new PromotionService(promotionRepository);
 
-        WarrantyRepository warrantyRepository =
-                new WarrantyRepository();
-
-        WarrantyService warrantyService =
-                new WarrantyService(
-                        warrantyRepository,
-                        saleRepository,
-                        productService
-                );
-
         SaleService saleService = new SaleService(
                 saleRepository,
                 productService,
                 personService,
                 accessoryService,
-                promotionService,
-                warrantyService
+                promotionService
         );
+
+        WarrantyRepository warrantyRepository =
+                new WarrantyRepository(
+                        saleService,
+                        productService
+                );
+
+        WarrantyService warrantyService =
+                new WarrantyService(
+                        warrantyRepository
+                );
+
+        saleService.setWarrantyService(warrantyService);
 
         ReturnRepository returnRepository =
                 new ReturnRepository(
