@@ -158,7 +158,12 @@ public class Sale {
             receipt.append("Discount: 0.0\n");
         }
 
+        receipt.append("Extended warranty cost: ")
+                .append(extendedWarrantyCost)
+                .append("\n");
+
         receipt.append("Final total: ").append(finalTotal).append("\n");
+
         receipt.append("============================");
 
         return receipt.toString();

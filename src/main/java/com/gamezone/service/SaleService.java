@@ -2,15 +2,17 @@ package com.gamezone.service;
 
 import com.gamezone.model.Accessory;
 import com.gamezone.model.Client;
+import com.gamezone.model.Console;
 import com.gamezone.model.Person;
 import com.gamezone.model.Product;
+import com.gamezone.model.Promotion;
 import com.gamezone.model.Sale;
 import com.gamezone.model.Seller;
 import com.gamezone.persistence.SaleRepository;
-import com.gamezone.model.Promotion;
-import com.gamezone.model.Console;
 
-
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -77,6 +79,9 @@ public class SaleService {
             List<String> productIdsWithExtendedWarranty
     ) {
 
+        /*
+         * 1. Validate that the sale contains at least one item.
+         */
         if (products == null || products.isEmpty()) {
             throw new IllegalArgumentException(
                     "La venta debe contener al menos un producto."
@@ -103,7 +108,7 @@ public class SaleService {
         Seller seller = (Seller) sellerPerson;
 
         /*
-         * Validate the stock of every item before updating any inventory.
+         * 2. Resolve every item and validate its stock.
          */
         for (Product product : products) {
 
@@ -148,17 +153,8 @@ public class SaleService {
         }
 
         /*
-         * Update the inventory using the service that owns each item.
+         * 3. Create the sale and calculate the subtotal.
          */
-        for (Product product : products) {
-
-            if (product instanceof Accessory) {
-                accessoryService.updateStock(product.getId(), 1);
-            } else {
-                productService.updateStock(product.getId(), 1);
-            }
-        }
-
         Sale sale = new Sale(
                 id,
                 date,
@@ -169,6 +165,9 @@ public class SaleService {
 
         double subtotal = sale.calculateTotal();
 
+        /*
+         * 4. Find the best promotion and calculate the discount.
+         */
         Promotion bestPromotion =
                 promotionService.findBestPromotionFor(sale);
 
@@ -184,6 +183,10 @@ public class SaleService {
             sale.setDiscountAmount(discount);
         }
 
+        /*
+         * 5. Generate basic warranties for consoles and
+         *    assign requested extended warranties.
+         */
         double extendedWarrantyCost = 0.0;
 
         if (warrantyService == null) {
@@ -192,12 +195,11 @@ public class SaleService {
             );
         }
 
-        java.time.LocalDate saleDate =
-                java.time.LocalDate.parse(sale.getDate());
+        LocalDate saleDate = LocalDate.parse(sale.getDate());
 
         List<String> extendedWarrantyIds =
                 productIdsWithExtendedWarranty == null
-                        ? java.util.Collections.emptyList()
+                        ? Collections.emptyList()
                         : productIdsWithExtendedWarranty;
 
         for (Product product : products) {
@@ -229,12 +231,31 @@ public class SaleService {
                 extendedWarrantyCost
         );
 
+        /*
+         * 6. Calculate the final total.
+         */
         sale.setTotalAmount(
                 Math.max(
                         0.0,
                         subtotal + extendedWarrantyCost - discount
                 )
         );
+
+        /*
+         * 7. Update inventory according to the item type.
+         */
+        for (Product product : products) {
+
+            if (product instanceof Accessory) {
+                accessoryService.updateStock(product.getId(), 1);
+            } else {
+                productService.updateStock(product.getId(), 1);
+            }
+        }
+
+        /*
+         * 8. Persist the sale.
+         */
         List<Sale> sales = saleRepository.findAll();
         sales.add(sale);
         saleRepository.saveAll(sales);
@@ -259,7 +280,7 @@ public class SaleService {
      */
     public List<Sale> findSalesByClient(String clientId) {
         List<Sale> sales = saleRepository.findAll();
-        List<Sale> clientSales = new java.util.ArrayList<>();
+        List<Sale> clientSales = new ArrayList<>();
 
         for (Sale sale : sales) {
             if (sale.getClient() != null
@@ -279,7 +300,7 @@ public class SaleService {
      */
     public List<Sale> findSalesBySeller(String sellerId) {
         List<Sale> sales = saleRepository.findAll();
-        List<Sale> sellerSales = new java.util.ArrayList<>();
+        List<Sale> sellerSales = new ArrayList<>();
 
         for (Sale sale : sales) {
             if (sale.getSeller() != null
