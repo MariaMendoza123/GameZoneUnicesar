@@ -69,8 +69,7 @@ public class CategoryDiscount extends Promotion {
         double categorySubtotal = 0;
         for (Product product : sale.getProducts()) {
             if ((product instanceof VideoGame && targetCategory.equals("VIDEOGAME")) ||
-                    (product instanceof Console && targetCategory.equals("CONSOLE"))||
-                    (product instanceof Accessory && targetCategory.equals("ACCESSORY"))) {
+                    (product instanceof Console && targetCategory.equals("CONSOLE"))) {
                 categorySubtotal += product.getPrice();
             }
         }

@@ -1236,7 +1236,7 @@ public class ConsoleMenu {
         System.out.print("Porcentaje de descuento: ");
         double percentage = Double.parseDouble(scanner.nextLine());
 
-        System.out.print("Categoría (VIDEOGAME/CONSOLE/ACCESSORY): ");
+        System.out.print("Categoría (VIDEOGAME/CONSOLE): ");
         String targetCategory = scanner.nextLine().trim().toUpperCase();
 
         try {

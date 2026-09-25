@@ -57,15 +57,15 @@ public class PromotionService {
      * @param startDate          the start date of the promotion
      * @param endDate            the end date of the promotion
      * @param discountPercentage the discount percentage to apply to the target category
-     * @param targetCategory     the target category ("VIDEOGAME", "CONSOLE" o "ACCESSORY")
+     * @param targetCategory     the target category ("VIDEOGAME" or "CONSOLE")
      * @return the registered CategoryDiscount object
      */
     public CategoryDiscount registerCategoryDiscount(String name, LocalDate startDate, LocalDate endDate,
                                                      double discountPercentage, String targetCategory) {
         validateCommonAttributes(name, startDate, endDate);
         validatePercentage(discountPercentage);
-        if (!"VIDEOGAME".equals(targetCategory) && !"CONSOLE".equals(targetCategory) && !"ACCESSORY".equals(targetCategory)) {
-            throw new IllegalArgumentException("La categoría objetivo debe ser VIDEOGAME, CONSOLE o ACCESSORY.");
+        if (!"VIDEOGAME".equals(targetCategory) && !"CONSOLE".equals(targetCategory)) {
+            throw new IllegalArgumentException("La categoría objetivo debe ser VIDEOGAME o CONSOLE.");
         }
 
         String id = generateNextId();
