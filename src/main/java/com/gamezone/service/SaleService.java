@@ -23,7 +23,7 @@ public class SaleService {
     private final PersonService personService;
     private final AccessoryService accessoryService;
     private final PromotionService promotionService;
-    private WarrantyService warrantyService;
+    private final WarrantyService warrantyService;
 
     /**
      * Constructs a SaleService with the required dependencies.
@@ -33,27 +33,21 @@ public class SaleService {
      * @param personService service for managing persons
      * @param accessoryService service for managing accessories
      * @param promotionService service for managing promotions
+     * @param warrantyService service for managing product warranties
      */
     public SaleService(
             SaleRepository saleRepository,
             ProductService productService,
             PersonService personService,
             AccessoryService accessoryService,
-            PromotionService promotionService
+            PromotionService promotionService,
+            WarrantyService warrantyService
     ) {
         this.saleRepository = saleRepository;
         this.productService = productService;
         this.personService = personService;
         this.accessoryService = accessoryService;
         this.promotionService = promotionService;
-    }
-
-    /**
-     * Sets the service used to manage product warranties.
-     *
-     * @param warrantyService service for managing warranties
-     */
-    public void setWarrantyService(WarrantyService warrantyService) {
         this.warrantyService = warrantyService;
     }
 
