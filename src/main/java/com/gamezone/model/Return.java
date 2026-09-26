@@ -86,8 +86,10 @@ public class Return {
      */
     public double calculateRefundAmount() {
         double totalRefund = 0;
+        double subtotal = originalSale.calculateTotal();
+        double paidProportion = 1 - (originalSale.getDiscountAmount()/subtotal);
         for (Product product : returnedProducts) {
-            totalRefund =  totalRefund + product.getPrice();
+            totalRefund =  totalRefund + (product.getPrice() * paidProportion);
         }
         this.refundAmount = totalRefund;
         return totalRefund;
