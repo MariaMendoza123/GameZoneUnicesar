@@ -184,6 +184,24 @@ public class AccessoryService {
         accessoryRepository.saveAll(accessories);
     }
 
+    /**
+     * Restores the stock quantity of an accessory after a return is processed.
+     *
+     * @param accessoryId the ID of the accessory
+     * @param quantity    the quantity to restore
+     */
+    public void restoreStock(String accessoryId, int quantity) {
+        Accessory accessory = findById(accessoryId);
+        if (accessory == null) {
+            throw new IllegalArgumentException("Accesorio no encontrado con ID: " + accessoryId);
+        }
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("La cantidad a restaurar debe ser mayor que cero.");
+        }
+        accessory.setStockQuantity(accessory.getStockQuantity() + quantity);
+        accessoryRepository.saveAll(accessories);
+    }
+
     private boolean matchesType(Accessory accessory, String type) {
         if (type == null) return false;
         switch (type.toUpperCase()) {
