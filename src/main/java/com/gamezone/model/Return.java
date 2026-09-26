@@ -80,9 +80,9 @@ public class Return {
         return refundAmount;
     }
     /**
-     * Calculates the total refund amount based on the returned products.
+     * Calculates the refund amount based on the original sale and the returned products.
      *
-     * @return The total refund amount.
+     * @return the calculated refund amount
      */
     public double calculateRefundAmount() {
         double totalRefund = 0;
@@ -95,20 +95,23 @@ public class Return {
         return totalRefund;
     }
     /**
-     * Generates a return receipt in text format.
+     * Generates a return receipt for the return transaction.
      *
-     * @return A string representing the return receipt.
+     * @return the return receipt as a string
      */
     public String generateReturnReceipt(){
-
+        double subtotal = originalSale.calculateTotal();
+        double paidProportion = 1 - (originalSale.getDiscountAmount()/subtotal);
         String receipt = "Recibo de devolución\n";
         receipt += "ID de devolución: " + id + "\n";
         receipt += "Fecha de devolución: " + returnDate + "\n";
         receipt += "Venta original: " + originalSale.getId() + "\n";
         receipt += "Productos devueltos:\n";
         for (Product product : returnedProducts) {
-            receipt += "- " + product.getTitle() + ": $" + product.getPrice() + "\n";
-        }
+            double listPrice = product.getPrice();
+            double proportionalDiscount = listPrice * (1 - paidProportion);
+            double refundedAmount = listPrice * paidProportion;
+            receipt += "- " + product.getTitle() + ": precio $" + listPrice + ", descuento $" + proportionalDiscount + ", reembolso $" + refundedAmount + "\n";        }
         receipt += "Motivo de la devolución: " + returnReason + "\n";
         receipt += "Monto del reembolso: $" + refundAmount + "\n";
 
