@@ -78,7 +78,8 @@ public class Main {
                 new ReturnService(
                         returnRepository,
                         saleService,
-                        productService
+                        productService,
+                        accessoryService
                 );
 
         // Create and start the console menu

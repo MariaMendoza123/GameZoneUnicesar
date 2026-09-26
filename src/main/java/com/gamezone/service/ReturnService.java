@@ -1,5 +1,6 @@
 package com.gamezone.service;
 
+import com.gamezone.model.Accessory;
 import com.gamezone.model.Product;
 import com.gamezone.model.Return;
 import com.gamezone.model.Sale;
@@ -18,6 +19,7 @@ public class ReturnService {
     private final ReturnRepository returnRepository;
     private final SaleService saleService;
     private final ProductService productService;
+    private final AccessoryService accessoryService;
     private final List<Return> returns;
 
     /**
@@ -26,11 +28,18 @@ public class ReturnService {
      * @param returnRepository the repository for managing returns
      * @param saleService      the service used to validate and locate the original sale
      * @param productService   the service used to restore stock of returned products
+     * @param accessoryService the service used to restore stock of returned accessories
      */
-    public ReturnService(ReturnRepository returnRepository, SaleService saleService, ProductService productService) {
+    public ReturnService(
+            ReturnRepository returnRepository,
+            SaleService saleService,
+            ProductService productService,
+            AccessoryService accessoryService
+    ) {
         this.returnRepository = returnRepository;
         this.saleService = saleService;
         this.productService = productService;
+        this.accessoryService = accessoryService;
         this.returns = returnRepository.loadAll();
     }
 
@@ -75,7 +84,9 @@ public class ReturnService {
         returnTransaction.calculateRefundAmount();
 
         for (Product product : returnedProducts) {
-            if (productService.findProduct(product.getId()) != null) {
+            if (product instanceof Accessory) {
+                accessoryService.restoreStock(product.getId(), 1);
+            } else if (productService.findProduct(product.getId()) != null) {
                 productService.restoreStock(product.getId(), 1);
             }
         }
@@ -126,7 +137,7 @@ public class ReturnService {
         }
         return result;
     }
-    
+
     /**
      * Generates the net balance for a given month and year, subtracting
      * the total returns from the total sales of that period.
