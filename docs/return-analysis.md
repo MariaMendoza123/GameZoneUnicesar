@@ -30,3 +30,15 @@ Reusing this method instead of duplicating stock-update logic inside ReturnServi
 The monthly balance report is implemented in ReturnService, through the generateMonthlyBalance(int month, int year) method. This location is coherent with the layered architecture because generating this report requires combining business data from two different modules (sales and returns) and applying a business rule (net balance = sales total - returns total), which is exactly what the service layer is responsible for: coordinating operations across the domain model on behalf of a use case, without embedding that coordination in the model or the UI.
 
 To generate the report, ReturnService needs two dependencies: SaleService, to retrieve all registered sales and filter them by month and year using their date; and its own list of returns (loaded through ReturnRepository), filtered by the return date using the same month/year criteria. No direct dependency on the persistence layer is needed beyond what ReturnRepository already provides, keeping the ui -> service -> persistence -> model dependency direction intact.
+
+## 6. Integration note (Requirement 5, A6 — monthly balance report breakdown)
+
+Requirement 5's ajuste A6 asks for `generateMonthlyBalance` to break down its result into three values (total sales, total returns, net balance), and for the total sales to be computed using each sale's final total (including any applied discount and extended warranty cost), since promotions and warranties are now part of the integrated system.
+
+After reviewing the current implementation, this was already satisfied by the return module built during Requirement 3/4 integration, with no code changes required:
+
+- `ReturnService.calculateMonthlySalesTotal(int, int)` and `ReturnService.calculateMonthlyReturnsTotal(int, int)` already exist as separate methods, and `generateMonthlyBalance(int, int)` already returns the difference between them, matching the signature required by A6.
+- `calculateMonthlySalesTotal` already sums `sale.getTotalAmount()` for each sale in the given month/year, which is the sale's **final** total. This is correct because `SaleService.registerSale` (as reorganized by A3) computes `totalAmount` as `subtotal - discount + extended warranty cost` before persisting the sale, and `SaleRepository` restores that same persisted value when loading sales from disk (`sale.setTotalAmount(...)` overrides the raw subtotal fallback from `sale.calculateTotal()`).
+- `ConsoleMenu.showMonthlyBalance()` already prints all three values ("Total de ventas", "Total de devoluciones", "Balance neto") to the user, as A6 requires.
+
+No functional change was necessary for A6; this section documents the verification performed (tracing `calculateMonthlySalesTotal` → `Sale.getTotalAmount()` → `SaleService.registerSale` → `SaleRepository` persistence/reload) to confirm the existing implementation already meets the integrated requirement.
