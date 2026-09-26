@@ -85,3 +85,41 @@ I used Claude to design and implement the Warranty class hierarchy: the abstract
 For BasicWarranty, I implemented getDurationInMonths() (6), getWarrantyType() ("Garantía Básica"), and getAdditionalCost() (0.0). For ExtendedWarranty, the difference was getAdditionalCost(), which required accessing the associated product through the inherited getProduct() getter (since product is private in Warranty) and calculating 10% of its price. I also caught and fixed an early version of the Warranty constructor that incorrectly received endDate as a parameter instead of calculating it internally, which also required removing that parameter from the subclasses' calls to super(...).
 
 All code was adapted to the real project classes and validated for compilation before being committed.
+
+
+Field:	Content
+
+Fecha:	2026-09-24
+
+Herramienta:	Claude
+
+Fase y rama:	Fase 2, feature/accessory-category-discount
+
+Objetivo:	Extend PromotionService.registerCategoryDiscount and ConsoleMenu to support the ACCESSORY category, and add a preloaded promotion
+
+Consulta:	What changes are needed in PromotionService, ConsoleMenu, and promotions.csv to complete adjustment A1
+
+Respuesta:	Add ACCESSORY to the category validation in registerCategoryDiscount, update the console prompt text to mention ACCESSORY, and add a CATEGORY line in promotions.csv with dates covering the integration work week (2026-09-21 to 2026-09-26)
+
+Decisión:	Accepted all three changes; verified the CSV date range against the work period stated in the requirement so the promotion is active during the oral defense
+
+Commit relacionado:	feat: allow ACCESSORY category in registerCategoryDiscount; feat: show ACCESSORY option in category promotion prompt; feat: add preloaded accessory category promotion
+
+Field	Content
+
+
+Fecha	2026-09-26
+
+Herramienta	Claude
+
+Fase y rama	Fase 4, fix/return-discounted-refund
+
+Objetivo	Understand and implement adjustment A5: refund proportional to the original sale's discount
+
+Consulta	How to fix calculateRefundAmount so it does not refund more than the client actually paid when the original sale had a promotion
+
+Respuesta	Calculate paidProportion as 1 - (discountAmount / subtotal) from the original sale, then multiply each returned product's price by that proportion instead of summing list prices directly
+
+Decisión:	Implemented the formula manually with guidance; declined the suggestion to extract a shared private helper method for paidProportion since it was not requested by the requirement, and duplicated the calculation in generateReturnReceipt instead
+
+Commit relacionado	fix: calculate proportional refund based on original sale discount; fix: show proportional discount and refund per item in return receipt
