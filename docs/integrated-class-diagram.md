@@ -253,3 +253,5 @@ PromotionRepository --> Promotion
 SaleRepository --> Sale
 ReturnRepository --> Return
 WarrantyRepository --> Warranty
+
+```
