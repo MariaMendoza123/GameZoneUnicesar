@@ -1,6 +1,7 @@
 package com.gamezone.service;
 
 import com.gamezone.model.Accessory;
+import com.gamezone.model.Console;
 import com.gamezone.model.Product;
 import com.gamezone.model.Return;
 import com.gamezone.model.Sale;
@@ -20,6 +21,7 @@ public class ReturnService {
     private final SaleService saleService;
     private final ProductService productService;
     private final AccessoryService accessoryService;
+    private final WarrantyService warrantyService;
     private final List<Return> returns;
 
     /**
@@ -29,17 +31,20 @@ public class ReturnService {
      * @param saleService      the service used to validate and locate the original sale
      * @param productService   the service used to restore stock of returned products
      * @param accessoryService the service used to restore stock of returned accessories
+     * @param warrantyService  the service used to cancel warranties of returned consoles
      */
     public ReturnService(
             ReturnRepository returnRepository,
             SaleService saleService,
             ProductService productService,
-            AccessoryService accessoryService
+            AccessoryService accessoryService,
+            WarrantyService warrantyService
     ) {
         this.returnRepository = returnRepository;
         this.saleService = saleService;
         this.productService = productService;
         this.accessoryService = accessoryService;
+        this.warrantyService = warrantyService;
         this.returns = returnRepository.loadAll();
     }
 
@@ -81,6 +86,14 @@ public class ReturnService {
 
         String id = generateNextId();
         Return returnTransaction = new Return(id, LocalDate.now(), sale, returnedProducts, reason, 0.0);
+
+        double warrantyRefund = 0.0;
+        for (Product product : returnedProducts) {
+            if (product instanceof Console) {
+                warrantyRefund += warrantyService.cancelWarranties(product.getId(), sale.getId());
+            }
+        }
+        returnTransaction.setWarrantyRefundAmount(warrantyRefund);
         returnTransaction.calculateRefundAmount();
 
         for (Product product : returnedProducts) {

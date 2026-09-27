@@ -79,7 +79,8 @@ public class Main {
                         returnRepository,
                         saleService,
                         productService,
-                        accessoryService
+                        accessoryService,
+                        warrantyService
                 );
 
         // Create and start the console menu

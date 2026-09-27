@@ -13,6 +13,7 @@ public class Return {
     private List<Product> returnedProducts;
     private String returnReason;
     private double refundAmount;
+    private double warrantyRefundAmount;
     /**
      * Constructs a new Return instance.
      *
@@ -80,6 +81,25 @@ public class Return {
         return refundAmount;
     }
     /**
+     * Returns the portion of the refund amount that comes from cancelling
+     * the warranties of a returned console, if any.
+     *
+     * @return the warranty refund amount
+     */
+    public double getWarrantyRefundAmount() {
+        return warrantyRefundAmount;
+    }
+    /**
+     * Sets the refundable amount coming from cancelling the warranties of a
+     * returned console. Must be set before calling calculateRefundAmount()
+     * for it to be included in the total.
+     *
+     * @param warrantyRefundAmount the refundable warranty cost
+     */
+    public void setWarrantyRefundAmount(double warrantyRefundAmount) {
+        this.warrantyRefundAmount = warrantyRefundAmount;
+    }
+    /**
      * Calculates the refund amount based on the original sale and the returned products.
      *
      * @return the calculated refund amount
@@ -91,6 +111,7 @@ public class Return {
         for (Product product : returnedProducts) {
             totalRefund =  totalRefund + (product.getPrice() * paidProportion);
         }
+        totalRefund += warrantyRefundAmount;
         this.refundAmount = totalRefund;
         return totalRefund;
     }
@@ -113,6 +134,9 @@ public class Return {
             double refundedAmount = listPrice * paidProportion;
             receipt += "- " + product.getTitle() + ": precio $" + listPrice + ", descuento $" + proportionalDiscount + ", reembolso $" + refundedAmount + "\n";        }
         receipt += "Motivo de la devolución: " + returnReason + "\n";
+        if (warrantyRefundAmount > 0) {
+            receipt += "Reembolso por cancelación de garantías: $" + warrantyRefundAmount + "\n";
+        }
         receipt += "Monto del reembolso: $" + refundAmount + "\n";
 
         return receipt;
