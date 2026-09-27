@@ -62,7 +62,7 @@ The system integrates products, accessories, promotions, and warranties into a u
 
 During sale registration:
 
--The system validates that the sale contains at least one item.
+- The system validates that the sale contains at least one item.
 - Products and accessories are resolved and their stock is validated.
 - The sale subtotal is calculated.
 - The best applicable promotion is selected automatically.
@@ -77,30 +77,31 @@ During sale registration:
 The application follows a layered architecture with the following dependency direction:
 
 UI
- ↓
+↓
 Service
- ↓
+↓
 Persistence
- ↓
+↓
 Model
 
 The system contains:
 
--UI layer for application startup and console interaction.
--Service layer for business logic and module coordination.
--Persistence layer for data storage and retrieval.
--Model layer for domain entities and inheritance hierarchies.
+- UI layer for application startup and console interaction.
+- Service layer for business logic and module coordination.
+- Persistence layer for data storage and retrieval.
+- Model layer for domain entities and inheritance hierarchies.
 
 ## Integrated Modules
 
 The integrated system contains the following modules:
 
--Person management.
--Product management.
--Accessory management.
--Promotion management.
--Sale management.
--Return management.
--Warranty management.
+- Person management.
+- Product management.
+- Accessory management.
+- Promotion management.
+- Sale management.
+- Return management.
+- Warranty management.
 
 The modules work together so that sales, promotions, warranties, returns, inventory, and monthly balances remain consistent across the system.
+
