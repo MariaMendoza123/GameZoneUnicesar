@@ -195,4 +195,30 @@ public class WarrantyService {
         }
         return prefix + "-" + (maxId + 1);
     }
+
+    /**
+     * Cancels every warranty (basic and extended) associated with a specific
+     * product within a specific sale, as required when that product is returned.
+     *
+     * @param productId the ID of the returned product
+     * @param saleId    the ID of the sale the product was returned from
+     * @return the refundable cost of the cancelled warranties (zero for a
+     *         basic warranty, the extended warranty's additional cost otherwise)
+     */
+    public double cancelWarranties(String productId, String saleId) {
+        double refundableCost = 0.0;
+        List<Warranty> toCancel = new ArrayList<>();
+
+        for (Warranty warranty : warranties) {
+            if (warranty.getProduct().getId().equals(productId)
+                    && warranty.getSale().getId().equals(saleId)) {
+                refundableCost += warranty.getAdditionalCost();
+                toCancel.add(warranty);
+            }
+        }
+
+        warranties.removeAll(toCancel);
+        warrantyRepository.saveAll(warranties);
+        return refundableCost;
+    }
 }
