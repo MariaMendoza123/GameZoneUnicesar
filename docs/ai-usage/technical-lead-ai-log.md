@@ -265,3 +265,53 @@ The required warranty analysis, class diagram, and README documentation were als
 ### Final Note
 
 AI assistance was used for technical guidance, debugging, and clarification. The final implementation decisions, code changes, testing, Git operations, and integration coordination were performed by me as Technical Lead.
+
+---
+
+## Log Entry 8
+
+* **Date:** 2026-09-21 to 2026-09-26
+* **Tool Used:** ChatGPT
+* **Role:** Technical Lead
+* **Module:** Requirement 5 - System Integration
+
+### Consultations Made
+
+I used AI as a technical consultation and debugging resource during the integration of the complete GameZone system for Requirement 5.
+
+I consulted about:
+
+* How to integrate the functionality developed in Requirements 1, 2, 3, and 4 without breaking the existing modules.
+* How to organize the sequential integration of the required changes using feature branches and pull requests.
+* How accessories should participate in category-based promotions together with video games and consoles.
+* How to remove the circular dependency between the warranty and sales components while preserving the required warranty functionality.
+* How to organize the unified sale registration flow so that products, accessories, promotions, warranties, inventory, persistence, and receipts work together.
+* How product and accessory stock should be restored when processing returns.
+* How to calculate proportional refunds when the original sale included a discount.
+* How to calculate the monthly balance using total sales, total returns, and the resulting net balance.
+* How warranty cancellation should be handled when a console is returned and how the applicable extended warranty cost should be refunded.
+* How to verify the integrated class diagram, layered architecture documentation, and README according to the final system functionality.
+* How to review Git status, differences, branches, commits, pull requests, and synchronization with the remote repository during the integration process.
+* How to verify that the final integrated branch remained clean before continuing with the next integration step.
+
+### Applied Decisions
+
+The AI was used as a technical consultation and learning resource to clarify implementation questions, debugging issues, documentation structure, and Git procedures. The implementation, testing, integration, and final technical decisions were performed by me as Technical Lead according to the Requirement 5 specifications and the existing project architecture.
+
+I preserved the functionality developed in Requirements 1, 2, 3, and 4 while integrating the new changes required for the complete system.
+
+The sales process was integrated so that products and accessories could participate in the same sale, while promotions, warranties, inventory updates, persistence, and receipt generation remained coordinated through the appropriate service and persistence layers.
+
+The return functionality was integrated with product and accessory inventory, including stock restoration and proportional refund calculations when discounts had been applied to the original sale.
+
+The monthly balance functionality was integrated to report total sales, total returns, and the resulting net balance.
+
+The warranty functionality was integrated with console returns so that applicable warranties could be cancelled and the corresponding extended warranty cost could be refunded.
+
+I also completed the required integration documentation, including the integrated class diagram, layered architecture documentation, and README update describing the functionality of the complete system.
+
+Throughout the integration process, I verified the Git state, synchronized the branch with the remote repository when necessary, reviewed the resulting changes, and maintained the established Git workflow.
+
+### Final Note
+
+AI assistance was used only as a technical consultation, debugging, documentation, and learning resource. It did not replace my implementation, testing, Git operations, integration work, or final technical decisions. All Requirement 5 changes and final integration activities were performed by me as Technical Lead.
