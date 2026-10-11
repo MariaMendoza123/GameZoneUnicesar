@@ -210,4 +210,43 @@ Branch: feature/exception-handling. AI tool used: Claude (Anthropic).
 | Commit relacionado | N/A |
 
 
+### Package com.gamezone.validation
 
+#### Entry 10
+
+| Field | Content |
+|---|---|
+| Fecha | 2026-10-11 |
+| Herramienta | Claude |
+| Fase y rama | Requerimiento 6, feature/exception-handling |
+| Objetivo | Understand the validator layer and implement ProductValidator |
+| Consulta | What is a validator? How do I write validateProductData? Provide the three methods |
+| Respuesta | Explained that validators are classes with static void methods that throw typed exceptions and sit between service and model. Corrected my first attempt (InvalidDataException needs two arguments) and recommended isBlank over isEmpty. Provided the full class with validateProductData, validateStockAvailability and validateProductExists |
+| Decisión | Accepted the code after reviewing it: InvalidDataException for malformed data, BusinessRuleException for insufficient stock, ResourceNotFoundException for a null product; isBlank so whitespace-only values are rejected. Noted that callers must call validateProductExists before validateStockAvailability |
+| Commit relacionado | feat: add ProductValidator with product data and stock validations |
+
+#### Entry 11
+
+| Field | Content |
+|---|---|
+| Fecha | 2026-10-11 |
+| Herramienta | Claude |
+| Fase y rama | Requerimiento 6, feature/exception-handling |
+| Objetivo | Implement PersonValidator |
+| Consulta | Guidance for the three PersonValidator methods; I uploaded Person.java so the names match the project |
+| Respuesta | Provided validatePersonData, validatePersonExists and validateUniquePerson using Person.getId(). The email is checked in two steps (blank, then '@' and '.') so each error has its own message, and a single validator serves both Client and Seller through polymorphism |
+| Decisión | Accepted after reviewing it; kept Person as the parameter type instead of Client or Seller; kept separate messages for an empty email and a malformed one |
+| Commit relacionado | feat: add PersonValidator with data, existence and uniqueness checks |
+
+#### Entry 12
+
+| Field | Content |
+|---|---|
+| Fecha | 2026-10-11 |
+| Herramienta | Claude |
+| Fase y rama | Requerimiento 6, feature/exception-handling |
+| Objetivo | Implement SaleValidator |
+| Consulta | How should SaleValidator look given that the requirement uses Customer but the project uses Client? |
+| Respuesta | Provided validateSaleData and validateSaleExists using Client instead of Customer. Suggested InvalidDataException for a null client or seller and BusinessRuleException for an empty product list, since the requirement lists "venta sin productos" as a business rule. Flagged the gendered-article problem in ResourceNotFoundException messages |
+| Decisión | Used Client because Customer does not exist in the project; adopted the exception criteria above; the article issue remains a pending decision |
+| Commit relacionado | feat: add SaleValidator with sale data and existence checks |
