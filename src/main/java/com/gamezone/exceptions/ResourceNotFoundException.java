@@ -12,6 +12,7 @@ public class ResourceNotFoundException extends GameZoneException {
      * @param resourceId   the identifier of the resource that was not found
      */
     public ResourceNotFoundException(String resourceType, String resourceId) {
-        super("El " + resourceType + " con identificador " + resourceId, "no fue encontrado.");
+        super("El " + resourceType + " con identificador " + resourceId + " no fue encontrado",
+                "RESOURCE_NOT_FOUND");
     }
 }
