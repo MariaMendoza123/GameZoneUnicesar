@@ -123,3 +123,91 @@ Respuesta	Calculate paidProportion as 1 - (discountAmount / subtotal) from the o
 Decisión:	Implemented the formula manually with guidance; declined the suggestion to extract a shared private helper method for paidProportion since it was not requested by the requirement, and duplicated the calculation in generateReturnReceipt instead
 
 Commit relacionado	fix: calculate proportional refund based on original sale discount; fix: show proportional discount and refund per item in return receipt
+
+
+## Requerimiento 6 — Exceptions and Validation (Developer 1)
+
+Branch: feature/exception-handling. AI tool used: Claude (Anthropic).
+
+### Package com.gamezone.exceptions
+
+#### Entry 4
+
+| Field | Content |
+|---|---|
+| Fecha | 2026-10-10 |
+| Herramienta | Claude |
+| Fase y rama | Requerimiento 6, feature/exception-handling |
+| Objetivo | Understand and implement GameZoneException, the root of the custom exception hierarchy |
+| Consulta | Must it be abstract? What does "extends RuntimeException" mean? How do I write its two constructors and the getter? |
+| Respuesta | Explained that an abstract class cannot be instantiated and that the team section of the requirement calls it abstract; explained that RuntimeException is unchecked, so service and repository methods do not need throws in their signatures. Pointed out a self-assignment in the first constructor (this.errorCode = errorCode with no such parameter) and a missing class keyword in the declaration |
+| Decisión | Declared it abstract; chose an explicit null as the default error code for the message-only constructor so the decision is visible; no setter, since an exception records an event that already happened; fixed the missing keyword |
+| Commit relacionado | feat: add abstract GameZoneException as root of the exception hierarchy |
+
+#### Entry 5
+
+| Field | Content |
+|---|---|
+| Fecha | 2026-10-10 |
+| Herramienta | Claude |
+| Fase y rama | Requerimiento 6, feature/exception-handling |
+| Objetivo | Implement ResourceNotFoundException, which builds a Spanish message from the resource type and identifier |
+| Consulta | What does the constructor need? How do I build the message inside super(...)? |
+| Respuesta | Explained that the constructor takes two String parameters and only calls super. Warned that putting "no fue encontrado" after the comma stores it as the error code and cuts the message, and that the resource type must not be hardcoded as "producto". Also noted that the "El" article is wrong for feminine words such as "venta" |
+| Decisión | Moved the phrase inside the message and used RESOURCE_NOT_FOUND as the error code; removed the hardcoded resource type; added JavaDoc. The gendered-article issue was noted and left as a pending decision |
+| Commit relacionado | feat: add ResourceNotFoundException for missing resources; fix: move not-found text into message in ResourceNotFoundException |
+
+#### Entry 6
+
+| Field | Content |
+|---|---|
+| Fecha | 2026-10-10 |
+| Herramienta | Claude |
+| Fase y rama | Requerimiento 6, feature/exception-handling |
+| Objetivo | Implement BusinessRuleException for business rule violations |
+| Consulta | Review of my BusinessRuleException constructor |
+| Respuesta | Confirmed the structure was correct, and recommended passing an error code so all subclasses follow the same criterion as ResourceNotFoundException |
+| Decisión | Used BUSINESS_RULE_VIOLATION as the error code so every subclass of GameZoneException behaves consistently; added JavaDoc |
+| Commit relacionado | feat: add BusinessRuleException for business rule violations |
+
+#### Entry 7
+
+| Field | Content |
+|---|---|
+| Fecha | 2026-10-10 |
+| Herramienta | Claude |
+| Fase y rama | Requerimiento 6, feature/exception-handling |
+| Objetivo | Implement InvalidDataException with a field name and a problem description |
+| Consulta | I do not understand the constructor parameters; how does the class look? |
+| Respuesta | Explained that the parameters are the invalid field name and a short description, supplied by whoever throws the exception (for example a validator). Noted that ConsoleMenu already adds the prefix "Los datos ingresados no son válidos", so the exception message should only carry the detail |
+| Decisión | Built the message from both parameters and used INVALID_DATA as the error code, keeping the same criterion as the other subclasses |
+| Commit relacionado | feat: add InvalidDataException for invalid input values |
+
+#### Entry 8
+
+| Field | Content |
+|---|---|
+| Fecha | 2026-10-10 |
+| Herramienta | Claude |
+| Fase y rama | Requerimiento 6, feature/exception-handling |
+| Objetivo | Implement PersistenceException, which must keep the original cause |
+| Consulta | Review of super(message, cause, "PERSISTENCE_ERROR") |
+| Respuesta | Explained that this does not compile because GameZoneException has no three-parameter constructor, and proposed calling super(message, code) followed by initCause(cause) |
+| Decisión | Used initCause instead of modifying GameZoneException, because the specification defines exactly two constructors and the class was already committed |
+| Commit relacionado | feat: add PersistenceException preserving the original cause |
+
+#### Entry 9
+
+| Field | Content |
+|---|---|
+| Fecha | 2026-10-10 |
+| Herramienta | Claude |
+| Fase y rama | Requerimiento 6, feature/exception-handling |
+| Objetivo | Undo a local commit that had not been pushed |
+| Consulta | How do I cancel a commit if I have not pushed it yet? |
+| Respuesta | Explained Undo Commit in GitHub Desktop and git reset --soft HEAD~1, warned against --hard because it deletes changes, and mentioned amend for changing only the message |
+| Decisión | Used Undo Commit before pushing, corrected the class, and committed again; did not use any force push, which is prohibited |
+| Commit relacionado | N/A |
+
+
+
