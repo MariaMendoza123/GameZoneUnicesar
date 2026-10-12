@@ -90,33 +90,34 @@ public class ProductService {
         return console;
     }
 
+
     /**
      * Updates the stock quantity of a product.
      *
-     * @param productId     the ID of the product
-     * @param quantitySold  the quantity of the product sold
+     * @param productId the ID of the product
+     * @param quantitySold the quantity of the product sold
      */
     public void updateStock(String productId, int quantitySold) {
 
         Product product = findProduct(productId);
+
         ProductValidator.validateProductExists(product, productId);
+
         if (quantitySold <= 0) {
-            throw new InvalidDataException("cantidad vendida", "debe ser mayor que cero");
+            throw new InvalidDataException(
+                    "cantidad vendida",
+                    "debe ser mayor que cero"
+            );
         }
+
         ProductValidator.validateStockAvailability(product, quantitySold);
-
-        if (product == null) {
-            throw new IllegalArgumentException("Producto no encontrado con ID: " + productId);
-        }
-
-        if (product.getStockQuantity() < quantitySold) {
-            throw new IllegalStateException("Stock insuficiente para el producto: " + product.getTitle());
-        }
 
         int newStock = product.getStockQuantity() - quantitySold;
         product.setStockQuantity(newStock);
+
         productRepository.update(product);
     }
+
     /**
      * Restores the stock quantity of a product.
      *
@@ -124,22 +125,21 @@ public class ProductService {
      * @param quantity the quantity to restore
      */
     public void restoreStock(String productId, int quantity) {
+
         Product product = findProduct(productId);
 
-        if (product == null) {
-            throw new IllegalArgumentException(
-                    "Producto no encontrado con ID: " + productId
-            );
-        }
+        ProductValidator.validateProductExists(product, productId);
 
         if (quantity <= 0) {
-            throw new IllegalArgumentException(
-                    "La cantidad a restaurar debe ser mayor que cero."
+            throw new InvalidDataException(
+                    "cantidad a restaurar",
+                    "debe ser mayor que cero"
             );
         }
 
         int newStock = product.getStockQuantity() + quantity;
         product.setStockQuantity(newStock);
+
         productRepository.update(product);
     }
 
