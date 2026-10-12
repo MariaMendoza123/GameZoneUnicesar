@@ -4,6 +4,8 @@ import com.gamezone.model.Console;
 import com.gamezone.model.Product;
 import com.gamezone.model.VideoGame;
 import com.gamezone.persistence.ProductRepository;
+import com.gamezone.exceptions.InvalidDataException;
+import com.gamezone.validation.ProductValidator;
 
 import java.util.List;
 
@@ -31,20 +33,22 @@ public class ProductService {
      */
     public VideoGame registerVideoGame(String title, double price, int stockQuantity,
                                        String platform, String genre, String classification) {
-        validateCommonAttributes(title, price, stockQuantity);
+
+        String id = generateNextId("VG");   // "CN" en registerConsole
+        ProductValidator.validateProductData(id, title, price, stockQuantity);
         if (platform == null || platform.isBlank()) {
-            throw new IllegalArgumentException("La plataforma del videojuego es obligatoria.");
+            throw new InvalidDataException("plataforma", "es obligatoria");
         }
 
         if(genre == null || genre.isBlank()) {
-            throw new IllegalArgumentException("El género del videojuego es obligatorio.");
+            throw new InvalidDataException("El género", "es obligatorio");
         }
 
-        if(classification == null || classification.isBlank()) {
-            throw new IllegalArgumentException("La clasificación del videojuego es obligatoria.");
+        if (classification == null || classification.isBlank()) {
+            throw new InvalidDataException("La clasificación", "es obligatoria");
         }
 
-        String id = generateNextId("VG");
+        ;
         VideoGame videoGame = new VideoGame(id, title, price, stockQuantity,
                 platform, genre, classification);
         productRepository.save(videoGame);
@@ -64,20 +68,22 @@ public class ProductService {
      */
     public Console registerConsole(String title, double price, int stockQuantity,
                                    String brand, String model, String generation) {
-        validateCommonAttributes(title, price, stockQuantity);
+
+        String id = generateNextId("CN");
+        ProductValidator.validateProductData(id, title, price, stockQuantity);
         if (brand == null || brand.isBlank()) {
-            throw new IllegalArgumentException("La marca de la consola es obligatoria.");
+            throw new InvalidDataException("La marca", "es obligatoria");
         }
 
         if(model == null || model.isBlank()) {
-            throw new IllegalArgumentException("El modelo de la consola es obligatorio.");
+            throw new InvalidDataException("El modelo", "es obligatorio");
         }
 
         if(generation == null || generation.isBlank()) {
-            throw new IllegalArgumentException("La generación de la consola es obligatoria.");
+            throw new InvalidDataException("La generación", "es obligatoria");
         }
 
-        String id = generateNextId("CN");
+
         Console console = new Console(id, title, price, stockQuantity,
                 brand, model, generation);
         productRepository.save(console);
@@ -91,13 +97,18 @@ public class ProductService {
      * @param quantitySold  the quantity of the product sold
      */
     public void updateStock(String productId, int quantitySold) {
+
         Product product = findProduct(productId);
+        ProductValidator.validateProductExists(product, productId);
+        if (quantitySold <= 0) {
+            throw new InvalidDataException("cantidad vendida", "debe ser mayor que cero");
+        }
+        ProductValidator.validateStockAvailability(product, quantitySold);
+
         if (product == null) {
             throw new IllegalArgumentException("Producto no encontrado con ID: " + productId);
         }
-        if (quantitySold <= 0) {
-            throw new IllegalArgumentException("La cantidad vendida debe ser mayor que cero.");
-        }
+
         if (product.getStockQuantity() < quantitySold) {
             throw new IllegalStateException("Stock insuficiente para el producto: " + product.getTitle());
         }
@@ -149,18 +160,6 @@ public class ProductService {
      */
     public List<Product> findAllProducts() {
         return productRepository.findAll();
-    }
-
-    private void validateCommonAttributes(String title, double price, int stockQuantity) {
-        if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException("El titulo del producto es obligatorio.");
-        }
-        if (price < 0) {
-            throw new IllegalArgumentException("El precio del producto no puede ser negativo.");
-        }
-        if (stockQuantity < 0) {
-            throw new IllegalArgumentException("La cantidad en stock no puede ser negativa.");
-        }
     }
 
     private String generateNextId(String prefix) {

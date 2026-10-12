@@ -4,6 +4,9 @@ import com.gamezone.model.Client;
 import com.gamezone.model.Person;
 import com.gamezone.model.Seller;
 import com.gamezone.persistence.PersonRepository;
+import com.gamezone.validation.PersonValidator;
+import com.gamezone.exceptions.InvalidDataException;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +33,9 @@ public class PersonService {
      * @return the registered Client object
      */
     public Client registerClient(String name, String phone, String email) {
-        validateCommonAttributes(name, phone);
-        if (email == null || email.isBlank()) {
-            throw new IllegalArgumentException("El correo electrónico del cliente es obligatorio.");
-        }
-
         String id = generateNextId("CL");
+        PersonValidator.validatePersonData(id, name, email, phone);
+        PersonValidator.validateUniquePerson(personRepository.findAll(), id);
         Client client = new Client(id, name, phone, email);
         personRepository.save(client);
         return client;
@@ -52,16 +52,18 @@ public class PersonService {
      */
     public Seller registerSeller(String name, String phone, String employeeCode, String shift) {
         validateCommonAttributes(name, phone);
+
         if (employeeCode == null || employeeCode.isBlank()) {
-            throw new IllegalArgumentException("El código de empleado del vendedor es obligatorio.");
+            throw new InvalidDataException("El código de empleado", "es obligatorio.");
         }
 
         if (shift == null || shift.isBlank()) {
-            throw new IllegalArgumentException("El turno de trabajo del vendedor es obligatorio.");
+            throw new InvalidDataException("El turno de trabajo", "es obligatorio.");
         }
 
         String id = generateNextId("SE");
         Seller seller = new Seller(id, name, phone, employeeCode, shift);
+        PersonValidator.validateUniquePerson(personRepository.findAll(), id);
         personRepository.save(seller);
         return seller;
     }
@@ -73,7 +75,8 @@ public class PersonService {
      * @return the found Person object, or null if not found
      */
     public Person findPerson(String id) {
-        return personRepository.findById(id);
+
+        return null;
     }
 
     /**
@@ -117,10 +120,10 @@ public class PersonService {
 
     private void validateCommonAttributes(String name, String phone) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("El nombre de la persona es obligatorio.");
+            throw new InvalidDataException("nombre", "es obligatorio");
         }
         if (phone == null || phone.isBlank()) {
-            throw new IllegalArgumentException("El teléfono de contacto es obligatorio.");
+            throw new InvalidDataException("teléfono", "es obligatorio");
         }
     }
 
