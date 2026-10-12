@@ -6,6 +6,7 @@ import com.gamezone.model.Person;
 import com.gamezone.model.Product;
 import com.gamezone.model.Sale;
 import com.gamezone.model.Seller;
+import com.gamezone.exceptions.PersistenceException;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -68,10 +69,8 @@ public class SaleRepository {
             }
 
         } catch (IOException e) {
-            throw new RuntimeException(
-                    "Error al guardar las ventas.",
-                    e
-            );
+            throw new PersistenceException(
+                    "Error writing file " + FILE_PATH + " (write operation)", e);
         }
     }
 
@@ -102,10 +101,8 @@ public class SaleRepository {
             }
 
         } catch (IOException e) {
-            throw new RuntimeException(
-                    "Error al cargar las ventas.",
-                    e
-            );
+            throw new PersistenceException(
+                    "Error reading file " + FILE_PATH + " (read operation)", e);
         }
 
         return sales;
