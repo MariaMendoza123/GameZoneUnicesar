@@ -3,6 +3,7 @@ package com.gamezone.persistence;
 import com.gamezone.model.Console;
 import com.gamezone.model.Product;
 import com.gamezone.model.VideoGame;
+import com.gamezone.exceptions.PersistenceException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -84,7 +85,8 @@ public class ProductRepository {
         try {
             return new ArrayList<>(Files.readAllLines(path));
         } catch (IOException e) {
-            throw new RuntimeException("Error reading file: " + FILE_PATH, e);
+            throw new PersistenceException(
+                    "Error reading file " + FILE_PATH + " (read operation)", e);
         }
     }
 
@@ -96,7 +98,8 @@ public class ProductRepository {
             }
             Files.write(path, lines);
         } catch (IOException e) {
-            throw new RuntimeException("Error writing file: " + FILE_PATH, e);
+            throw new PersistenceException(
+                    "Error writing file " + FILE_PATH + " (write operation)", e);
         }
     }
 
