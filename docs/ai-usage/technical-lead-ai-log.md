@@ -315,3 +315,41 @@ Throughout the integration process, I verified the Git state, synchronized the b
 ### Final Note
 
 AI assistance was used only as a technical consultation, debugging, documentation, and learning resource. It did not replace my implementation, testing, Git operations, integration work, or final technical decisions. All Requirement 5 changes and final integration activities were performed by me as Technical Lead.
+
+---
+
+## Log Entry 9
+
+* **Date:** 2026-10-12
+* **Tool Used:** ChatGPT
+* **Role:** Technical Lead
+* **Module:** Requirement 6 - Exception Handling and Validation
+
+### Consultations Made
+
+I used AI as a technical consultation and documentation resource while completing the exception-handling work for Requirement 6.
+
+I consulted about:
+
+* How to handle specific exception types in `ConsoleMenu` and display differentiated messages to users.
+* How to standardize product stock validation in `ProductService` using `ProductValidator` and `InvalidDataException`.
+* Why `GameZoneException` should extend `RuntimeException` and how a custom exception hierarchy improves error handling.
+* How validators should interact with the service layer while keeping validation separate from persistence responsibilities.
+* How to document the five exception-analysis questions and create the Mermaid class diagram for the exception hierarchy.
+* How to document the new exception-handling and validation responsibilities in the README.
+* How to review Git status and preserve the changes in separate, descriptive commits.
+
+### Applied Decisions
+
+I updated `ConsoleMenu` to catch specific exception types, including `ResourceNotFoundException`, `BusinessRuleException`, `InvalidDataException`, and `PersistenceException`, so users receive more appropriate error messages.
+
+I updated `ProductService` to use centralized product validation for stock-related operations and to report invalid quantities through `InvalidDataException`.
+
+I documented the five orienting questions in `docs/exception-analysis.md` and created `docs/exception-class-diagram.md` to represent `GameZoneException` and its four specialized subclasses. I also updated the README to describe the responsibilities of exception handling and validation.
+
+The working tree was clean after the final documentation commit. The analysis describes regression testing for the ten menu operations; this log entry does not claim that all ten operations have been individually verified.
+
+### Final Note
+
+AI assistance was used as a technical consultation, debugging, and documentation resource. It did not replace my implementation, build verification, Git operations, or final technical decisions. The changes and documentation were completed as part of my responsibilities as Technical Lead.
+
