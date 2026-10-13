@@ -91,6 +91,21 @@ The system contains:
 - Persistence layer for data storage and retrieval.
 - Model layer for domain entities and inheritance hierarchies.
 
+## Exception Handling and Validation
+
+The system incorporates specific exception handling and centralized validation to improve reliability and provide clearer feedback when operations fail.
+
+The exception handling and validation components have the following responsibilities:
+
+- **Input validation:** The `ProductValidator` class validates product data, verifies that products exist, and checks stock availability.
+- **Invalid data handling:** `InvalidDataException` represents invalid input or data that does not meet the required conditions.
+- **Business rule handling:** `BusinessRuleException` represents violations of business rules, such as insufficient product stock.
+- **Resource handling:** `ResourceNotFoundException` identifies resources that cannot be found by the system.
+- **Persistence error handling:** `PersistenceException` represents problems that occur when accessing or managing stored data.
+- **User feedback:** The `ConsoleMenu` class catches specific exception types and displays differentiated messages to help users understand operation failures.
+
+These components help separate validation and error handling from normal application execution, making the system easier to maintain and troubleshoot.
+
 ## Integrated Modules
 
 The integrated system contains the following modules:

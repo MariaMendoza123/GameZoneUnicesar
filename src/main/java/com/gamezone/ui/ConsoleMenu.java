@@ -18,6 +18,10 @@ import com.gamezone.model.Return;
 import com.gamezone.model.Console;
 import com.gamezone.model.Warranty;
 import com.gamezone.service.WarrantyService;
+import com.gamezone.exceptions.BusinessRuleException;
+import com.gamezone.exceptions.InvalidDataException;
+import com.gamezone.exceptions.PersistenceException;
+import com.gamezone.exceptions.ResourceNotFoundException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -458,13 +462,26 @@ public class ConsoleMenu {
             );
             System.out.println("ID: " + product.getId());
 
-        } catch (IllegalArgumentException e) {
-            System.out.println();
+
+        } catch (ResourceNotFoundException e) {
             System.out.println(
-                    "No se pudo registrar el videojuego."
+                    "No se encontró el recurso solicitado: " + e.getMessage()
             );
-            System.out.println(e.getMessage());
+        } catch (BusinessRuleException e) {
+            System.out.println(
+                    "No se puede completar la operación: " + e.getMessage()
+            );
+        } catch (InvalidDataException e) {
+            System.out.println(
+                    "Los datos ingresados no son válidos: " + e.getMessage()
+            );
+        } catch (PersistenceException e) {
+            System.out.println(
+                    "Ocurrió un problema al acceder a los datos del sistema. "
+                            + "Contacte al administrador."
+            );
         }
+
     }
 
     /**
@@ -509,13 +526,26 @@ public class ConsoleMenu {
             );
             System.out.println("ID: " + product.getId());
 
-        } catch (IllegalArgumentException e) {
-            System.out.println();
+
+        } catch (ResourceNotFoundException e) {
             System.out.println(
-                    "No se pudo registrar la consola."
+                    "No se encontró el recurso solicitado: " + e.getMessage()
             );
-            System.out.println(e.getMessage());
+        } catch (BusinessRuleException e) {
+            System.out.println(
+                    "No se puede completar la operación: " + e.getMessage()
+            );
+        } catch (InvalidDataException e) {
+            System.out.println(
+                    "Los datos ingresados no son válidos: " + e.getMessage()
+            );
+        } catch (PersistenceException e) {
+            System.out.println(
+                    "Ocurrió un problema al acceder a los datos del sistema. "
+                            + "Contacte al administrador."
+            );
         }
+
     }
 
     /**

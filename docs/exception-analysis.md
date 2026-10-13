@@ -1,7 +1,29 @@
-1. The root class GameZoneException can be declared as Exception (checked) or RuntimeException (unchecked). Which of the two options is more suitable for this project and why? What consequence does it have on the method signatures of services and repositories?
+### 1. Should `GameZoneException` extend `Exception` or `RuntimeException`? Why, and how does this affect service and repository method signatures?
 
-The root class `GameZoneException` should be declared as a `RuntimeException` (unchecked)[cite: 11]. This is the most suitable option for this project because the exceptions being modeled—such as business rule violations, missing resources, and invalid data inputs—represent conditions that the system cannot automatically recover from during the execution of a business transaction[cite: 8, 9]. When a user enters a negative price or requests a product that does not exist, the intermediate service layers cannot "fix" the problem programmatically; they must abort the operation and report the failure back to the presentation layer[cite: 8]. Furthermore, the system is refactoring away from `IllegalArgumentException`, which is already an unchecked exception[cite: 8, 9]. Using `RuntimeException` aligns with modern Java practices for business and validation exceptions, keeping the control flow straightforward.
+`GameZoneException` should extend `RuntimeException` because the system's validation and business errors should be reported without forcing every method to declare or handle them. This is appropriate for errors such as invalid data, missing resources, and business rule violations.
 
-The main consequence of this choice is that it prevents modifications to the method signatures of the services and repositories[cite: 9]. Because `RuntimeException` and its subclasses are unchecked, the compiler does not force the developer to append a `throws GameZoneException` clause to every method signature across the model, repository, and service layers[cite: 9].
+Since `RuntimeException` is unchecked, services and repositories do not need to add `throws GameZoneException` to their method signatures. The exceptions can propagate through the layers until `ConsoleMenu` catches them and displays the appropriate message.
 
-If checked exceptions (`Exception`) were used instead, it would create a cascading effect of `throws` declarations throughout the entire codebase, tightly coupling the interfaces to specific error implementations and cluttering the code. By making the hierarchy unchecked, the method contracts remain clean and focused on their business purpose, allowing the exceptions to bubble up transparently through the layers until they reach the `ConsoleMenu`, where they are explicitly caught and handled to display appropriate messages to the user[cite: 9, 14].
+### 2. Why is a custom exception hierarchy with a common root class (`GameZoneException`) preferable to using `IllegalArgumentException` for every case? What design principles apply?
+
+A custom exception hierarchy makes it possible to distinguish between different errors, such as missing resources, business rule violations, invalid data, and persistence failures. Using only `IllegalArgumentException` would make these situations harder to identify and handle correctly.
+
+This design supports the Single Responsibility Principle and separation of concerns because each exception represents a specific type of failure, while `ConsoleMenu` is responsible for displaying the corresponding message.
+
+### 3. When are validators invoked, and why is this consistent with the layered architecture? Can validators access the persistence package?
+
+Validators are invoked by the service layer before performing operations that require data or business rule validation. For example, `ProductService` uses `ProductValidator` to verify product information and stock availability before updating inventory.
+
+Validators should not directly access the persistence package because their responsibility is to validate data, not to read or write files. Services coordinate with repositories when information must be retrieved, preserving separation of responsibilities and reducing coupling.
+
+### 4. How does the team ensure that the ten menu operations continue working as before? What evidence demonstrates that nothing has been broken?
+
+The team uses regression testing to verify that the ten menu operations preserve their existing behavior after the refactoring. Each operation should be tested with valid inputs and relevant error scenarios.
+
+The evidence should include a successful Maven build, the results of available automated tests, and manual verification of the ten operations. Console outputs can demonstrate that successful operations still work and that errors display the appropriate messages.
+
+### 5. Should `ConsoleMenu` use one `try` block with multiple `catch` clauses, nested `try-catch` blocks, or a general `catch (GameZoneException)`? Why?
+
+`ConsoleMenu` should use one `try` block with multiple specific `catch` clauses for `ResourceNotFoundException`, `BusinessRuleException`, `InvalidDataException`, and `PersistenceException`.
+
+This approach keeps the code clear and allows each exception to display a different user-friendly message. Catching only `GameZoneException` would require additional checks to distinguish the errors, while nested `try-catch` blocks would make the code unnecessarily complex.
