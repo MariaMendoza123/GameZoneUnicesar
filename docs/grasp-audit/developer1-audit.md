@@ -626,19 +626,19 @@ Verdict: Correct
 
 Explanation: The class acts as the proper expert for its specific hardware metrics. It knows and manages its own unique attributes (capacityInGb and memoryType) locally and complements its descriptions natively.
 
-- Alta Cohesión
+- High Cohesion
 
 Verdict: Correct
 
 Explanation: This is a compact class (69 lines) focused exclusively on a single and well-defined purpose: modeling the properties and behaviors of a memory expansion unit.
 
-- Bajo Acoplamiento
+- Low Coupling
 
 Verdict: Correct
 
 Explanation: The class exhibits low coupling since it only depends directly on its abstract base class (Accessory) and standard types (List, String), avoiding unnecessary structural links.
 
-- Polimorfismo
+- Polymorphism
 
 Verdict: Correct
 
@@ -646,7 +646,7 @@ Evidence: Override of getDescription() method
 
 Explanation: Unlike the Cable class, this component correctly overrides the polymorphic getDescription() method defined in Product, ensuring smooth integration with the unified domain hierarchy.
 
-- Variaciones Protegidas
+- Protected Variations
 
 Verdict: Correct
 
@@ -676,6 +676,292 @@ Verdict: Not Applicable
 
 Explanation: The class is a domain data entity component located deep inside the model layer. It does not handle system interface interaction events, coordinate software workflows, or manage user input flows.
 
+---
+
+#  Promotion.java Audit
+
+- Information Expert
+
+Verdict: Correct
+
+Evidence: Promotion.isActive() method (Lines 94-96)
+
+Explanation: The class acts as a perfect information expert for managing its validity timeframe. Because it encapsulates the fields startDate and endDate, it natively resolves whether a promotion is active on a specific date without leaking structural temporal state logic to upper business handlers.
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: Promotion is defined with the abstract modifier, preventing any direct structural instantiation using the new keyword. Object creation responsibilities are safely deferred to specialized subclasses or factory patterns.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: The component is a core business domain entity model. It remains isolated from interface inputs, console streams, or orchestrating system use case flows.
+
+- Low Coupling
+
+Verdict: Correct
+
+Explanation: The class features low, safe coupling boundaries. It interacts exclusively with standard Java data types (java.time.LocalDate) and references the Sale contract as a generic execution parameter to decouple its interface.
+
+- High Cohesion
+
+Verdict: Correct
+
+Explanation: The class exhibits high, focused cohesion. Its properties and methods are entirely dedicated to a single conceptual task: managing the common attributes of store promotions and declaring the contract for discount evaluation.
+
+- Polymorphism
+
+Verdict: Correct
+
+Evidence: public abstract double calculateDiscount(Sale sale);
+
+Explanation: Instead of allowing the service layer to handle discount calculations using complex conditional type branches (such as checking if a promotion is a percentage or bulk type), the class establishes an abstract hook. This delegates calculation behaviors polimorphically to its concrete subclasses.
+
+- Pure Fabrication
+
+Verdict: Not Applicable
+
+Explanation: The class maps a direct conceptual requirement of the GameZone business domain (Store Promotions), so it represents an organic entity component rather than an artificial technical utility.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: The abstract class serves as a structural intermediate layer in the polymorphic promotion hierarchy (Promotion -> PercentageDiscount / BulkDiscount), isolating generic use case validation from specialized calculations.
+
+- Protected Variations
+
+Verdict: Correct
+
+Evidence: public abstract class Promotion
+
+Explanation: It serves as a stable, predictable contract for the system. External components (like billing controllers or sale services) depend entirely on this abstraction. Adding new promotion styles in the future will not cause ripple modifications or destabilize existing system modules.
 
 
+# PercentageDiscount.java Audit
+
+- Information Expert
+
+Verdict: Correct
+
+Evidence: PercentageDiscount.calculateDiscount() body
+
+Explanation: It operates as the correct expert because it knows its own internal configuration parameter (percentage) and directly executes the corresponding mathematical discount formula.
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: This class carries no structural initialization responsibilities and does not instantiate other complex domain software components.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: The class is a pure domain entity and behavioral strategy. It has no contact with capturing user interface commands, menu loops, or managing system event streams.
+
+- Low Coupling
+
+Verdict: Correct
+
+Explanation: It exhibits minimal coupling boundaries since it only binds directly to its superclass contract (Promotion) and the generic transaction interface (Sale).
+
+- High Cohesion
+
+Verdict: Correct
+
+Explanation: This is a highly focused, small component (53 lines) with a single, well-defined purpose: calculating and applying the percentage-based discount rule.
+
+- Polymorphism
+
+Verdict: Correct
+
+Evidence: @Override public double calculateDiscount(Sale sale)
+
+Explanation: The class successfully implements calculateDiscount(Sale sale) polymorphically, allowing the execution layout to resolve the math dynamically without requiring conditional statements or type evaluations.
+
+- Pure Fabrication
+
+Verdict: Not Applicable
+
+Explanation: The class maps a direct, concrete commercial concept from the real-world business domain (a percentage discount) rather than an artificial technical utility class built for system support.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: The component acts as the concrete operational strategy layer that effectively decouples the transaction model (Sale) from specific underlying discount evaluation algorithms.
+
+- Protected Variations
+
+Verdict: Correct
+
+Explanation: It safely encapsulates the unique percentage calculation algorithms internally without generating unexpected ripple impacts across the model hierarchy or the calling client.
+
+
+# CategoryDiscount.java Audit
+
+- Information Expert
+
+Verdict: Violation
+
+ID: V-12
+
+Module: Promotions (Requerimiento 2)
+
+Evidence: CategoryDiscount.calculateDiscount() structural flow
+
+Explanation: The class violates the pattern regarding categorization rules. The Product entity itself should be the expert that knows which category it belongs to, rather than forcing the promotion logic to inspect attributes externally using instanceof.
+
+Consequence: Object encapsulation is weakened because the promotion layer must actively deduce structural data domains that belong exclusively to the models.
+
+Proposed Solution: Add a generic category categorization hook or string contract inside the abstract Product structure.
+
+Other Member Code: No.
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: This class carries no structural initialization responsibilities and does not instantiate other complex domain software components.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: The class is a pure domain entity and behavioral strategy layout. It has no contact with capturing user interface commands, menu loops, or managing system event streams.
+
+- Low Coupling
+
+Verdict: Violation
+
+ID: V-13
+
+Module: Promotions (Requerimiento 2)
+
+Evidence: CategoryDiscount concrete product instance checks
+
+Explanation: The class exhibits a partial violation as it unnecessarily couples its calculation routine directly to the concrete implementations of VideoGame, Console, and Accessory.
+
+Consequence: Any structural rearrangement or removal of a concrete product subclass will directly cause compilation or execution errors inside the promotion layer.
+
+Proposed Solution: Rely exclusively on abstract superclass string accessor contracts to decouple the method layout from direct class type checks.
+
+Other Member Code: No.
+
+- High Cohesion
+
+Verdict: Correct
+
+Explanation: The component strictly complies with its conceptual purpose. It focuses entirely on calculating category-specific discounts, even though its internal code utilizes poor design techniques.
+
+- Polymorphism
+
+Verdict: Violation
+
+ID: V-14
+
+Module: CategoryDiscount.calculateDiscount() type evaluation loops
+
+Explanation: The class severely violates this principle by using explicit type-checking structures (instanceof VideoGame, instanceof Console, instanceof Accessory) combined with magic strings instead of exploiting clean polymorphism.
+
+Consequence: Adding any new product category to the store catalog will break the calculation logic, preventing dynamic system extensibility.
+
+Proposed Solution: Replace the type evaluation branch rules with a uniform polymorphic string evaluation mechanism driven by the product superclass.
+
+Other Member Code: No.
+
+- Pure Fabrication
+
+Verdict: Not Applicable
+
+Explanation: The class maps a direct, concrete commercial concept from the real-world business domain (a category discount rule) rather than an artificial technical utility class built for system support.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: The component serves as an intermediate architectural layer that mediates between the business sale transaction model and the specific discount calculations for this promotion variant.
+
+- Protected Variations
+
+Verdict: Violation
+
+ID: V-15
+
+Module: Promotions (Requerimiento 2)
+
+Evidence: CategoryDiscount calculation verification blocks
+
+Explanation: The class violates this principle because it fails to protect the code against change. If a new type of product is introduced into the store system, this strategy class must be manually opened and modified.
+
+Consequence: The system layer becomes fragile and highly volatile every time the core business domain model expands its inventory categories.
+
+Proposed Solution: Wrap the variable classification validation rules under a stable, standard product property contract layout.
+
+Other Member Code: No.
+
+
+# BulkPurchaseDiscount.java Audit
+
+- Information Expert
+
+Verdict: Correct
+
+Evidence: BulkPurchaseDiscount.calculateDiscount() body
+
+Explanation: The class acts as the correct expert because it encapsulates and knows its own configuration parameters, which are the minimum threshold (minimumQuantity) and the percentage to apply (discountPercentage).
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: This class carries no structural initialization responsibilities and does not hold the responsibility to instantiate other complex domain software components.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: The class is a pure domain entity and behavioral strategy layout. It has no contact with capturing user interface commands, menu loops, or managing system event streams.
+
+- Low Coupling
+
+Verdict: Correct
+
+Explanation: It exhibits minimal and clean coupling boundaries since it only binds directly to its abstract superclass contract (Promotion) and the generic transaction interface (Sale).
+
+- High Cohesion
+
+Verdict: Correct
+
+Explanation: The class exhibits a single and well-defined responsibility: calculating the commercial discount based strictly on bulk purchase volume.
+
+- Polymorphism
+
+Verdict: Correct
+
+Evidence: @Override public double calculateDiscount(Sale sale)
+
+Explanation: Unlike the CategoryDiscount class, this component successfully realizes the polymorphic contract of the Promotion hierarchy by cleanly implementing calculateDiscount(Sale sale) without type conditional statements or instanceof checks.
+
+- Pure Fabrication
+
+Verdict: Not Applicable
+
+Explanation: The class maps a direct, concrete commercial concept from the real-world business domain (a wholesale/bulk discount) rather than an artificial technical utility class built for system support.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: The component acts as a concrete operational strategy layer (Strategy pattern) that effectively mediates between the business sale transaction model and the final discount calculations.
+
+- Protected Variations
+
+Verdict: Correct
+
+Explanation: It safely encapsulates the unique wholesale volume calculation rules internally, protecting and shielding the rest of the system classes from modifications.
 
