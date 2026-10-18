@@ -1,13 +1,6 @@
 # Developer 1 GRASP Audit
 
 
-  Scope of the Audit
-
-Module: Product Management (Taller 1)
-
-Audited Classes: Product, Console, VideoGame
-
-
 # Product.java Audit
 
 
@@ -1306,3 +1299,653 @@ Verdict: Correct
 
 Explanation: It safely encapsulates the unique 10% cost calculation formula and the 12-month coverage timeframe internally without creating unexpected impacts across the rest of the system layout.
 
+# audit of exceptions and validations
+
+# GameZoneException.java Audit
+
+- Information Expert
+
+Verdict: Correct
+
+Evidence: GameZoneException.getErrorCode() implementation (Lines 32-34)
+
+Explanation: The class acts as the correct information expert by encapsulating the root error message and the application-level errorCode, providing a dedicated accessor to retrieve it without exposing internal variables.
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: As an abstract base exception class, it does not carry responsibility for instantiating or managing other domain entities.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: It is an infrastructure error abstraction. It does not handle user input, interface actions, or use-case orchestration.
+
+- Low Coupling
+
+Verdict: Correct
+
+Explanation: It maintains minimal coupling by depending solely on the core Java runtime library (java.lang.RuntimeException and java.lang.String). It has zero dependencies on domain models or persistence frameworks.
+
+- High Cohesion
+
+Verdict: Correct
+
+Explanation: The class is compact (38 lines) and focused strictly on establishing the base unchecked exception contract with standardized error codes for the entire application.
+
+- Polymorphism
+
+Verdict: Correct
+
+Evidence: public abstract class GameZoneException extends RuntimeException declaration (Line 6)
+
+Explanation: It defines the root polymorphic type for all application errors, allowing high-level services and presentation handlers to catch GameZoneException polymorphically and inspect error codes without type branching.
+
+- Pure Fabrication
+
+Verdict: Correct
+
+Explanation: Exceptions are artificial software constructs created to decouple failure signaling from normal business logic execution paths.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: It mediates between low-level failure sites and higher-level application error consumers, establishing a standard error reporting contract.
+
+- Protected Variations
+
+Verdict: Violation
+
+ID: V-19
+
+Module: Exceptions (Requerimiento 6)
+
+Evidence: GameZoneException constructor declarations (Lines 14-26) lacking Throwable cause chaining
+
+Explanation: The base class fails to provide constructors that accept a Throwable cause parameter (e.g., GameZoneException(String message, Throwable cause)). This breaks the standard Java exception chaining contract, leaving the hierarchy unprotected when wrapping low-level system exceptions.
+
+Consequence: Subclasses that wrap checked or external exceptions (such as PersistenceException wrapping IOException) cannot pass the cause to super(...) and are forced to use post-construction workarounds like initCause().
+
+Proposed Solution: Add overloaded constructors in GameZoneException that accept a Throwable cause and delegate to super(message, cause).
+
+Other Member Code: No.
+
+---
+
+# InvalidDataException.java Audit
+
+- Information Expert
+
+Verdict: Violation
+
+ID: V-20
+
+Module: Exceptions (Requerimiento 6)
+
+Evidence: Constructor implementation super("el campo " + fieldName + " es inválido: " + problem, "INVALID_DATA") (Lines 14-16)
+
+Explanation: The class violates the Information Expert principle because it discards the structured parameters fieldName and problem upon instantiation, concatenating them into a raw string rather than encapsulating them as accessible attributes.
+
+Consequence: Consuming presentation or API layers cannot query ex.getFieldName() programmatically to highlight the specific input field in the user interface, forcing consumers to rely on fragile string parsing.
+
+Proposed Solution: Add private final fields private final String fieldName; and private final String problem; with public getter methods, while passing the formatted string to super.
+
+Other Member Code: No.
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: It carries no responsibility for creating, tracking, or managing other application objects.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: It is a specialized domain error class and does not process system events or coordinate workflows.
+
+- Low Coupling
+
+Verdict: Correct
+
+Explanation: It depends exclusively on its superclass GameZoneException and Java String parameters, maintaining loose coupling with the rest of the application.
+
+- High Cohesion
+
+Verdict: Correct
+
+Explanation: The class is concise (18 lines) and focused exclusively on signaling field-level validation and format failures.
+
+- Polymorphism
+
+Verdict: Correct
+
+Evidence: Subclassing of GameZoneException with the specialized "INVALID_DATA" code
+
+Explanation: It fulfills the polymorphic exception hierarchy by allowing field validation errors to be captured specifically or handled generically as GameZoneException.
+
+- Pure Fabrication
+
+Verdict: Correct
+
+Explanation: It is an artificial design construction engineered to standardize validation failure reporting.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: It decouples input validation routines from the visual error presentation layer.
+
+- Protected Variations
+
+Verdict: Correct
+
+Explanation: Encapsulates validation failure classification into a distinct type, protecting callers from relying on generic runtime exceptions.
+
+---
+
+# BusinessRuleException.java Audit
+
+- Information Expert
+
+Verdict: Correct
+
+Evidence: Constructor delegating to super(message, "BUSINESS_RULE_VIOLATION") (Lines 12-14)
+
+Explanation: The class acts as the correct expert in identifying domain invariant violations, stamping each instance with the authoritative "BUSINESS_RULE_VIOLATION" system code.
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: It does not instantiate or initialize other objects in the system.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: It is a data error entity without presentation or workflow orchestration roles.
+
+- Low Coupling
+
+Verdict: Correct
+
+Explanation: It depends only on GameZoneException and standard Java String classes.
+
+- High Cohesion
+
+Verdict: Correct
+
+Explanation: The class is strictly focused on a single concern (16 lines): signaling violations of domain business rules (such as stock deficits or empty sale carts).
+
+- Polymorphism
+
+Verdict: Correct
+
+Evidence: Subclass of GameZoneException providing concrete rule violation classification
+
+Explanation: It allows business rule infractions to be dispatched and handled polymorphically at upper layers.
+
+- Pure Fabrication
+
+Verdict: Correct
+
+Explanation: It is a pure technical fabrication created to segregate business rule rejections from technical failures.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: It decouples domain rule enforcement points from presentation reporting.
+
+- Protected Variations
+
+Verdict: Correct
+
+Explanation: It isolates semantic business rule failures from infrastructure errors, protecting callers from ambiguous error handling.
+
+---
+
+# PersistenceException.java Audit
+
+- Information Expert
+
+Verdict: Correct
+
+Evidence: Constructor setting "PERSISTENCE_ERROR" and preserving root cause via initCause(cause) (Lines 12-15)
+
+Explanation: The class acts as the information expert for storage failures by binding the high-level persistence failure message, assigning the "PERSISTENCE_ERROR" code, and retaining the underlying root cause exception.
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: It does not create or manage domain or storage entities.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: It has no operational role in handling UI events or use-case execution.
+
+- Low Coupling
+
+Verdict: Correct
+
+Explanation: Despite representing storage issues, it maintains low coupling by depending only on GameZoneException and Throwable, without coupling to concrete file paths or database APIs.
+
+- High Cohesion
+
+Verdict: Correct
+
+Explanation: It has a single, well-defined responsibility (17 lines): signaling input/output and data storage failures.
+
+- Polymorphism
+
+Verdict: Correct
+
+Evidence: Extension of GameZoneException wrapping lower-level causes
+
+Explanation: It integrates into the polymorphic error hierarchy, allowing persistence failures to be caught uniformly without exposing I/O details.
+
+- Pure Fabrication
+
+Verdict: Correct
+
+Explanation: An artificial design construction created to abstract raw storage errors from domain logic.
+
+- Indirection
+
+Verdict: Correct
+
+Evidence: Wrapping checked IOException instances into unchecked PersistenceException
+
+Explanation: It serves as an indirection barrier, translating low-level checked system exceptions into domain-level runtime exceptions.
+
+- Protected Variations
+
+Verdict: Violation
+
+ID: V-21
+
+Module: Exceptions (Requerimiento 6)
+
+Evidence: Manual workaround initCause(cause);; in constructor (Line 14)
+
+Explanation: Because GameZoneException lacks a constructor accepting a Throwable cause, PersistenceException is forced to execute a post-super manual initialization (initCause(cause)) containing a redundant double semicolon syntax defect, violating clean Protected Variations for exception wrapping.
+
+Consequence: If a cause has already been set or initialized prior to this call, initCause() throws an IllegalStateException at runtime, creating an unstable exception propagation mechanism.
+
+Proposed Solution: Update GameZoneException with a constructor GameZoneException(String message, String errorCode, Throwable cause) and invoke super(message, "PERSISTENCE_ERROR", cause) directly.
+
+Other Member Code: No.
+
+---
+
+# ResourceNotFoundException.java Audit
+
+- Information Expert
+
+Verdict: Violation
+
+ID: V-22
+
+Module: Exceptions (Requerimiento 6)
+
+Evidence: Constructor implementation super("El " + resourceType + " con identificador " + resourceId + " no fue encontrado", "RESOURCE_NOT_FOUND") (Lines 14-17)
+
+Explanation: The class violates the Information Expert principle because it accepts resourceType and resourceId but fails to retain them as encapsulated, queryable attributes, concatenating them into a plain string message upon construction.
+
+Consecuence: Consuming services and controllers cannot programmatically extract the missing resource type or ID (e.g., to trigger an automated redirect, create an audit log, or return a structured JSON response) without fragile string manipulation.
+
+Proposed Solution: Define private final String resourceType; and private final String resourceId; fields with public getters, retaining the structured data alongside the formatted super message.
+
+Other Member Code: No.
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: It does not instantiate or initialize other system objects.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: It is a domain error representation that does not coordinate UI actions or system workflows.
+
+- Low Coupling
+
+Verdict: Correct
+
+Explanation: It maintains loose coupling by relying solely on GameZoneException and String parameters, avoiding coupling to concrete entity classes like Product or Sale.
+
+- High Cohesion
+
+Verdict: Correct
+
+Explanation: Focused strictly on a single concern (19 lines): signaling missing entity lookup failures.
+
+- Polymorphism
+
+Verdict: Correct
+
+Evidence: Subclass of GameZoneException providing semantic not-found classification
+
+Explanation: It integrates into the polymorphic error structure, allowing upper layers to capture not-found conditions specifically or handle them via the generic GameZoneException handler.
+
+- Pure Fabrication
+
+Verdict: Correct
+
+Explanation: An artificial software artifact designed to standardize not-found error conditions without polluting domain models.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: It acts as an intermediary signaling device between repository lookup misses and user-facing error presentation layers.
+
+- Protected Variations
+
+Verdict: Correct
+
+Explanation: It encapsulates missing-resource reporting behind a uniform contract, protecting consumers from inconsistent null checks and custom missing-record string formats across the application.
+
+# PersonValidator.java Audit
+
+- Information Expert
+
+Verdict: Correct
+
+Evidence: PersonValidator.validatePersonData(String id, String name, String email, String phone) implementation (Lines 19-34)
+
+Explanation: The class acts as the correct information expert for structural input format validation, verifying syntactic integrity rules such as non-empty identification, email format containing '@' and '.', and phone numbers matching the 10-digit regex specification ("\\d{10}").
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: It is a stateless verification utility class. It has no responsibility to instantiate, track, or manage the lifecycle of Person entities.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: The class operates purely as an assertion utility. It does not handle user input events, manage system workflows, or coordinate use cases.
+
+- Low Coupling
+
+Verdict: Violation
+
+ID: V-23
+
+Module: Validations (Requerimiento 6)
+
+Evidence: PersonValidator static method declarations (Lines 19, 42, 54)
+
+Explanation: Implementing validations as public static methods tightly couples consumers (such as PersonService) to the concrete PersonValidator class at compile time. Consuming classes cannot inject mock validators or substitute alternative implementations.
+
+Consequence: Unit testing PersonService in total isolation from validation side-effects is impossible without bytecode manipulation tools. Any architectural shift in validation signatures directly breaks all callers.
+
+Proposed Solution: Refactor PersonValidator into an instantiable component implementing a common Validator<Person> interface and inject it via constructor into PersonService.
+
+Other Member Code: No.
+
+- High Cohesion
+
+Verdict: Correct
+
+Explanation: The class is compact (64 lines) and exhibits high cohesion, focusing exclusively on a single concern: verifying data integrity, uniqueness, and existence preconditions for persons.
+
+- Polymorphism
+
+Verdict: Violation
+
+ID: V-24
+
+Module: Validations (Requerimiento 6)
+
+Evidence: PersonValidator procedural static routines lacking interface contracts (Lines 19-60)
+
+Explanation: The class bypasses object-oriented polymorphism entirely by utilizing static procedural methods rather than implementing a shared validation contract (e.g., Validator<T>).
+
+Consequence: Validation behaviors cannot be dynamically substituted or specialized for Person subtypes (such as Client vs. Seller) through polymorphic dispatch.
+
+Proposed Solution: Introduce a Validator<T> generic interface and implement polymorphic validation strategies for distinct domain types.
+
+Other Member Code: No.
+
+- Pure Fabrication
+
+Verdict: Correct
+
+Explanation: PersonValidator is an artificial software construct engineered to keep the Person domain model and PersonService free from repetitive boilerplate validation logic.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: It acts as an indirection barrier between raw user inputs and entity instantiation, preventing corrupted or malformed person data from entering the application core.
+
+- Protected Variations
+
+Verdict: Violation
+
+ID: V-25
+
+Module: Validations (Requerimiento 6)
+
+Evidence: Hardcoded regex rules in Line 31 (phone.matches("\\d{10}")) and direct static calls
+
+Explanation: Client services are tightly coupled to concrete static validation routines and hardcoded regex rules without an interface or configuration boundary protecting against changing validation criteria.
+
+Consequence: Any shift in validation requirements (such as international phone numbers or distinct email formats) forces direct code modifications in core validation files and cascades into client callers.
+
+Proposed Solution: Encapsulate validation rules behind an interface or configurable strategy pattern to isolate client services from format policy variations.
+
+Other Member Code: No.
+
+---
+
+# ProductValidator.java Audit
+
+- Information Expert
+
+Verdict: Violation
+
+ID: V-26
+
+Module: Validations (Requerimiento 6)
+
+Evidence: ProductValidator.validateStockAvailability(Product product, int requestedQuantity) method (Lines 39-45)
+
+Explanation: The class violates the Information Expert principle regarding stock validation because Product holds its own inventory state and business invariants. Extracting stock via getters to evaluate thresholds externally creates an Anemic Domain Model; the check belongs naturally within Product (e.g., product.hasStock(requestedQuantity) or product.decreaseStock(quantity)). However, it correctly acts as an expert for checking raw input parameter boundaries (id, title, price, stock).
+
+Consequence: Fosters an Anemic Domain Model where the Product class is reduced to a passive data bag, while business invariants are scattered across external static utility classes.
+
+Proposed Solution: Move stock availability validation inside the Product domain model (e.g., product.hasStock(requestedQuantity) or product.decreaseStock(quantity)).
+
+Other Member Code: No.
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: It is a stateless validation utility class that carries no responsibilities for creating, instantiating, or tracking domain entities.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: It is an assertion utility component. It has no contact with capturing UI events, handling user input, or orchestrating software use cases.
+
+- Low Coupling
+
+Verdict: Violation
+
+ID: V-27
+
+Module: Validations (Requerimiento 6)
+
+Evidence: ProductValidator static method declarations (Lines 18, 39, 52)
+
+Explanation: Exposing all validation routines as public static methods binds consumers such as ProductService directly to this concrete class at compile time.
+Consequence: Prevents dependency injection and mock substitution in unit testing suites, creating rigid dependencies throughout the application core.
+
+Proposed Solution: Convert ProductValidator into an instantiable component implementing a Validator<Product> interface and inject it through constructor injection in ProductService.
+
+Other Member Code: No.
+
+- High Cohesion
+
+Verdict: Correct
+
+Explanation: The class has high cohesion (58 lines) focused exclusively on a single area of responsibility: asserting boundary preconditions, stock rules, and existence checks for products.
+
+- Polymorphism
+
+Verdict: Violation
+
+ID: V-28
+
+Module: Validations (Requerimiento 6)
+
+Evidence: Absence of a polymorphic interface hierarchy for product validation (Lines 18-56)
+
+Explanation: The class does not leverage polymorphism. It cannot be extended or dynamically dispatched to vary validation rules for different product categories or operating environments, relying on fixed static calls instead.
+
+Consequence: Adding new product categories requires either creating new static methods or modifying existing validation blocks, violating the Open/Closed Principle.
+
+Proposed Solution: Define a polymorphic Validator<T> contract that can be implemented per product category.
+
+Other Member Code: No.
+
+- Pure Fabrication
+
+Verdict: Correct
+
+Explanation: A validator is a quintessential Pure Fabrication: an artificial technical construct designed to prevent domain entities and application services from being overloaded with repetitive assertion logic.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: It acts as an indirection barrier between service workflows and raw input arguments, shielding business workflows from corrupted or negative data.
+
+- Protected Variations
+
+Verdict: Violation
+
+ID: V-29
+
+Module: Validations (Requerimiento 6)
+
+Evidence: Static method invocation points across ProductService
+
+Explanation: Callers are directly bound to fixed static methods. The class provides no abstraction layer to protect callers if validation strategies change (such as switching from fail-fast exception throwing to an error accumulator pattern).
+
+Consequence: Any redesign of validation error reporting or rule evaluation mandates intrusive modifications to all calling service layers.
+
+Proposed Solution: Introduce an interface-based validation contract to decouple callers from validation execution mechanics.
+
+Other Member Code: No.
+
+---
+
+# SaleValidator.java Audit
+
+- Information Expert
+
+Verdict: Correct
+
+Evidence: SaleValidator.validateSaleData(Client client, Seller seller, List<Product> products) implementation (Lines 23-33)
+
+Explanation: The class acts as the correct expert for cross-cutting transaction preconditions, verifying that all mandatory participants (client, seller) and non-empty items are provided before the sale is processed or constructed.
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: This class does not create or instantiate objects; it merely evaluates references and raises domain exceptions upon contract violation.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: It performs validation assertions and does not coordinate presentation events or manage use-case lifecycles.
+
+- Low Coupling
+
+Verdict: Violation
+
+ID: V-30
+
+Module: Validations (Requerimiento 6)
+
+Evidence: Static procedural methods (public static void) coupled to multiple domain models (Lines 23, 40)
+
+Explanation: Implementing validations as static methods creates rigid compile-time coupling with consuming services, preventing mock substitution and dependency inversion in unit test suites.
+
+Consequence: Restricts unit testing by preventing mock substitution and introduces tight compile-time coupling across transactional components.
+
+Proposed Solution: Turn SaleValidator into a non-static service or bean implementing a Validator<Sale> contract and inject it via constructor.
+
+Other Member Code: No.
+
+- High Cohesion
+
+Verdict: Correct
+
+Explanation: It is a concise class (47 lines) focused strictly on verifying the preconditions, participant presence, and persistence existence checks required for sales transactions.
+
+- Polymorphism
+
+Verdict: Violation
+
+ID: V-31
+
+Module: Validations (Requerimiento 6)
+
+Evidence: Static method signatures without polymorphic abstraction (Lines 23-44)
+
+Explanation: It relies entirely on static procedural routines. It cannot participate in polymorphic validation pipelines or strategy-driven validation rules.
+
+Consequence: New sale validation rules cannot be plugged in dynamically; they must be procedurally hardcoded into static methods.
+
+Proposed Solution: Implement a polymorphic validation strategy pattern based on a common Validator interface.
+
+Other Member Code: No.
+
+- Pure Fabrication
+
+Verdict: Correct
+
+Explanation: It is a pure technical utility class invented to keep the Sale model and SaleService clean, preventing validation boilerplate from polluting business and persistence logic.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: It introduces an indirection checkpoint between incoming transaction parameters and sale creation, ensuring only validated data flows into downstream components.
+
+- Protected Variations
+
+Verdict: Violation
+
+ID: V-32
+
+Module: Validations (Requerimiento 6)
+
+Evidence: Direct static method invocations across consuming services
+
+Explanation: The static design does not protect client classes from changes in validation mechanisms or alternative validation rules (e.g., wholesale rules vs. retail rules), requiring direct code modifications in callers if validation contracts evolve.
+
+Consequence: Calling services are tightly bound to the current static exception-throwing implementation and will require rewrites if validation mechanisms evolve.
+
+Proposed Solution: Wrap sale validation logic behind an injectable interface to preserve Protected Variations.
+
+Other Member Code: No.
