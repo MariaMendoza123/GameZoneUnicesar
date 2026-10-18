@@ -250,3 +250,179 @@ Branch: feature/exception-handling. AI tool used: Claude (Anthropic).
 | Respuesta | Provided validateSaleData and validateSaleExists using Client instead of Customer. Suggested InvalidDataException for a null client or seller and BusinessRuleException for an empty product list, since the requirement lists "venta sin productos" as a business rule. Flagged the gendered-article problem in ResourceNotFoundException messages |
 | Decisión | Used Client because Customer does not exist in the project; adopted the exception criteria above; the article issue remains a pending decision |
 | Commit relacionado | feat: add SaleValidator with sale data and existence checks |
+
+| Campo | Detalle |
+|---|---|
+| Fecha | 2026-10-18 |
+| Herramienta | Gemini |
+| Fase y rama | Requerimiento 6, feature/audit-exceptions-validations |
+| Objetivo | Structure the GRASP design audit documentation for exception handling and validation layers |
+| Consulta | Verification of theoretical GRASP criteria applied to static validators and review of the standard reporting schema for violations starting from ID V-19 |
+| Respuesta | Assisted by clarifying the theoretical impact of static procedural methods on Low Coupling and Protected Variations, and recommended structuring each violation entry with concrete evidence, technical consequences, and proposed solutions to thoroughly justify every finding |
+| Decisión | Adopted the suggested audit template across the documentation, sequentially indexing violations from V-19 to V-32 for Requirement 6, and documented decoupling refactoring strategies based on the Validator<T> interface |
+| Commit relacionado | docs: add GRASP design audit for exceptions and validation layers (Req 6) |
+
+| Campo | Detalle |
+|---|---|
+| Fecha | 2026-10-18 |
+| Herramienta | Gemini |
+| Fase y rama | Fase 2 (Refactorización GRASP), `feature/grasp-refactor` |
+| Objetivo | Refactor `ProductRepository.java` and `Product` hierarchy to resolve GRASP violations V-01, V-02, and V-03 without altering file persistence format |
+| Consulta | How to refactor `ProductRepository.java` to remove concrete subclass dependencies (`VideoGame`, `Console`) and `instanceof` checks while maintaining strict non-regression on `data/products.txt`? |
+| Respuesta | Recommended defining a polymorphic serialization contract (`toCsvLine()`) in `Product` hierarchy and a static rehydration method (`fromCsvLine()`), allowing `ProductRepository` to fully delegate persistence responsibility to domain models |
+| Decisión | Implemented `toCsvLine()` in `Product`, `VideoGame`, and `Console`, updated `ProductRepository.java` to delegate file operations, and verified that the output CSV format remained 100% identical |
+| Commit relacionado | `refactor: implement polymorphic CSV serialization in Product hierarchy (V-01, V-02, V-03)` |
+
+| Campo | Detalle |
+|---|---|
+| Fecha | 2026-10-18 |
+| Herramienta | Gemini |
+| Fase y rama | Fase 2 (Refactorización GRASP), `feature/grasp-refactor` |
+| Objetivo | Refactor `ProductService.java` and `Product.java` to resolve Information Expert violation V-04 |
+| Consulta | How to refactor stock updates in `ProductService` to comply with Information Expert without affecting existing validation exceptions? |
+| Respuesta | Recommended adding `reduceStock` and `increaseStock` encapsulation methods to `Product`, updating `ProductService` to delegate stock mutation directly to the domain object |
+| Decisión | Implemented `reduceStock` and `increaseStock` in `Product`, refactored `updateStock` and `restoreStock` in `ProductService`, and verified compilation and non-regression |
+| Commit relacionado | `refactor: delegate stock management to Product domain model (V-04)` |
+
+| Campo | Detalle |
+|---|---|
+| Fecha | 2026-10-18 |
+| Herramienta | Gemini |
+| Fase y rama | Fase 2 (Refactorización GRASP), `feature/grasp-refactor` |
+| Objetivo | Refactor `ProductService.java` to resolve High Cohesion violation V-06 |
+| Consulta | How to refactor `generateNextId` out of `ProductService` to comply with High Cohesion? |
+| Respuesta | Recommended moving sequence calculation to `ProductRepository` as the data owner and invoking it from `ProductService` |
+| Decisión | Implemented `generateNextId` in `ProductRepository`, removed private helper from `ProductService`, and verified ID format preservation |
+| Commit relacionado | `refactor: delegate ID generation logic to ProductRepository (V-06)` |
+
+| Campo | Detalle |
+|---|---|
+| Fecha | 2026-10-18 |
+| Herramienta | Gemini |
+| Fase y rama | Fase 2 (Refactorización GRASP), `feature/grasp-refactor` |
+| Objetivo | Refactor `ProductService.java` and `ProductValidator.java` to resolve High Cohesion violations V-07, V-08, V-09 |
+| Consulta | How to encapsulate attribute validation logic out of `ProductService` into `ProductValidator` without altering exception messages? |
+| Respuesta | Recommended creating `validateVideoGameData` and `validateConsoleData` in `ProductValidator` and delegating validation calls from `ProductService` |
+| Decisión | Implemented validation methods in `ProductValidator`, cleaned up `ProductService`, and verified compilation and exception string exactness |
+| Commit relacionado | `refactor: encapsulate product attribute validation in ProductValidator (V-07, V-08, V-09)` |
+
+| Campo | Detalle |
+|---|---|
+| Fecha | 2026-10-18 |
+| Herramienta | Gemini |
+| Fase y rama | Fase 2 (Refactorización GRASP), `feature/grasp-refactor` |
+| Objetivo | Refactor `Cable.java` to resolve Polymorphism (V-10) and Protected Variations (V-11) |
+| Consulta | How to fix description rendering contract in `Cable.java` according to GRASP audit findings? |
+| Respuesta | Recommended replacing `toString()` signature with `@Override public String getDescription()` and implementing `@Override public String toCsvLine()` |
+| Decisión | Updated `Cable.java` to override `getDescription()`, verified compilation and uniform polymorphic output |
+| Commit relacionado | `refactor(model): override getDescription in Cable to satisfy polymorphic contract (V-10, V-11)` |
+
+| Campo | Detalle |
+|---|---|
+| Fecha | 2026-10-18 |
+| Herramienta | Gemini |
+| Fase y rama | Fase 2 (Refactorización GRASP), `feature/grasp-refactor` |
+| Objetivo | Refactor `CategoryDiscount.java` and `Product` hierarchy to resolve violations V-12 through V-15 |
+| Consulta | How to replace `instanceof` type checks in `CategoryDiscount.calculateDiscount()` using GRASP Polymorphism and Information Expert? |
+| Respuesta | Recommended adding abstract `getCategoryName()` method in `Product`, implementing it in sub-models, and evaluating eligibility via string matching in `CategoryDiscount` |
+| Decisión | Implemented `getCategoryName()` across `Product` subclasses, refactored `CategoryDiscount.calculateDiscount()`, and verified non-regression in discount calculations |
+| Commit relacionado | `refactor(promotions): replace instanceof checks with polymorphic category evaluation in CategoryDiscount (V-12 to V-15)` |
+
+| Campo | Detalle |
+|---|---|
+| Fecha | 2026-10-18 |
+| Herramienta | Gemini |
+| Fase y rama | Fase 2 (Refactorización GRASP), `feature/grasp-refactor` |
+| Objetivo | Refactor `Return.java` to resolve High Cohesion violation V-16 |
+| Consulta | How to separate receipt formatting concerns from the `Return` domain model to comply with High Cohesion? |
+| Respuesta | Recommended delegating receipt layout string construction to a dedicated `ReturnReceiptFormatter` utility class |
+| Decisión | Implemented `ReturnReceiptFormatter`, updated `Return.generateReturnReceipt()` to delegate execution, and verified non-regression in text layout |
+| Commit relacionado | `refactor(returns): extract receipt formatting logic into ReturnReceiptFormatter (V-16)` |
+
+| Campo | Detalle |
+|---|---|
+| Fecha | 2026-10-18 |
+| Herramienta | Gemini |
+| Fase y rama | Fase 2 (Refactorización GRASP), `feature/grasp-refactor` |
+| Objetivo | Refactor `Sale.canBeReturned()` to resolve Low Coupling (V-17) and Protected Variations (V-18) |
+| Consulta | How to resolve date parsing issues and parameterize return policy in `Sale.canBeReturned()` without modifying existing class fields? |
+| Respuesta | Recommended local conversion to `LocalDate` within `canBeReturned()` and method overloading with `currentDate` and `maxDaysAllowed` parameters |
+| Decisión | Implemented method overloading in `canBeReturned()` for testing and flexible limits, keeping class fields intact |
+| Commit relacionado | `refactor(sales): parameterize canBeReturned eligibility in Sale (V-17, V-18)` |
+
+| Campo | Detalle |
+|---|---|
+| Fecha | 2026-10-18 |
+| Herramienta | Gemini |
+| Fase y rama | Fase 2 (Refactorización GRASP), `feature/grasp-refactor` |
+| Objetivo | Refactor `GameZoneException.java` to resolve Protected Variations (V-19) |
+| Consulta | How to support Throwable cause chaining in base exception GameZoneException without altering existing constructor contracts? |
+| Respuesta | Recommended adding overloaded constructors accepting `Throwable cause` and chaining through `super(message, cause)` |
+| Decisión | Implemented constructor overloading with `Throwable cause` and `errorCode` support |
+| Commit relacionado | `refactor(exceptions): enable Throwable cause chaining in GameZoneException (V-19)` |
+
+| Campo | Detalle |
+|---|---|
+| Fecha | 2026-10-18 |
+| Herramienta | Gemini |
+| Fase y rama | Fase 2 (Refactorización GRASP), `feature/grasp-refactor` |
+| Objetivo | Refactor `InvalidDataException.java` to resolve Information Expert violation V-20 |
+| Consulta | How to structure `InvalidDataException` to retain `fieldName` and `problem` as accessible attributes for presentation layers? |
+| Respuesta | Recommended storing `fieldName` and `problem` as private final fields, adding getters, and preserving super string formatting |
+| Decisión | Added `fieldName` and `problem` fields, getters, and overloaded constructor with `Throwable cause` |
+| Commit relacionado | `refactor(exceptions): encapsulate fieldName and problem in InvalidDataException (V-20)` |
+
+| Campo | Detalle |
+|---|---|
+| Fecha | 2026-10-18 |
+| Herramienta | Gemini |
+| Fase y rama | Fase 2 (Refactorización GRASP), `feature/grasp-refactor` |
+| Objetivo | Refactor `PersistenceException.java` to resolve Protected Variations (V-21) |
+| Consulta | How to replace `initCause` workaround in `PersistenceException` using the updated `GameZoneException` constructor? |
+| Respuesta | Recommended invoking `super(message, "PERSISTENCE_ERROR", cause)` directly and removing `initCause(cause)` |
+| Decisión | Updated constructor delegation to super with cause parameter and removed manual initCause call |
+| Commit relacionado | `refactor(exceptions): delegate root cause via super in PersistenceException (V-21)` |
+
+| Campo | Detalle |
+|---|---|
+| Fecha | 2026-10-18 |
+| Herramienta | Gemini |
+| Fase y rama | Fase 2 (Refactorización GRASP), `feature/grasp-refactor` |
+| Objetivo | Refactor `ResourceNotFoundException.java` to resolve Information Expert violation V-22 |
+| Consulta | How to encapsulate `resourceType` and `resourceId` as accessible attributes in `ResourceNotFoundException`? |
+| Respuesta | Recommended adding `resourceType` and `resourceId` private final fields with getters and an overloaded constructor with `Throwable cause` |
+| Decisión | Implemented encapsulated fields, public getters, and cause-enabled constructor overloading |
+| Commit relacionado | `refactor(exceptions): encapsulate resourceType and resourceId in ResourceNotFoundException (V-22)` |
+
+| Campo | Detalle |
+|---|---|
+| Fecha | 2026-10-18 |
+| Herramienta | Gemini |
+| Fase y rama | Fase 2 (Refactorización GRASP), `feature/grasp-refactor` |
+| Objetivo | Refactor `PersonValidator.java` to resolve V-23, V-24, and V-25 |
+| Consulta | How to introduce a generic `Validator<T>` interface and decouple hardcoded regex in `PersonValidator` while maintaining backwards compatibility? |
+| Respuesta | Recommended introducing `Validator<T>` interface, transforming `PersonValidator` into an instantiable configurable component, and adding static delegates |
+| Decisión | Created `Validator<T>`, refactored `PersonValidator` to implement `Validator<Person>` with configurable `phoneRegex`, and added static compatibility methods |
+| Commit relacionado | `refactor(validation): implement Validator interface and parameterize regex in PersonValidator (V-23, V-24, V-25)` |
+
+| Campo | Detalle |
+|---|---|
+| Fecha | 2026-10-18 |
+| Herramienta | Gemini |
+| Fase y rama | Fase 2 (Refactorización GRASP), `feature/grasp-refactor` |
+| Objetivo | Refactor `ProductValidator.java` and `Product.java` to resolve V-26 to V-29 |
+| Consulta | How to refactor `ProductValidator` to delegate stock checking to `Product.hasStock()` using existing `stockQuantity` field? |
+| Respuesta | Recommended adding `hasStock()` in `Product` evaluating `stockQuantity`, implementing `Validator<Product>`, and adding static delegate accessors |
+| Decisión | Implemented `Product.hasStock()`, refactored `ProductValidator` to implement `Validator<Product>` with `stockQuantity` accessors |
+| Commit relacionado | `refactor(validation): delegate stock check to Product and implement Validator in ProductValidator (V-26 to V-29)` |
+
+| Campo | Detalle |
+|---|---|
+| Fecha | 2026-10-18 |
+| Herramienta | Gemini |
+| Fase y rama | Fase 2 (Refactorización GRASP), `feature/grasp-refactor` |
+| Objetivo | Refactor `SaleValidator.java` to resolve V-30, V-31, and V-32 |
+| Consulta | How to refactor `SaleValidator` to implement `Validator<Sale>` while preserving backwards compatibility for callers? |
+| Respuesta | Recommended implementing `Validator<Sale>`, creating instance validation methods, and providing static delegate methods |
+| Decisión | Refactored `SaleValidator` to implement `Validator<Sale>` and added static delegates |
+| Commit relacionado | `refactor(validation): implement Validator in SaleValidator (V-30, V-31, V-32)` |
