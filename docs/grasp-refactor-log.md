@@ -32,3 +32,7 @@ This document logs all refactoring activities performed during Phase 2 to resolv
 | **LOG-06** | 2026-10-18 | `CategoryDiscount.java`<br>`Product.java` | V-12, V-13, V-14, V-15 | Information Expert, Low Coupling, Polymorphism, Protected Variations | Refactored `CategoryDiscount.calculateDiscount()` to use abstract `getCategoryName()` polymorphic hook, eliminating `instanceof` checks and decoupling from concrete product subclasses. | **PASS**: Discount amounts match 100% with previous calculation logic for all categories. |
 
 | **LOG-07** | 2026-10-18 | `Return.java`<br>`ReturnReceiptFormatter.java` | V-16 | High Cohesion | Extracted raw text receipt formatting logic out of `Return` domain entity into `ReturnReceiptFormatter`, restoring single responsibility. | **PASS**: Receipt output format string matches 100% with previous formatting tests. |
+
+| **LOG-08** | 2026-10-18 | `Sale.java` | V-17, V-18 | Low Coupling, Protected Variations | Refactored `canBeReturned()` method in `Sale.java` to handle local date parsing safely and parameterized return eligibility with evaluation dates and dynamic threshold limits. | **PASS**: 30-day return policy rule and date calculation remain compliant without altering original class attributes. |
+
+| **LOG-09** | 2026-10-18 | `GameZoneException.java` | V-19 | Protected Variations | Added overloaded constructors with `Throwable cause` parameters to support standard exception chaining without breaking existing constructors. | **PASS**: Exception cause chaining works properly for low-level system exception wrapping. |

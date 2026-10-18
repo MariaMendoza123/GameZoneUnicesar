@@ -25,6 +25,26 @@ public abstract class GameZoneException extends RuntimeException {
         this.errorCode = errorCode;
     }
     /**
+     * Constructs a new GameZoneException with the specified detail message and cause.
+     *
+     * @param message the detail message
+     * @param cause   the cause of the exception
+     */
+    public GameZoneException(String message, Throwable cause) {
+        super(message, cause);
+    }
+    /**
+     * Constructs a new GameZoneException with the specified detail message, error code, and cause.
+     *
+     * @param message   the detail message
+     * @param errorCode the error code associated with this exception
+     * @param cause     the cause of the exception
+     */
+    public GameZoneException(String message, String errorCode, Throwable cause) {
+        super(message, cause);
+        this.errorCode = errorCode;
+    }
+    /**
      * Returns the error code associated with this exception.
      *
      * @return the error code
