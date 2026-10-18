@@ -43,6 +43,8 @@ public class Controller extends Accessory {
         return "CONTROLLER|" + getId() + "|" + getTitle() + "|" + getPrice() + "|"
                 + getStockQuantity() + "|" + String.join(",", getCompatibleConsoleIds()) + "|" + ConnectionType;
     }
+
+    
     /**
      * Returns a string representation of the controller, including its connection type.
      *

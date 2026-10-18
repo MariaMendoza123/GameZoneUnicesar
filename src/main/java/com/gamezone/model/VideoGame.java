@@ -100,6 +100,11 @@ public class VideoGame extends Product{
    }
 
     @Override
+    public String getCategoryName() {
+        return "VIDEOGAME";
+    }
+
+    @Override
     public String toCsvLine() {
         return "VIDEOGAME|" + getId() + "|" + getTitle() + "|" + getPrice() + "|"
                 + getStockQuantity() + "|" + getPlatform() + "|" + getGenre() + "|" + getClassification();

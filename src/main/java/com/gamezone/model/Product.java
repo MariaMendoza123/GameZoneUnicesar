@@ -152,4 +152,10 @@ public abstract class Product {
      public String toString() {
           return getDescription();
      }
+     /**
+      * Returns the category name of the product.
+      *
+      * @return the category name of the product
+      */
+     public abstract String getCategoryName();
 }

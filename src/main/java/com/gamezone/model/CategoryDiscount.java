@@ -66,14 +66,17 @@ public class CategoryDiscount extends Promotion {
      */
     @Override
     public double calculateDiscount(Sale sale) {
+        if (sale == null || sale.getProducts() == null) {
+            return 0.0;
+        }
+
         double categorySubtotal = 0;
         for (Product product : sale.getProducts()) {
-            if ((product instanceof VideoGame && targetCategory.equals("VIDEOGAME")) ||
-                    (product instanceof Console && targetCategory.equals("CONSOLE"))||
-                    (product instanceof Accessory && targetCategory.equals("ACCESSORY"))) {
+            if (product != null && product.getCategoryName() != null &&
+                    product.getCategoryName().equalsIgnoreCase(targetCategory)) {
                 categorySubtotal += product.getPrice();
             }
         }
-        return categorySubtotal * (discountPercentage / 100);
+        return categorySubtotal * (discountPercentage / 100.0);
     }
 }

@@ -77,4 +77,9 @@ public abstract class Accessory extends Product {
         return "Accessory: " + getTitle() + ", Price: $" + getPrice() + ", Stock: " + getStockQuantity() +
                 ", Compatible Consoles: " + consoles;
     }
+
+    @Override
+    public String getCategoryName() {
+        return "ACCESSORY";
+    }
 }

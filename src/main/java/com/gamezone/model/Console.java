@@ -101,6 +101,11 @@ public class Console extends Product {
     }
 
     @Override
+    public String getCategoryName() {
+        return "CONSOLE";
+    }
+
+    @Override
     public String toCsvLine() {
         return "CONSOLE|" + getId() + "|" + getTitle() + "|" + getPrice() + "|"
                 + getStockQuantity() + "|" + getBrand() + "|" + getModel() + "|" + getGeneration();
