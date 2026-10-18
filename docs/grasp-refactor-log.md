@@ -19,3 +19,6 @@ This document logs all refactoring activities performed during Phase 2 to resolv
 * **V-01 (Low Coupling):** Eliminated direct imports of `VideoGame` and `Console` in `ProductRepository.java`.
 * **V-02 (Polymorphism):** Replaced conditional `instanceof` checks in `toLine()` with a polymorphic call to `product.toCsvLine()`.
 * **V-03 (Protected Variations):** `ProductRepository` is now shielded from future additions of new product categories.
+
+
+| **LOG-02** | 2026-10-18 | `Product.java`<br>`ProductService.java` | V-04 | Information Expert | Delegated stock modification logic (`reduceStock`, `increaseStock`) from `ProductService` directly to `Product`. | **PASS**: Stock updates and validation exception messages remain unchanged. |

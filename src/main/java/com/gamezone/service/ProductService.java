@@ -112,8 +112,7 @@ public class ProductService {
 
         ProductValidator.validateStockAvailability(product, quantitySold);
 
-        int newStock = product.getStockQuantity() - quantitySold;
-        product.setStockQuantity(newStock);
+        product.reduceStock(quantitySold);
 
         productRepository.update(product);
     }
@@ -136,9 +135,7 @@ public class ProductService {
                     "debe ser mayor que cero"
             );
         }
-
-        int newStock = product.getStockQuantity() + quantity;
-        product.setStockQuantity(newStock);
+        product.increaseStock(quantity);
 
         productRepository.update(product);
     }

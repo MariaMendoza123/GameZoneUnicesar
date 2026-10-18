@@ -123,6 +123,27 @@ public abstract class Product {
           throw new IllegalArgumentException("Unknown product type in file: " + type);
      }
      /**
+      * Reduces the stock quantity by the specified amount.
+      *
+      * @param quantity The amount of stock to reduce.
+      */
+     public void reduceStock(int quantity) {
+          if (quantity > 0 && quantity <= this.stockQuantity) {
+               this.stockQuantity -= quantity;
+          }
+     }
+
+     /**
+      * Increases the stock quantity by the specified amount.
+      *
+      * @param quantity The amount of stock to add.
+      */
+     public void increaseStock(int quantity) {
+          if (quantity > 0) {
+               this.stockQuantity += quantity;
+          }
+     }
+     /**
       * Returns a string representation of the product.
       *
       * @return a string representation of the product
