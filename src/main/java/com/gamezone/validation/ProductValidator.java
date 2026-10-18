@@ -5,19 +5,29 @@ import com.gamezone.exceptions.InvalidDataException;
 import com.gamezone.exceptions.ResourceNotFoundException;
 import com.gamezone.model.Product;
 
-public class ProductValidator {
+/**
+ * Instantiable validator component implementing Validator<Product>.
+ * Asserts structural boundaries, inventory availability, product existence, and specific domain attributes.
+ */
+public class ProductValidator implements Validator<Product> {
 
     /**
-     * Validates the product data.
+     * Polymorphic validation contract for Product entity instances.
      *
-     * @param id    The product identifier.
-     * @param title The product title.
-     * @param price The product price.
-     * @param stock The product stock quantity.
-     * @throws InvalidDataException if any of the parameters are invalid.
+     * @param product The product entity to validate.
      */
-    public static void validateProductData(String id, String title, double price, int stock) {
+    @Override
+    public void validate(Product product) {
+        if (product == null) {
+            throw new InvalidDataException("producto", "no puede ser nulo");
+        }
+        validateData(product.getId(), product.getTitle(), product.getPrice(), product.getStockQuantity());
+    }
 
+    /**
+     * Instance method to validate raw product field boundary parameters.
+     */
+    public void validateData(String id, String title, double price, int stock) {
         if (id == null || id.isBlank()) {
             throw new InvalidDataException("identificador", "no puede ser nulo o vacío");
         }
@@ -33,39 +43,32 @@ public class ProductValidator {
     }
 
     /**
-     * Validates if the requested quantity of a product is available in stock.
-     *
-     * @param product           The product to check.
-     * @param requestedQuantity The quantity requested.
+     * Instance method to validate stock availability using Product domain model (Information Expert V-26).
      */
-    public static void validateStockAvailability(Product product, int requestedQuantity) {
-
-        if (product.getStockQuantity() < requestedQuantity) {
-            throw new BusinessRuleException("Stock insuficiente para el producto: " + product.getTitle() + ". Stock disponible: "
-                    + product.getStockQuantity() + ", cantidad solicitada: " + requestedQuantity);
+    public void validateStock(Product product, int requestedQuantity) {
+        if (product == null) {
+            throw new InvalidDataException("producto", "no puede ser nulo");
+        }
+        if (!product.hasStock(requestedQuantity)) {
+            throw new BusinessRuleException("Stock insuficiente para el producto: " + product.getTitle()
+                    + ". Stock disponible: " + product.getStockQuantity()
+                    + ", cantidad solicitada: " + requestedQuantity);
         }
     }
 
     /**
-     * Validates if the product exists.
-     *
-     * @param product   The product to check.
-     * @param productId The product identifier.
+     * Instance method to validate that a product exists.
      */
-    public static void validateProductExists(Product product, String productId) {
+    public void validateExists(Product product, String productId) {
         if (product == null) {
             throw new ResourceNotFoundException("Producto con ID ", productId);
         }
     }
 
     /**
-     * Validates video game specific attributes.
-     *
-     * @param platform       the video game platform
-     * @param genre          the video game genre
-     * @param classification the video game classification
+     * Instance method to validate video game specific attributes.
      */
-    public static void validateVideoGameData(String platform, String genre, String classification) {
+    public void validateVideoGame(String platform, String genre, String classification) {
         if (platform == null || platform.isBlank()) {
             throw new InvalidDataException("plataforma", "es obligatoria");
         }
@@ -78,13 +81,9 @@ public class ProductValidator {
     }
 
     /**
-     * Validates console specific attributes.
-     *
-     * @param brand      the console brand
-     * @param model      the console model
-     * @param generation the console generation
+     * Instance method to validate console specific attributes.
      */
-    public static void validateConsoleData(String brand, String model, String generation) {
+    public void validateConsole(String brand, String model, String generation) {
         if (brand == null || brand.isBlank()) {
             throw new InvalidDataException("La marca", "es obligatoria");
         }
@@ -94,5 +93,28 @@ public class ProductValidator {
         if (generation == null || generation.isBlank()) {
             throw new InvalidDataException("La generación", "es obligatoria");
         }
+    }
+
+    // Static delegate methods for backward compatibility with pre-existing caller code
+    private static final ProductValidator DEFAULT_INSTANCE = new ProductValidator();
+
+    public static void validateProductData(String id, String title, double price, int stock) {
+        DEFAULT_INSTANCE.validateData(id, title, price, stock);
+    }
+
+    public static void validateStockAvailability(Product product, int requestedQuantity) {
+        DEFAULT_INSTANCE.validateStock(product, requestedQuantity);
+    }
+
+    public static void validateProductExists(Product product, String productId) {
+        DEFAULT_INSTANCE.validateExists(product, productId);
+    }
+
+    public static void validateVideoGameData(String platform, String genre, String classification) {
+        DEFAULT_INSTANCE.validateVideoGame(platform, genre, classification);
+    }
+
+    public static void validateConsoleData(String brand, String model, String generation) {
+        DEFAULT_INSTANCE.validateConsole(brand, model, generation);
     }
 }

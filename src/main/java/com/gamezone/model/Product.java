@@ -158,4 +158,14 @@ public abstract class Product {
       * @return the category name of the product
       */
      public abstract String getCategoryName();
+
+     /**
+      * Checks if the product has sufficient stock for the requested quantity.
+      *
+      * @param requestedQuantity the quantity to verify
+      * @return true if stock is greater than or equal to requestedQuantity and requestedQuantity is positive
+      */
+     public boolean hasStock(int requestedQuantity) {
+          return requestedQuantity > 0 && this.getStockQuantity() >= requestedQuantity;
+     }
 }
