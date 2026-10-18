@@ -65,4 +65,10 @@ public class Memory extends Accessory{
     public String getDescription() {
         return super.getDescription() + ", Capacity: " + capacityInGb + "GB, Memory Type: " + memoryType;
     }
+
+    @Override
+    public String toCsvLine() {
+        return "MEMORY|" + getId() + "|" + getTitle() + "|" + getPrice() + "|"
+                + getStockQuantity() + "|" + String.join(",", getCompatibleConsoleIds()) + "|" + capacityInGb + "|" + memoryType;
+    }
 }

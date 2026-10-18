@@ -37,6 +37,12 @@ public class Controller extends Accessory {
     public void setConnectionType(String connectionType) {
         ConnectionType = connectionType;
     }
+
+    @Override
+    public String toCsvLine() {
+        return "CONTROLLER|" + getId() + "|" + getTitle() + "|" + getPrice() + "|"
+                + getStockQuantity() + "|" + String.join(",", getCompatibleConsoleIds()) + "|" + ConnectionType;
+    }
     /**
      * Returns a string representation of the controller, including its connection type.
      *

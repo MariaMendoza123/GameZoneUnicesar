@@ -56,15 +56,30 @@ public class Cable extends Accessory{
     public void setConnectorType(String connectorType) {
         this.connectorType = connectorType;
     }
+
     /**
      * Returns a string representation of the cable, including its length and connector type.
      *
      * @return a string representation of the cable
      */
     @Override
-    public String toString() {
+    public String getDescription() {
         return super.getDescription() + ", Length: " + lengthInMeters + " meters, Connector Type: " + connectorType;
     }
 
+    @Override
+    public String toString() {
+        return getDescription();
+    }
+
+    /**
+     * Returns a CSV line representation of the cable.
+     *
+     * @return a CSV line representing the cable
+     */
+    public String toCsvLine() {
+        return "CABLE|" + getId() + "|" + getTitle() + "|" + getPrice() + "|"
+                + getStockQuantity() + "|" + String.join(",", getCompatibleConsoleIds()) + "|" + lengthInMeters + "|" + connectorType;
+    }
 
 }

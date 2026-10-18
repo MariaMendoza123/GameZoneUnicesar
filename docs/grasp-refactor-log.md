@@ -26,3 +26,5 @@ This document logs all refactoring activities performed during Phase 2 to resolv
 | **LOG-03** | 2026-10-18 | `ProductRepository.java`<br>`ProductService.java` | V-06 | High Cohesion | Delegated ID sequence generation from `ProductService` to `ProductRepository`. | **PASS**: ID formats (`VG-1`, `CN-1`, etc.) remain 100% identical. |
 
 | **LOG-04** | 2026-10-18 | `ProductValidator.java`<br>`ProductService.java` | V-07, V-08, V-09 | High Cohesion, Protected Variations | Delegated specific input attribute validations (`validateVideoGameData`, `validateConsoleData`) to `ProductValidator`. | **PASS**: Exception types and error message strings remain 100% identical. |
+
+| **LOG-05** | 2026-10-18 | `Cable.java` | V-10, V-11 | Polymorphism, Protected Variations | Replaced `toString()` with `@Override public String getDescription()` to honor polymorphic hierarchy contracts and protect upper layers from data omission. | **PASS**: Polymorphic description rendering now includes cable length and connector type without requiring downcasting. |
