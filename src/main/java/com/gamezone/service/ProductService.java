@@ -31,24 +31,13 @@ public class ProductService {
      * @param classification the classification of the video game
      * @return the registered VideoGame object
      */
-    public VideoGame registerVideoGame(String title, double price, int stockQuantity,
+    public Product registerVideoGame(String title, double price, int stockQuantity,
                                        String platform, String genre, String classification) {
 
         String id = productRepository.generateNextId("VG");
         ProductValidator.validateProductData(id, title, price, stockQuantity);
-        if (platform == null || platform.isBlank()) {
-            throw new InvalidDataException("plataforma", "es obligatoria");
-        }
+        ProductValidator.validateVideoGameData(platform, genre, classification);
 
-        if(genre == null || genre.isBlank()) {
-            throw new InvalidDataException("El género", "es obligatorio");
-        }
-
-        if (classification == null || classification.isBlank()) {
-            throw new InvalidDataException("La clasificación", "es obligatoria");
-        }
-
-        ;
         VideoGame videoGame = new VideoGame(id, title, price, stockQuantity,
                 platform, genre, classification);
         productRepository.save(videoGame);
@@ -66,23 +55,12 @@ public class ProductService {
      * @param generation     the generation of the console
      * @return the registered Console object
      */
-    public Console registerConsole(String title, double price, int stockQuantity,
+    public Product registerConsole(String title, double price, int stockQuantity,
                                    String brand, String model, String generation) {
 
         String id = productRepository.generateNextId("CN");
         ProductValidator.validateProductData(id, title, price, stockQuantity);
-        if (brand == null || brand.isBlank()) {
-            throw new InvalidDataException("La marca", "es obligatoria");
-        }
-
-        if(model == null || model.isBlank()) {
-            throw new InvalidDataException("El modelo", "es obligatorio");
-        }
-
-        if(generation == null || generation.isBlank()) {
-            throw new InvalidDataException("La generación", "es obligatoria");
-        }
-
+        ProductValidator.validateConsoleData(brand, model, generation);
 
         Console console = new Console(id, title, price, stockQuantity,
                 brand, model, generation);
