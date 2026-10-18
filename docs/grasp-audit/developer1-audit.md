@@ -965,3 +965,158 @@ Verdict: Correct
 
 Explanation: It safely encapsulates the unique wholesale volume calculation rules internally, protecting and shielding the rest of the system classes from modifications.
 
+
+# Return.java Audit
+
+- Information Expert
+
+Verdict: Correct
+
+Evidence: Return class properties and list handling
+
+Explanation: As the aggregator of the return transaction, the class naturally knows the returned products and encapsulates the state data necessary to compute the proportional refund locally.
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: The class does not create instances of sales or products. It safely receives them already instantiated as parameters associated with the current transaction context.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: The class behaves as a core domain data and business rule entity. It has no contact with capturing user interface commands, terminal inputs, or system event streams.
+
+- Low Coupling
+
+Verdict: Correct
+
+Explanation: It exhibits thin and safe coupling boundaries because it only links directly to the Sale transaction contract and the abstract Product superclass, without knowing or referencing any concrete item subtypes.
+
+- High Cohesion
+
+Verdict: Violation
+
+ID: V-16
+
+Module: Returns (Requerimiento 3)
+
+Evidence: Return.generateReturnReceipt() method layout
+
+Explanation: The class features a partial violation with an observation. While it remains highly focused on modeling the return transaction concepts, it dilutes its core cohesion by mixing raw domain properties with text receipt formatting and layout layout parameters.
+
+Consequence: Any structural update to the layout print design or a language localization change forces dangerous manual code modifications directly inside this business entity.
+
+Proposed Solution: Relocate the text formatting and receipt layout construction code blocks into an outer view helper or a separate printing service utility.
+
+Other Member Code: No.
+
+- Polymorphism
+
+Verdict: Correct
+
+Evidence: Returned products evaluation loops
+
+Explanation: The class cleanly acts as a polymorphic consumer. It processes and iterates over the collection of returned items in a 100% polymorphic manner, without utilizing type-checking operations or instanceof checks.
+
+- Pure Fabrication
+
+Verdict: Not Applicable
+
+Explanation: The component maps a concrete, physical commercial concept from the real-world business model (a transaction return process) rather than an artificial technical class built for system engineering support.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: The component functions as a clean design layer that effectively encapsulates the historical trace and the financial adjustments between the original transaction (Sale) and the individual returned products.
+
+- Protected Variations
+
+Verdict: Correct
+
+Explanation: Introducing new types of custom items into the store dynamic product catalog will not impact or break the execution of the return verification logic because the module interacts strictly with stable base abstractions.
+
+
+# Sale.canBeReturned() Method Audit
+
+- Information Expert
+
+Verdict: Correct
+
+Evidence: Sale.canBeReturned() execution scope
+
+Explanation: The method complies in essence with this pattern because it directly evaluates internal transaction parameters (the sale date attribute) to resolve whether the item is within the store policy timeframe.
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: This specific method contains no instantiation responsibility and does not trigger creation routines for any domain or system components.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: The method executes core domain evaluation logic and has no contact with capturing user interface commands, terminal menus, or application interaction loops.
+
+- Low Coupling
+
+Verdict: Violation
+
+ID: V-17
+
+Module: Returns (Requerimiento 3)
+
+Evidence: Sale.canBeReturned() string parsing (Line 151)
+
+Explanation: The method features a partial violation with an observation. While it operates within the boundaries of the transaction parameters, it suffers from Primitive Obsession by forcing a low-level text string to be parsed into a date object during evaluation.
+
+Consequence: Altering date field presentation schemas or formatting properties inside the application will directly cause runtime execution errors inside this verification block.
+
+Proposed Solution: Modify the underlying model property to manage a native java.time.LocalDate data type from its initialization to decouple the calculation logic.
+
+Other Member Code: No.
+
+- High Cohesion
+
+Verdict: Correct
+
+Explanation: The business validation logic to determine whether an entire transaction item is eligible for a return policy naturally belongs to the operational scope and lifecycle of this method block.
+
+- Polymorphism
+
+Verdict: Not Applicable
+
+Explanation: There is no point of application for this pattern since there are no alternative operational paths or subtype variations within this policy verification workflow.
+
+- Pure Fabrication
+
+Verdict: Not Applicable
+
+Explanation: The calculation logic is an organic domain business validation check directly required by the retail workflow, rather than an artificial structural helper class.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: The method safely wraps the calendar check logic natively, preventing outer application service handlers from needing to manually compute days between transactions or date metrics.
+
+- Protected Variations
+
+Verdict: Violation
+
+ID: V-18
+
+Module: Returns (Requerimiento 3)
+
+Evidence: Hardcoded return limits and current date lookups (Lines 152-153)
+
+Explanation: The method partially violates this principle because it embeds the 30-day temporal threshold limit and the direct call to LocalDate.now() fixed (hardcoded) inside its operational path, leaving the policy unprotected against alterations.
+
+Consequence: If store return policies shift or if automated testing strategies require injecting a specific temporal timeline to mock system behaviors, the validation routine breaks.
+
+Proposed Solution: Inject the policy threshold parameter externally via system configuration properties or pass the evaluation timeline directly as a method signature contract.
+
+Other Member Code: No.
