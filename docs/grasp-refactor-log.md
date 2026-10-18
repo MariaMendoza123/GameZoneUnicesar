@@ -40,3 +40,5 @@ This document logs all refactoring activities performed during Phase 2 to resolv
 | **LOG-10** | 2026-10-18 | `InvalidDataException.java` | V-20 | Information Expert | Encapsulated `fieldName` and `problem` as structured private fields with getter accessors instead of discarding them into a raw concatenated string. | **PASS**: Programmatic extraction of field name and error cause works without string parsing. |
 
 | **LOG-11** | 2026-10-18 | `PersistenceException.java` | V-21 | Protected Variations | Replaced manual `initCause(cause)` workaround with direct `super(message, "PERSISTENCE_ERROR", cause)` invocation, removing redundant syntax artifacts. | **PASS**: Root exception cause propagates cleanly without `IllegalStateException` risks. |
+
+| **LOG-12** | 2026-10-18 | `ResourceNotFoundException.java` | V-22 | Information Expert | Encapsulated `resourceType` and `resourceId` as queryable private final fields with getter accessors instead of discarding them into a raw string message. | **PASS**: Programmatic extraction of missing resource details and type evaluation verified without string parsing. |
