@@ -1,8 +1,6 @@
 package com.gamezone.persistence;
 
-import com.gamezone.model.Console;
 import com.gamezone.model.Product;
-import com.gamezone.model.VideoGame;
 import com.gamezone.exceptions.PersistenceException;
 
 import java.io.IOException;
@@ -19,10 +17,7 @@ import java.util.List;
 public class ProductRepository {
 
     private static final String FILE_PATH = "data/products.txt";
-    private static final String SEPARATOR = "|";
-    private static final String DELIMITER = "\\|";
-    private static final String VIDEOGAME_TAG = "VIDEOGAME";
-    private static final String CONSOLE_TAG = "CONSOLE";
+
 
     /**
      * Saves a product to the repository.
@@ -104,37 +99,11 @@ public class ProductRepository {
     }
 
     private String toLine(Product product) {
-        if (product instanceof VideoGame) {
-            VideoGame videoGame = (VideoGame) product;
-            return VIDEOGAME_TAG + SEPARATOR + videoGame.getId() + SEPARATOR
-                    + videoGame.getTitle() + SEPARATOR + videoGame.getPrice() + SEPARATOR
-                    + videoGame.getStockQuantity() + SEPARATOR + videoGame.getPlatform() + SEPARATOR
-                    + videoGame.getGenre() + SEPARATOR + videoGame.getClassification();
-        } else if (product instanceof Console) {
-            Console console = (Console) product;
-            return CONSOLE_TAG + SEPARATOR + console.getId() + SEPARATOR
-                    + console.getTitle() + SEPARATOR + console.getPrice() + SEPARATOR
-                    + console.getStockQuantity() + SEPARATOR + console.getBrand() + SEPARATOR
-                    + console.getModel() + SEPARATOR + console.getGeneration();
-        }
-        throw new IllegalArgumentException(
-                "Unsupported product type: " + product.getClass().getSimpleName());
+        return product.toCsvLine();
     }
 
     private Product fromLine(String line) {
-        String[] fields = line.split(DELIMITER, -1);
-        String type = fields[0];
-        String id = fields[1];
-        String title = fields[2];
-        double price = Double.parseDouble(fields[3]);
-        int stockQuantity = Integer.parseInt(fields[4]);
-
-        if (VIDEOGAME_TAG.equals(type)) {
-            return new VideoGame(id, title, price, stockQuantity, fields[5], fields[6], fields[7]);
-        } else if (CONSOLE_TAG.equals(type)) {
-            return new Console(id, title, price, stockQuantity, fields[5], fields[6], fields[7]);
-        }
-        throw new IllegalArgumentException("Unknown product type in file: " + type);
+        return Product.fromCsvLine(line);
     }
 
 }

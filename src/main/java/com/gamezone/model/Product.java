@@ -96,6 +96,33 @@ public abstract class Product {
           this.stockQuantity = stockQuantity;
      }
      /**
+      * Returns a CSV representation of the product.
+      *
+      * @return a CSV representation of the product
+      */
+     public abstract String toCsvLine();
+     /**
+      * Creates a Product instance from a CSV line.
+      *
+      * @param line the CSV line representing the product
+      * @return a Product instance
+      */
+     public static Product fromCsvLine(String line) {
+          String[] fields = line.split("\\|", -1);
+          String type = fields[0];
+          String id = fields[1];
+          String title = fields[2];
+          double price = Double.parseDouble(fields[3]);
+          int stockQuantity = Integer.parseInt(fields[4]);
+
+          if ("VIDEOGAME".equals(type)) {
+               return new VideoGame(id, title, price, stockQuantity, fields[5], fields[6], fields[7]);
+          } else if ("CONSOLE".equals(type)) {
+               return new Console(id, title, price, stockQuantity, fields[5], fields[6], fields[7]);
+          }
+          throw new IllegalArgumentException("Unknown product type in file: " + type);
+     }
+     /**
       * Returns a string representation of the product.
       *
       * @return a string representation of the product

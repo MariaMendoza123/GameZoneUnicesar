@@ -98,4 +98,10 @@ public class VideoGame extends Product{
    public String toString() {
        return getDescription();
    }
+
+    @Override
+    public String toCsvLine() {
+        return "VIDEOGAME|" + getId() + "|" + getTitle() + "|" + getPrice() + "|"
+                + getStockQuantity() + "|" + getPlatform() + "|" + getGenre() + "|" + getClassification();
+    }
 }

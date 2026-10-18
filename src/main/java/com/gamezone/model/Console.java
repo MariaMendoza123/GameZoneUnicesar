@@ -99,4 +99,10 @@ public class Console extends Product {
     public String toString() {
         return getDescription();
     }
+
+    @Override
+    public String toCsvLine() {
+        return "CONSOLE|" + getId() + "|" + getTitle() + "|" + getPrice() + "|"
+                + getStockQuantity() + "|" + getBrand() + "|" + getModel() + "|" + getGeneration();
+    }
 }
