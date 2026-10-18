@@ -408,3 +408,274 @@ Consequence: Any change to existing product data layouts or the introduction of 
 Proposed Solution: Shield the service layer by wrapping dynamic behaviors in abstract contracts or structural creation strategies.
 
 Other Member Code: No.
+
+---
+
+# Accessory.java Audit
+
+- Information Expert
+
+Verdict: Correct
+
+Evidence: Accessory class implementation and dynamic list utilities
+
+Explanation: The class acts as a perfect information expert for managing its internal list of compatible platforms. It provides clean domain methods like isCompatibleWith, addCompatibleConsole, and removeCompatibleConsole to manage state internally, rather than forcing outer layers to manipulate its collection manually.
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: Accessory is an abstract class and cannot be directly initialized using the new keyword. Object instantiation tasks are safely deferred to its concrete subclasses or factory utilities.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: This class is a standard entity in the domain model layer. It remains isolated from capture systems, user inputs, and application control sequences.
+
+- Low Coupling
+
+Verdict: Correct
+
+Explanation: The class remains highly decoupled. It does not depend on peripheral services or database repositories, and it decouples dynamic compatibility validation by storing console references as simple String identifiers instead of linking directly to concrete Console object models.
+
+- High Cohesion
+
+Verdict: Correct
+
+Explanation: Its conceptual scope is completely focused on modeling structural accessory data and handling its specific console compatibility lists. It carries no peripheral logic like menu printing or persistence mechanisms.
+
+- Polymorphism
+
+Verdict: Correct
+
+Evidence: public abstract class Accessory extends Product
+
+Explanation: It expands the base Product structure to establish a specific abstract tier for peripheral items. By implementing a standardized getDescription routine, it fulfills its polymorphic role smoothly within the core domain hierarchy.
+
+- Pure Fabrication
+
+Verdict: Not Applicable
+
+Explanation: The component maps a concrete business requirement from the store domain, so it represents an intrinsic model object rather than an engineering support utility class.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: The class acts as a structural intermediate level within the domain design hierarchy (Product -> Accessory -> Controller), serving as an abstract layer that isolates generic core product behaviors from specialized individual controller attributes.
+
+- Protected Variations
+
+Verdict: Correct
+
+Explanation: As an abstract class contract, it shields client components from needing directly to know or bind into specific concrete accessory implementations, containing variation impacts internally.
+
+---
+
+# Controller.java Audit
+
+- Information Expert
+
+Verdict: Correct
+
+Evidence: Controller.getDescription() method
+
+Explanation: The class operates as the local expert for its specific attribute. It knows and manages its unique field (ConnectionType) and uses super.getDescription() to complement its dynamic text representation natively.
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: This class does not instantiate or build other complex domain data models; its scope is strictly restricted to initializing its own internal state variables.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: Even though the class name is Controller, it represents a physical gaming hardware device (gamepad/joystick). It does not act as the GRASP architectural system controller component and has no interaction with system event streams.
+
+- Low Coupling
+
+Verdict: Correct
+
+Explanation: The class exhibits low coupling since it only depends directly on its abstract base class (Accessory) and standard Java types such as String and List, avoiding foreign dependencies.
+
+- High Cohesion
+
+Verdict: Correct
+
+Explanation: This is a small and highly focused class (around 50 lines) with a single, well-defined purpose: modeling the specific data attributes and behavior of a gaming controller device.
+
+- Polymorphism
+
+Verdict: Correct
+
+Evidence: Override of getDescription() method
+
+Explanation: It overrides the getDescription() method polymorphically, extending the string behavior of the super class to append its connection type without requiring type conditional evaluations in upper layers.
+
+- Pure Fabrication
+
+Verdict: Not Applicable
+
+Explanation: Controller maps a physical, concrete entity from the store business domain (a game controller) and is not an artificial or technical class invented for engineering support.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: It represents the concrete leaf node of the system's polymorphic domain hierarchy path (Product -> Accessory -> Controller), inheriting behavioral contracts through a structured intermediate layout.
+
+- Protected Variations
+
+Verdict: Correct
+
+Explanation: It safely encapsulates all specific variations and fields inherent to game controllers inside its own boundaries, ensuring that internal model modifications do not affect or break the upper hierarchy structures.
+
+---
+
+# Cable.java Audit
+
+- Information Expert
+
+Verdict: Correct
+
+Explanation: The class acts as the proper expert for its specific hardware metrics. It handles its unique physical attributes (lengthInMeters and connectorType) locally, relying on parent accessors via super to build its core identity data fields.
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: This class focuses strictly on mapping structural entity parameters and initializing its own internal fields. It contains no responsibility for instantiating other domain software elements.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: The class is a dead data model component located deep inside the domain layer. It remains completely isolated from capturing system execution triggers or coordinating console menus.
+
+- Low Coupling
+
+Verdict: Correct
+
+Explanation: It maintains thin coupling boundaries, depending exclusively on its abstract superclass (Accessory) and standard data types, avoiding complex structural hooks with outer manager layers.
+
+- High Cohesion
+
+Verdict: Correct
+
+Explanation: The structural scope is highly focused and cohesive. The component limits its responsibilities to modeling the physical attributes and accessors of a connection cable device.
+
+- Polymorphism
+
+Verdict: Violation
+
+ID: V-10
+
+Module: Accessories (Requerimiento 1)
+
+Evidence: Cable class method overrides (Lines 56-59)
+
+Explanation: The class breaks the established polymorphic contract of the product hierarchy by declaring a toString() method instead of overriding the abstract getDescription() method. When client modules iterate over a list of generic products and call getDescription(), the unique specific attributes of the cable will be completely ignored, falling back to the generic Accessory output format.
+
+Consecuence: The polymorphic rendering framework fails for this specific class, preventing upper layer components from displaying complete hardware specifications uniformly.
+
+Proposed Solution: Change the method signature from toString() to @Override public String getDescription() to satisfy the object hierarchy contract.
+
+Other Member Code: No.
+
+- Pure Fabrication
+
+Verdict: Not Applicable
+
+Explanation: Cable mirrors a tangible, real-world retail inventory item from the business domain. It is a fundamental model entity rather than an artificial technical class built for system support.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: The class represents a concrete leaf node attached to the unified inheritance path layout (Product -> Accessory -> Cable), using a structured intermediate layout to inherit global contracts.
+
+- Protected Variations
+
+Verdict: Violation
+
+ID: V-11
+
+Module: Accessories (Requerimiento 1)
+
+Evidence: Cable class description interface mismatch
+
+Explanation: Because the specific textual representation is locked inside toString() instead of matching the getDescription() contract, the class exposes the presentation layer to data loss or unexpected visualization bugs if the catalog is evaluated polymorphically.
+
+Consecuence: Client modules are unprotected against structural inconsistencies, forcing special case type-checking workarounds in upper layer views.
+
+Proposed Solution: Align the method signature with the global description hook to protect caller interfaces from structural text inconsistencies.
+
+Other Member Code: No.
+
+
+---
+
+# Memory.java Audit
+
+- Information Expert
+
+Verdict: Correct
+
+Explanation: The class acts as the proper expert for its specific hardware metrics. It knows and manages its own unique attributes (capacityInGb and memoryType) locally and complements its descriptions natively.
+
+- Alta Cohesión
+
+Verdict: Correct
+
+Explanation: This is a compact class (69 lines) focused exclusively on a single and well-defined purpose: modeling the properties and behaviors of a memory expansion unit.
+
+- Bajo Acoplamiento
+
+Verdict: Correct
+
+Explanation: The class exhibits low coupling since it only depends directly on its abstract base class (Accessory) and standard types (List, String), avoiding unnecessary structural links.
+
+- Polimorfismo
+
+Verdict: Correct
+
+Evidence: Override of getDescription() method
+
+Explanation: Unlike the Cable class, this component correctly overrides the polymorphic getDescription() method defined in Product, ensuring smooth integration with the unified domain hierarchy.
+
+- Variaciones Protegidas
+
+Verdict: Correct
+
+Explanation: It safely encapsulates all specific particularities and fields inherent to memory hardware inside its boundaries without impacting the rest of the inheritance hierarchy structure.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: It represents a concrete leaf node within the dynamic polymorphic domain hierarchy path (Product -> Accessory -> Memory), inheriting contracts through a structured layout.
+
+- Pure Fabrication
+
+Verdict: Not Applicable
+
+Explanation: Memory represents a concrete concept and a physical retail inventory item from the store business domain, rather than an artificial technical class built for engineering support.
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: This class focuses strictly on initializing its own internal state variables and does not instantiate other complex domain software elements.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: The class is a domain data entity component located deep inside the model layer. It does not handle system interface interaction events, coordinate software workflows, or manage user input flows.
+
+
+
+
