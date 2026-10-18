@@ -1,5 +1,7 @@
 package com.gamezone.model;
 
+import com.gamezone.util.ReturnReceiptFormatter;
+
 import java.time.LocalDate;
 import java.util.List;
 /**
@@ -121,25 +123,7 @@ public class Return {
      * @return the return receipt as a string
      */
     public String generateReturnReceipt(){
-        double subtotal = originalSale.calculateTotal();
-        double paidProportion = 1 - (originalSale.getDiscountAmount()/subtotal);
-        String receipt = "Recibo de devolución\n";
-        receipt += "ID de devolución: " + id + "\n";
-        receipt += "Fecha de devolución: " + returnDate + "\n";
-        receipt += "Venta original: " + originalSale.getId() + "\n";
-        receipt += "Productos devueltos:\n";
-        for (Product product : returnedProducts) {
-            double listPrice = product.getPrice();
-            double proportionalDiscount = listPrice * (1 - paidProportion);
-            double refundedAmount = listPrice * paidProportion;
-            receipt += "- " + product.getTitle() + ": precio $" + listPrice + ", descuento $" + proportionalDiscount + ", reembolso $" + refundedAmount + "\n";        }
-        receipt += "Motivo de la devolución: " + returnReason + "\n";
-        if (warrantyRefundAmount > 0) {
-            receipt += "Reembolso por cancelación de garantías: $" + warrantyRefundAmount + "\n";
-        }
-        receipt += "Monto del reembolso: $" + refundAmount + "\n";
-
-        return receipt;
+        return ReturnReceiptFormatter.formatReceipt(this);
     }
 
 }
