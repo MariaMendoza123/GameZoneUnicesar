@@ -33,6 +33,7 @@ public abstract class GameZoneException extends RuntimeException {
     public GameZoneException(String message, Throwable cause) {
         super(message, cause);
     }
+
     /**
      * Constructs a new GameZoneException with the specified detail message, error code, and cause.
      *
@@ -44,6 +45,7 @@ public abstract class GameZoneException extends RuntimeException {
         super(message, cause);
         this.errorCode = errorCode;
     }
+
     /**
      * Returns the error code associated with this exception.
      *
