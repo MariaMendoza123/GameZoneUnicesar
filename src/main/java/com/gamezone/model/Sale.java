@@ -9,7 +9,6 @@ import java.util.List;
  */
 public class Sale {
 
-
     private String id;
     private String date;
     private Client client;
@@ -170,38 +169,15 @@ public class Sale {
         return receipt.toString();
     }
     /**
-     * Determines if the sale can be returned based on custom threshold parameters.
+     * Determines if the sale can be returned based on the date of the sale.
+     * A sale can be returned if it was made within the last 30 days.
      *
-     * @param currentDate    Reference evaluation date.
-     * @param maxDaysAllowed Maximum allowed days for return policy.
-     * @return true if eligible for return, false otherwise.
-     */
-    public boolean canBeReturned(LocalDate currentDate, int maxDaysAllowed) {
-        if (date == null || date.isBlank() || currentDate == null) {
-            return false;
-        }
-        LocalDate saleDate = LocalDate.parse(date);
-        long daysPassed = ChronoUnit.DAYS.between(saleDate, currentDate);
-        return daysPassed >= 0 && daysPassed <= maxDaysAllowed;
-    }
-
-    /**
-     * Overloaded method using standard default 30-day limit for testing or specific evaluation dates.
-     *
-     * @param currentDate Reference evaluation date.
-     * @return true if eligible for return, false otherwise.
-     */
-    public boolean canBeReturned(LocalDate currentDate) {
-        return canBeReturned(currentDate, 30);
-    }
-
-    /**
-     * Determines if the sale can be returned using current system date and default 30-day policy limit.
-     *
-     * @return true if eligible for return, false otherwise.
+     * @return true if the sale can be returned, false otherwise
      */
     public boolean canBeReturned() {
-        return canBeReturned(LocalDate.now(), 30);
+        LocalDate saleDate = LocalDate.parse(date);
+        LocalDate currentDate = LocalDate.now();
+        long daysPassed = ChronoUnit.DAYS.between(saleDate, currentDate);
+        return daysPassed <= 30;
     }
-
 }
