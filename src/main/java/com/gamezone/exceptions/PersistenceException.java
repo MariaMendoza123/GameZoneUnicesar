@@ -8,9 +8,17 @@ public class PersistenceException extends GameZoneException {
      * Constructs a new PersistenceException with the specified detail message.
      *
      * @param message the detail message
+     * @param cause   the underlying cause exception
      */
     public PersistenceException(String message, Throwable cause) {
+        super(message, "PERSISTENCE_ERROR", cause);
+    }
+    /**
+     * Constructs a new PersistenceException with the specified detail message.
+     *
+     * @param message the detail message
+     */
+    public PersistenceException(String message) {
         super(message, "PERSISTENCE_ERROR");
-        initCause(cause);;
     }
 }
