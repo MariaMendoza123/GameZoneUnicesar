@@ -106,4 +106,26 @@ public class ProductRepository {
         return Product.fromCsvLine(line);
     }
 
+    /**
+     * Generates the next unique identifier for a given product type prefix.
+     *
+     * @param prefix the prefix for the ID (e.g., "VG" or "CN")
+     * @return the generated ID string
+     */
+    public String generateNextId(String prefix) {
+        int maxId = 0;
+        for (Product product : findAll()) {
+            if (product.getId() != null && product.getId().startsWith(prefix + "-")) {
+                try {
+                    int numericPart = Integer.parseInt(product.getId().replace(prefix + "-", ""));
+                    if (numericPart > maxId) {
+                        maxId = numericPart;
+                    }
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+        return prefix + "-" + (maxId + 1);
+    }
+
 }

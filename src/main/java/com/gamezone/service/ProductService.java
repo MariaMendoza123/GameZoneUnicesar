@@ -34,7 +34,7 @@ public class ProductService {
     public VideoGame registerVideoGame(String title, double price, int stockQuantity,
                                        String platform, String genre, String classification) {
 
-        String id = generateNextId("VG");   // "CN" en registerConsole
+        String id = productRepository.generateNextId("VG");
         ProductValidator.validateProductData(id, title, price, stockQuantity);
         if (platform == null || platform.isBlank()) {
             throw new InvalidDataException("plataforma", "es obligatoria");
@@ -69,7 +69,7 @@ public class ProductService {
     public Console registerConsole(String title, double price, int stockQuantity,
                                    String brand, String model, String generation) {
 
-        String id = generateNextId("CN");
+        String id = productRepository.generateNextId("CN");
         ProductValidator.validateProductData(id, title, price, stockQuantity);
         if (brand == null || brand.isBlank()) {
             throw new InvalidDataException("La marca", "es obligatoria");
@@ -157,23 +157,6 @@ public class ProductService {
      */
     public List<Product> findAllProducts() {
         return productRepository.findAll();
-    }
-
-    private String generateNextId(String prefix) {
-        int maxId = 0;
-        for (Product product : productRepository.findAll()) {
-            if (product.getId() != null && product.getId().startsWith(prefix + "-")) {
-                try {
-                    int numericPart = Integer.parseInt(product.getId().replace(prefix + "-", ""));
-                    if (numericPart > maxId) {
-                        maxId = numericPart;
-                    }
-                } catch (NumberFormatException ignored) {
-
-                }
-            }
-        }
-        return prefix + "-" + (maxId + 1);
     }
 
 }

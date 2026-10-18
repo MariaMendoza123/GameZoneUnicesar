@@ -22,3 +22,5 @@ This document logs all refactoring activities performed during Phase 2 to resolv
 
 
 | **LOG-02** | 2026-10-18 | `Product.java`<br>`ProductService.java` | V-04 | Information Expert | Delegated stock modification logic (`reduceStock`, `increaseStock`) from `ProductService` directly to `Product`. | **PASS**: Stock updates and validation exception messages remain unchanged. |
+
+| **LOG-03** | 2026-10-18 | `ProductRepository.java`<br>`ProductService.java` | V-06 | High Cohesion | Delegated ID sequence generation from `ProductService` to `ProductRepository`. | **PASS**: ID formats (`VG-1`, `CN-1`, etc.) remain 100% identical. |
