@@ -36,3 +36,5 @@ This document logs all refactoring activities performed during Phase 2 to resolv
 | **LOG-08** | 2026-10-18 | `Sale.java` | V-17, V-18 | Low Coupling, Protected Variations | Refactored `canBeReturned()` method in `Sale.java` to handle local date parsing safely and parameterized return eligibility with evaluation dates and dynamic threshold limits. | **PASS**: 30-day return policy rule and date calculation remain compliant without altering original class attributes. |
 
 | **LOG-09** | 2026-10-18 | `GameZoneException.java` | V-19 | Protected Variations | Added overloaded constructors with `Throwable cause` parameters to support standard exception chaining without breaking existing constructors. | **PASS**: Exception cause chaining works properly for low-level system exception wrapping. |
+
+| **LOG-10** | 2026-10-18 | `InvalidDataException.java` | V-20 | Information Expert | Encapsulated `fieldName` and `problem` as structured private fields with getter accessors instead of discarding them into a raw concatenated string. | **PASS**: Programmatic extraction of field name and error cause works without string parsing. |
