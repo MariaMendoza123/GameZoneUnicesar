@@ -1120,3 +1120,189 @@ Consequence: If store return policies shift or if automated testing strategies r
 Proposed Solution: Inject the policy threshold parameter externally via system configuration properties or pass the evaluation timeline directly as a method signature contract.
 
 Other Member Code: No.
+
+
+# Warranty.java Audit
+
+- Information Expert
+
+Verdict: Correct
+
+Evidence: Warranty.isActive() method layout
+
+Explanation: The class operates as the correct expert because it directly manages its coverage timeframe and natively evaluates its own validity through the isActive(LocalDate date) routine.
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: Since it is explicitly declared as an abstract class, it cannot be instantiated directly using the new keyword, and it does not instantiate other entities or itself.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: The class is a core domain model entity. It has no contact with capturing user interface commands, menu loops, or managing application event streams.
+
+- Low Coupling
+
+Verdict: Correct
+
+Explanation: It exhibits minimal and clean coupling boundaries since it only binds directly to the stable abstractions Product and Sale, and the standard platform data type LocalDate.
+
+- High Cohesion
+
+Verdict: Correct
+
+Explanation: The class maintains a clear and focused responsibility, which is strictly limited to modeling the characteristics and lifecycle of a commercial warranty.
+
+- Polymorphism
+
+Verdict: Correct
+
+Evidence: Use of abstract hooks getDurationInMonths(), getWarrantyType(), and getAdditionalCost()
+
+Explanation: The component complies exemplarily with this pattern by defining abstract polymorphic method hooks to delegate variable subtype characteristics directly to its subclasses.
+
+- Pure Fabrication
+
+Verdict: Not Applicable
+
+Explanation: The class maps a direct, concrete commercial concept and an organic contract from the real-world retail store business domain (a warranty) rather than an artificial technical utility class built for system support.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: The component serves as an intermediate architectural layer that effectively mediates between the product sale transaction model and the various post-sale coverage policies.
+
+- Protected Variations
+
+Verdict: Correct
+
+Evidence: public abstract class Warranty structure
+
+Explanation: The class acts as an abstract contract that complies exemplarily with this principle, effectively protecting and shielding the rest of the system from modifications whenever a new type of warranty is introduced.
+
+
+# BasicWarranty.java Audit
+
+- Information Expert
+
+Verdict: Correct
+
+Evidence: BasicWarranty class method overrides
+
+Explanation: The class acts as the correct expert because it knows its own specific business rules, which are a duration of 6 months, an additional cost of $0.0, and its descriptive label text.
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: This class does not carry any initialization responsibilities to create or instantiate other classes within the system architecture.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: The class is a core domain data entity. It has no contact with managing system events, interface components, or orchestrating core software use cases.
+
+- Low Coupling
+
+Verdict: Correct
+
+Explanation: It exhibits minimal and clean coupling boundaries since it only binds directly to its superclass Warranty and the necessary entities required in the constructor parameters (Product, Sale, LocalDate).
+
+- High Cohesion
+
+Verdict: Correct
+
+Explanation: This is an extremely compact class (48 lines) with a single and well-defined goal: defining the fixed operational parameters of a basic baseline warranty.
+
+- Polymorphism
+
+Verdict: Correct
+
+Evidence: @Override implementation of abstract warranty contracts
+
+Explanation: The class successfully complies with this pattern by cleanly implementing the three polymorphic methods inherited from Warranty (getDurationInMonths, getWarrantyType, getAdditionalCost).
+
+- Pure Fabrication
+
+Verdict: Not Applicable
+
+Explanation: The class maps a direct, concrete commercial concept and a contract from the real-world store business domain (a standard/base warranty) rather than an artificial technical utility class built for system support.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: The component functions as a concrete leaf node within the architecture's structural indirection tree driven by inheritance (Warranty -> BasicWarranty).
+
+- Protected Variations
+
+Verdict: Correct
+
+Explanation: It safely encapsulates all the internal rules and conditions of the basic warranty inside its own boundaries without creating unexpected impacts across the rest of the system layout.
+
+
+# ExtendedWarranty.java Audit
+
+- Information Expert
+
+Verdict: Correct
+
+Evidence: ExtendedWarranty.getAdditionalCost() implementation
+
+Explanation: The class acts as the correct expert because it knows its own parameters and safely queries the price of the associated product to calculate the 10% additional cost surcharge natively.
+
+- Creator
+
+Verdict: Not Applicable
+
+Explanation: This class does not carry any initialization responsibilities to create or instantiate other classes within the system architecture.
+
+- Controller
+
+Verdict: Not Applicable
+
+Explanation: The class is a core domain data entity. It has no contact with managing system events, interface components, or orchestrating core software use cases.
+
+- Low Coupling
+
+Verdict: Correct
+
+Explanation: It exhibits minimal and clean coupling boundaries since it only binds directly to its superclass Warranty and the necessary entities required in the constructor parameters (Product, Sale, LocalDate).
+
+- High Cohesion
+
+Verdict: Correct
+
+Explanation: This is a small class (48 lines) focused exclusively on a single and well-defined purpose: defining the conditions and operational metrics of an extended warranty.
+
+- Polymorphism
+
+Verdict: Correct
+
+Evidence: @Override implementation of abstract warranty contracts
+
+Explanation: The class successfully complies with this pattern by overriding the three methods of Warranty, dynamically resolving the timeframe (12 months) and the operational formula for the additional cost surcharge.
+
+- Pure Fabrication
+
+Verdict: Not Applicable
+
+Explanation: The class maps a direct, concrete commercial product/service concept offered in the real-world store business domain rather than an artificial technical utility class built for system support.
+
+- Indirection
+
+Verdict: Correct
+
+Explanation: The component functions as a concrete leaf node within the architecture's structural indirection tree driven by inheritance (Warranty -> ExtendedWarranty).
+
+- Protected Variations
+
+Verdict: Correct
+
+Explanation: It safely encapsulates the unique 10% cost calculation formula and the 12-month coverage timeframe internally without creating unexpected impacts across the rest of the system layout.
+
